@@ -2,7 +2,7 @@
 // เปลี่ยนปลายทางได้ที่ Vercel > Settings > Environment Variables ชื่อ GAS_URL
 // (ถ้าไม่ตั้ง จะใช้ URL ด้านล่าง)
 const DEFAULT_GAS_URL =
-  "https://script.google.com/macros/s/AKfycbwXU_nIrl7B_-2ffrDxgzR3xhp1RFsS4ozblYkNeQOb8x94FWWbYkXVnY3tv1ocoNHU/exec";
+  "https://script.google.com/macros/s/AKfycbzT4n08-GGUTKdEA6ZjUZUAbpREaKiGyCVnvIirNzk_PGGvJLgfTBHC1dfSACnnsEyEfw/exec";
 
 module.exports = async (req, res) => {
   const target = process.env.GAS_URL || DEFAULT_GAS_URL;
