@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="qrcode.min.js" defer onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';document.head.appendChild(s)"></script>
 <style>
 /* ===== ตั้งค่า: ใส่ URL เว็บแอป Apps Script ที่ลงท้าย /exec  (ว่างไว้ = โหมดตัวอย่าง) ===== */
 :root{
@@ -635,6 +635,11 @@ th{background:#0B1328;color:#9FB0CC}
 .pchip.add small{font-size:12px;color:var(--muted)}
 .pill.none{background:rgba(242,184,75,.15);color:var(--gold)}
 @media (max-width:900px){.pchip{min-width:180px}}
+
+.syncing{font-size:12px;color:#8EC1FF;display:inline-flex;align-items:center;gap:6px}
+.syncing::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue);animation:syncPulse 1s ease-in-out infinite}
+@keyframes syncPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.syncing[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -655,6 +660,7 @@ th{background:#0B1328;color:#9FB0CC}
   </div>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
+  <span class="syncing" id="syncing" hidden>กำลังอัปเดต…</span>
   <span class="pill-btn" id="whoami"></span>
   <button class="btn small" id="logoutBtn" hidden>ออกจากระบบ</button>
 </header>
@@ -785,7 +791,7 @@ th{background:#0B1328;color:#9FB0CC}
   </section>
 
   <section class="card" id="secPlan">
-    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button></div><span class="pill plan" id="planPill">–</span></div>
+    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button> <button class="linkish" id="closePort" style="color:var(--red)">ปิดพอร์ต</button></div><span class="pill plan" id="planPill">–</span></div>
     <div class="tiles t3">
       <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
       <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
@@ -989,7 +995,7 @@ th{background:#0B1328;color:#9FB0CC}
       </div>
       <h3>รับเงินพร้อมเพย์</h3>
       <div class="cfg-grid">
-        <label class="fld"><span>เบอร์หรือเลขบัตรประชาชนที่ผูกพร้อมเพย์</span><input class="field num" inputmode="numeric" id="shopPP"></label>
+        <label class="fld"><span>เบอร์โทร / เลขบัตรประชาชน / รหัส e-Wallet (15 หลัก) ที่ผูกพร้อมเพย์</span><input class="field num" inputmode="numeric" id="shopPP"></label>
         <label class="fld"><span>ชื่อบัญชีที่ลูกค้าเห็น</span><input class="field" id="shopName"></label>
       </div>
       <h3>QR รับเงิน</h3>
@@ -1002,7 +1008,8 @@ th{background:#0B1328;color:#9FB0CC}
         <div style="display:grid;gap:8px">
           <span class="btn small file-btn">อัปโหลดรูป QR<input type="file" accept="image/*" id="shopQrIn" aria-label="อัปโหลดรูป QR"></span>
           <button type="button" class="btn small ghost" id="shopQrDel" style="color:var(--red)" hidden>ลบรูป QR</button>
-          <p class="pnote" style="margin:0;max-width:320px">ใช้รูปที่เห็น QR ชัดทั้งภาพ ครอบเฉพาะส่วน QR ได้จะดีที่สุด อัปโหลดแล้วระบบจะเปลี่ยนไปใช้รูปนี้ให้อัตโนมัติ</p>
+          <p class="pnote" style="margin:0;max-width:320px">ใช้รูปที่เห็น QR ชัดทั้งภาพ ครอบเฉพาะส่วน QR ได้จะดีที่สุด</p>
+          <p class="pnote" style="margin:0;max-width:320px;color:#8EC1FF">โหลดเร็วที่สุด: ตั้งชื่อรูปว่า <b>pay-qr.png</b> แล้วอัปขึ้น GitHub หน้าแรกของ repo ระบบจะใช้รูปนั้นก่อน <span id="shopQrGh"></span></p>
         </div>
       </div>
 
@@ -1185,7 +1192,7 @@ function demoApi(action, d) {
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
-    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit", "port_add", "port_rename"].includes(action)) {
+    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit", "port_add", "port_rename", "port_close"].includes(action)) {
       const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
       u.codes = u.codes || [u.code];
       if (action === "port_add") {
@@ -1194,9 +1201,12 @@ function demoApi(action, d) {
         L.push({ code, name: u.name, label: d.label || ("พอร์ต " + (u.codes.length + 1)), account: "", expires: Date.now(), status: "active", plan: "none", port: d.port, currency: "", equity: null, online: false, created: Date.now(), login: u.login, settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 5 } });
         u.codes.push(code); return res({ ok: true, code });
       }
-      const lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
+      let lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
       if (action === "port_rename") { lic.label = d.label; return res({ ok: true }); }
+      if (action === "port_close") { u.codes = u.codes.filter(c => c !== lic.code); lic.status = "closed"; d.code = ""; action = "me"; }
       if (action === "me") {
+        lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
+        if (!lic) return res({ ok: true, user: { name: u.name, login: u.login }, ports: [], maxPorts: 10, plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }], pay: { promptpay: demo.config.promptpay, payName: demo.config.payName }, payments: [] });
         const last = demo.hist[demo.hist.length - 1], snapOk = !!lic.equity;
         const nowH = Math.floor(Date.now() / 3600000), hp = [];
         for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
@@ -1362,6 +1372,7 @@ $("adminForm").addEventListener("submit", async e => {
 
 function logout(msg) {
   clearInterval(timer);
+  try { Object.keys(localStorage).filter(k => k.startsWith("gs_me_")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port");
   session = { mode: null };
   $("whoami").textContent = "";
@@ -1384,14 +1395,27 @@ async function loadMe(auto) {
   }
   dashData = r;
   if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
+  try { const c = Object.assign({}, r, { history: (r.history || []).slice(-600) }); store.set(meCacheKey(), JSON.stringify(c)); } catch (e) {}
   renderPorts();
   renderDash();
   return true;
 }
 
+function meCacheKey() { return "gs_me_" + String(session.token || "").slice(-12) + "_" + (session.port || store.get("gs_port") || ""); }
 async function openMember(token) {
   session = { mode: "user", token };
-  if (!(await loadMe())) return;
+  // แสดงข้อมูลชุดล่าสุดที่จำไว้ทันที (ถ้ามี) ระหว่างรอข้อมูลใหม่
+  let cached = null;
+  try { cached = JSON.parse(store.get(meCacheKey()) || "null"); } catch (e) {}
+  if (cached && cached.ok) {
+    dashData = cached; renderPorts(); renderDash();
+    $("whoami").textContent = dashData.user.name;
+    show("dashView"); hideSplash();
+    $("syncing").hidden = false;
+  }
+  const ok = await loadMe();
+  $("syncing").hidden = true;
+  if (!ok) return;
   $("whoami").textContent = dashData.user.name;
   show("dashView");
   clearInterval(timer);
@@ -1399,6 +1423,7 @@ async function openMember(token) {
 }
 
 function renderDash() {
+  if (dashData.pay && dashData.pay.qrMode === "image") preloadStaticQr();
   if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
   renderPlan(); renderPort();
@@ -1796,7 +1821,7 @@ const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
 function renderNoLicense() {
   $("planPill").textContent = "ยังไม่มีแพ็กเกจ";
   $("lDays").textContent = "–"; $("lExp").textContent = "–"; $("planCode").textContent = "–";
-  $("planNote").textContent = "บัญชีนี้ยังไม่มีโค้ดใช้งาน ถ้ามีโค้ดจากแอดมิน ให้ผูกโค้ดด้านล่าง";
+  $("planNote").textContent = "บัญชีนี้ยังไม่มีพอร์ต กด + เปิดพอร์ตใหม่ ด้านบน หรือถ้ามีโค้ดจากแอดมิน ให้เพิ่มด้านล่าง";
   $("renewBtn").hidden = true;
 }
 
@@ -1826,6 +1851,25 @@ function renderPlan() {
   else note.textContent = "";
 }
 $("planCode").addEventListener("click", () => copy($("planCode").textContent));
+$("closePort").addEventListener("click", async () => {
+  const L = dashData.license; if (!L) return;
+  const P = (dashData.ports || []).find(x => x.code === L.code) || {};
+  const dl = daysLeft(L.expires), paid = ["month", "year", "life"].includes(L.plan) && (L.plan === "life" || dl > 0);
+  let msg = `ปิดพอร์ต "${L.label || L.code}" (${L.code})?\n\n• พอร์ตจะหายจากหน้าสมาชิก และ EA ที่ใช้โค้ดนี้จะหยุดเปิดไม้ใหม่`;
+  if (P.online) msg += "\n• EA ของพอร์ตนี้ยังออนไลน์อยู่ ควรปิดไม้และถอด EA ออกจากกราฟก่อน";
+  if (paid) msg += `\n• แพ็กเกจ${PLAN_LABEL[L.plan]}ที่เหลือ${L.plan === "life" ? " (ถาวร)" : " " + dl + " วัน"} จะใช้ไม่ได้อีก และไม่คืนเงิน`;
+  if (L.plan === "trial") msg += "\n• สิทธิ์ทดลองฟรีจะถือว่าใช้ไปแล้ว";
+  msg += "\n\nถ้าต้องการเปิดพอร์ตนี้กลับมา ต้องติดต่อแอดมิน";
+  if (!confirm(msg)) return;
+  $("closePort").disabled = true;
+  const r = await api("port_close", { token: session.token, code: L.code });
+  $("closePort").disabled = false;
+  if (!r.ok) { toast(r.error); return; }
+  try { localStorage.removeItem(meCacheKey()); } catch (e) {}
+  session.port = r.license ? r.license.code : ""; store.set("gs_port", session.port);
+  dashData = r; renderPorts(); renderDash();
+  toast("ปิดพอร์ตแล้ว");
+});
 $("renamePort").addEventListener("click", async () => {
   const L = dashData.license; if (!L) return;
   const v = prompt("ตั้งชื่อพอร์ตนี้", L.label || "");
@@ -1859,15 +1903,20 @@ let npType = "cent";
 document.querySelectorAll("#npSeg button").forEach(b => b.addEventListener("click", () => {
   npType = b.dataset.np; document.querySelectorAll("#npSeg button").forEach(x => x.setAttribute("aria-pressed", x === b));
 }));
+let npBusy = false;
 $("npCreate").addEventListener("click", async () => {
-  $("npCreate").disabled = true;
+  if (npBusy) return;
+  npBusy = true;
+  const btn = $("npCreate"), txt = btn.textContent;
+  btn.disabled = true; btn.textContent = "กำลังเปิดพอร์ต… (ไม่ต้องกดซ้ำ)";
   const r = await api("port_add", { token: session.token, label: $("npLabel").value.trim(), port: npType });
-  $("npCreate").disabled = false;
+  btn.disabled = false; btn.textContent = txt; npBusy = false;
   if (!r.ok) { toast(r.error); return; }
   $("newPortDlg").close();
   session.port = r.code; store.set("gs_port", r.code);
-  await loadMe();
-  toast("เปิดพอร์ตใหม่แล้ว เลือกแพ็กเกจเพื่อเริ่มใช้งาน");
+  if (r.ports) { dashData = r; renderPorts(); renderDash(); try { store.set(meCacheKey(), JSON.stringify(r)); } catch (e) {} }
+  else await loadMe();
+  toast(r.reused ? "เปิดพอร์ตนี้ไว้แล้ว เลือกแพ็กเกจเพื่อเริ่มใช้งาน" : "เปิดพอร์ตใหม่แล้ว เลือกแพ็กเกจเพื่อเริ่มใช้งาน");
   openPay();
 });
 
@@ -1920,13 +1969,23 @@ function crc16(str) {
 function ppPayload(id, amount) {
   const f = (tag, v) => tag + String(v.length).padStart(2, "0") + v;
   id = String(id).replace(/[^0-9]/g, "");
-  const acc = id.length >= 13 ? f("02", id) : f("01", ("0000000000000" + id.replace(/^0/, "66")).slice(-13));
+  // 15 หลัก = e-Wallet ID (เช่น CLICX, TrueMoney), 13 หลัก = เลขบัตรประชาชน/ผู้เสียภาษี, อื่นๆ = เบอร์โทร
+  const acc = id.length >= 15 ? f("03", id) : id.length === 13 ? f("02", id) : f("01", ("0000000000000" + id.replace(/^0/, "66")).slice(-13));
   const p = f("00", "01") + f("01", amount ? "12" : "11") + f("29", f("00", "A000000677010111") + acc)
           + f("58", "TH") + f("53", "764") + (amount ? f("54", Number(amount).toFixed(2)) : "") + "6304";
   return p + crc16(p);
 }
 
 let payPlan = null, slipData = null, payQrCache = { ver: -1, img: "" };
+/* รูป QR รับเงินที่วางไว้บน GitHub ชื่อ pay-qr.png — โหลดรอไว้ตั้งแต่เปิดหน้า */
+const STATIC_QR = "pay-qr.png";
+const staticQr = { ok: false, tried: false };
+function preloadStaticQr() {
+  if (staticQr.tried) return; staticQr.tried = true;
+  const im = new Image();
+  im.onload = () => { staticQr.ok = im.naturalWidth > 0; };
+  im.src = STATIC_QR;
+}
 function openPay() {
   const plans = dashData.plans || [];
   $("payFor").textContent = dashData.license ? `${dashData.license.label || ""} (${dashData.license.code})` : "";
@@ -1947,17 +2006,18 @@ function renderPayBox() {
   $("payTo").textContent = pay.promptpay ? `พร้อมเพย์ ${pay.promptpay}${pay.payName ? " (" + pay.payName + ")" : ""}` : "";
   const qr = $("payQR"); qr.innerHTML = "";
   $("payHint").textContent = "";
-  if (pay.qrMode === "image" && pay.hasQr) {
+  if (pay.qrMode === "image") {
     $("payHint").textContent = "สแกนแล้วพิมพ์ยอด " + fmt(amt, 2) + " บาท ให้ตรงทุกสตางค์";
-    if (payQrCache.ver === pay.qrVer && payQrCache.img) qr.innerHTML = `<img src="${payQrCache.img}" alt="QR รับเงิน" style="width:180px;height:auto">`;
-    else {
+    const show = src => { qr.innerHTML = `<img src="${src}" alt="QR รับเงิน" style="width:180px;height:auto">`; };
+    if (staticQr.ok) show(STATIC_QR);                       // รูปจาก GitHub (เร็วสุด)
+    else if (payQrCache.ver === pay.qrVer && payQrCache.img) show(payQrCache.img);
+    else if (pay.hasQr) {
       qr.innerHTML = `<div class="muted">กำลังโหลด QR…</div>`;
       api("pay_qr", {}).then(r => {
         if (!r.ok) { qr.innerHTML = `<div class="muted">โหลด QR ไม่ได้ ติดต่อแอดมิน</div>`; return; }
-        payQrCache = { ver: pay.qrVer, img: r.image };
-        qr.innerHTML = `<img src="${r.image}" alt="QR รับเงิน" style="width:180px;height:auto">`;
+        payQrCache = { ver: pay.qrVer, img: r.image }; show(r.image);
       });
-    }
+    } else qr.innerHTML = `<div class="muted">ยังไม่มีรูป QR ติดต่อแอดมิน</div>`;
   }
   else if (!pay.promptpay) qr.innerHTML = `<div class="muted">ยังไม่ได้ตั้งเลขพร้อมเพย์ ติดต่อแอดมินเพื่อรับเลขบัญชี</div>`;
   else if (window.QRCode) new QRCode(qr, { text: ppPayload(pay.promptpay, amt), width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
@@ -2025,6 +2085,7 @@ async function loadLics() {
 }
 
 function licState(l) {
+  if (l.status === "closed") return ["expired", "ปิดโดยสมาชิก"];
   if (l.status !== "active") return ["suspended", "ระงับ"];
   if (daysLeft(l.expires) <= 0) return ["expired", "หมดอายุ"];
   return ["active", "ใช้งาน"];
@@ -2219,6 +2280,7 @@ async function loadShop() {
   $("shopCLc").value = c.port.cent.cutLoss; $("shopCLu").value = c.port.usd.cutLoss;
   document.querySelectorAll('input[name="qrMode"]').forEach(r => r.checked = r.value === c.qrMode);
   $("shopQrDel").hidden = !c.qrFile;
+  const gh = new Image(); gh.onload = () => { $("shopQrGh").textContent = "· พบไฟล์บน GitHub แล้ว ✓"; }; gh.onerror = () => { $("shopQrGh").textContent = ""; }; gh.src = STATIC_QR + "?t=" + Date.now();
   if (c.qrFile) {
     $("shopQrPrev").innerHTML = `<div class="muted">กำลังโหลด…</div>`;
     const q = await api("pay_qr", {});
