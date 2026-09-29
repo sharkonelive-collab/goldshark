@@ -3,11 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GoldShark — แดชบอร์ด EA</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦈</text></svg>">
+<title>GoldShark — EA เทรดทองอัตโนมัติพร้อมแดชบอร์ดสด</title>
+<meta name="description" content="EA เทรดทอง XAUUSD สำหรับ MetaTrader 5 ดูพอร์ตแบบสด หลบข่าวอัตโนมัติ และตั้งเวลาเทรดผ่านเว็บ ทดลองใช้ฟรี 15 วัน">
+<meta name="theme-color" content="#0F1622">
+<meta property="og:title" content="GoldShark — EA เทรดทองอัตโนมัติ">
+<meta property="og:description" content="ดูพอร์ตแบบสด หลบข่าวอัตโนมัติ ตั้งเวลาเทรดผ่านเว็บ ทดลองใช้ฟรี 15 วัน">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://goldshark.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="https://goldshark.vercel.app/icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
 /* ===== ตั้งค่า: ใส่ URL เว็บแอป Apps Script ที่ลงท้าย /exec  (ว่างไว้ = โหมดตัวอย่าง) ===== */
@@ -22,12 +32,12 @@
   --gold:#D9AE52;     /* เส้น equity ทอง */
   --green:#3FB68B;
   --r:6px;
-  --display:"Chakra Petch", "IBM Plex Sans Thai", system-ui, sans-serif;
-  --body:"IBM Plex Sans Thai", "Chakra Petch", system-ui, sans-serif;
+  --display:"Kanit", "Leelawadee UI", "Tahoma", system-ui, sans-serif;
+  --body:"Kanit", "Leelawadee UI", "Tahoma", system-ui, sans-serif;
 }
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.55}
+html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.6;font-weight:300}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .num{font-family:var(--display);font-variant-numeric:tabular-nums}
@@ -305,6 +315,57 @@ select.field{appearance:auto}
 .file-btn{position:relative;overflow:hidden}
 .file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .pay-hint{font-size:13px;color:var(--gold);margin-top:6px}
+
+/* ---------- หน้าเข้าสู่ระบบ ---------- */
+body[data-view="loginView"] .bar{display:none}
+.auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.auth-brand{position:relative;overflow:hidden;background:linear-gradient(160deg,#152033 0%,#0b111b 100%);padding:44px 56px 36px;display:flex;flex-direction:column;gap:40px;border-right:1px solid var(--line)}
+.auth-brand .logo{font-size:21px}
+.eyebrow{display:inline-block;font-size:13px;color:var(--gold);letter-spacing:.03em;margin-bottom:14px}
+.auth-copy h1{font-family:var(--display);font-size:clamp(32px,3.4vw,46px);line-height:1.14;margin:0 0 16px;font-weight:700}
+.auth-copy>p{color:var(--muted);max-width:470px;margin:0 0 30px;font-size:16px}
+.feat{list-style:none;padding:0;margin:0;display:grid;gap:20px;max-width:470px}
+.feat li{display:grid;grid-template-columns:40px 1fr;column-gap:14px;align-items:start;font-weight:600}
+.feat li svg{grid-row:span 2;width:40px;height:40px;padding:9px;border-radius:9px;background:rgba(224,49,63,.12);color:var(--red)}
+.feat li span{font-weight:400;color:var(--muted);font-size:14px;line-height:1.5}
+.auth-curve{margin-top:auto;opacity:.9}
+.auth-curve svg{width:100%;height:110px;display:block}
+.auth-risk{font-size:12px;color:var(--muted);margin:0;max-width:540px;line-height:1.6}
+.auth-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 28px}
+.auth-card{width:100%;max-width:400px}
+.auth-card h2{font-family:var(--display);font-size:28px;line-height:1.2;margin:14px 0 6px}
+.auth-card .sub{color:var(--muted);margin:0 0 24px}
+.trial-badge,.admin-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:4px 12px}
+.trial-badge{color:var(--gold);background:rgba(217,174,82,.12)}
+.admin-badge{color:var(--red);background:rgba(224,49,63,.12);letter-spacing:.08em}
+.auth form{display:grid;gap:14px}
+.auth form label{margin:0}
+.auth .btn.primary{padding:12px 16px;font-size:15px;margin-top:4px}
+.auth .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:22px;background:var(--deep)}
+.auth .tab{border:0;border-radius:4px;padding:9px;font-weight:500}
+.auth .tab[aria-selected="true"]{background:var(--panel);color:var(--text)}
+.pw{position:relative}
+.pw .field{padding-right:62px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 8px;border-radius:4px}
+.pw-eye:hover{color:var(--text)}
+.forgot{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;justify-self:center;padding:4px}
+.forgot:hover{color:var(--text);text-decoration:underline}
+.auth-foot{margin-top:44px;font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.linkish{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12px;padding:0}
+.linkish:hover{color:var(--text)}
+body.admin-mode .auth{grid-template-columns:1fr}
+body.admin-mode .auth-brand{display:none}
+#riskDlg p{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 12px}
+@media (max-width:900px){
+  .auth{grid-template-columns:1fr;min-height:0}
+  .auth-brand{padding:24px 22px 26px;gap:18px;border-right:0;border-bottom:1px solid var(--line)}
+  .feat,.auth-curve,.auth-risk{display:none}
+  .auth-copy h1{font-size:26px;margin-bottom:8px}
+  .auth-copy>p{margin:0;font-size:14px}
+  .eyebrow{margin-bottom:8px}
+  .auth-panel{padding:26px 20px 40px;justify-content:flex-start}
+  .auth-card h2{font-size:24px}
+}
 @media (max-width:860px){.member-top{grid-template-columns:1fr}.plan-opts{grid-template-columns:1fr}.pay-box{grid-template-columns:1fr;justify-items:center;text-align:center}}
 @media (max-width:860px){.lotcard{grid-template-columns:1fr}.lot-ladder{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:860px){.setup-body{grid-template-columns:1fr}}
@@ -315,83 +376,401 @@ select.field{appearance:auto}
   .admin-top{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* =====================================================================
+   THEME — สไตล์การ์ดเรืองแสง โทนแดง-ฟ้า (ชั้นนี้ทับสไตล์ด้านบนทั้งหมด)
+   ===================================================================== */
+:root{
+  --ink:#05070D; --deep:#070B16; --panel:#0E1628; --line:rgba(110,150,230,.16);
+  --text:#EAF0FA; --muted:#8E9AB3; --red:#E5283D; --blue:#3B94FF; --gold:#F2B84B; --green:#2FBF8A;
+  --r:10px; --rc:18px;
+}
+html,body{background:var(--ink)}
+body{background-image:
+  radial-gradient(900px 520px at 88% -8%, rgba(59,148,255,.13), transparent 62%),
+  radial-gradient(760px 460px at -8% 6%, rgba(229,40,61,.10), transparent 62%);
+  background-attachment:fixed;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, #fff, transparent 60%),
+    radial-gradient(1px 1px at 68% 8%, #cfe0ff, transparent 60%),
+    radial-gradient(1px 1px at 38% 62%, #fff, transparent 60%),
+    radial-gradient(1.3px 1.3px at 86% 44%, #ffd6db, transparent 60%),
+    radial-gradient(1px 1px at 22% 88%, #cfe0ff, transparent 60%),
+    radial-gradient(1px 1px at 55% 30%, #fff, transparent 60%),
+    radial-gradient(1px 1px at 94% 82%, #fff, transparent 60%),
+    radial-gradient(1.1px 1.1px at 5% 50%, #cfe0ff, transparent 60%);
+  background-size:560px 560px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.field{border-radius:12px;background:rgba(5,8,16,.7)}
+.field:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,148,255,.18)}
+.pos{color:var(--green)} .neg{color:var(--red)}
+
+/* ---- ปุ่ม ---- */
+.btn{border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line);transition:border-color .15s,background .15s,box-shadow .15s}
+.btn:hover{border-color:rgba(59,148,255,.5);background:rgba(59,148,255,.06)}
+.btn.small{border-radius:999px;padding:6px 14px}
+.btn.primary{background:linear-gradient(180deg,#F4495E 0%,#C81E33 100%);border-color:transparent;color:#fff;
+  box-shadow:0 10px 26px -10px rgba(229,40,61,.7), inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.primary:hover{filter:brightness(1.07);background:linear-gradient(180deg,#F4495E 0%,#C81E33 100%)}
+.btn:disabled{opacity:.45;box-shadow:none}
+.chip{border-radius:999px;background:rgba(5,8,16,.6)}
+.chip[aria-pressed="true"]{border-color:var(--blue);color:#9CC8FF;background:rgba(59,148,255,.1)}
+.seg{border-radius:999px;background:rgba(5,8,16,.6);padding:3px;gap:2px;border-color:var(--line)}
+.seg button{border-radius:999px;padding:5px 12px}
+.seg button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(59,148,255,.28),rgba(59,148,255,.12));color:#fff;box-shadow:inset 0 0 0 1px rgba(59,148,255,.45)}
+.pill{border-radius:999px}
+.pill.plan{background:rgba(59,148,255,.14);color:#8EC1FF}
+.pill.pending{background:rgba(242,184,75,.14);color:var(--gold)}
+
+/* ---- แถบบน ---- */
+.bar{position:sticky;top:0;z-index:30;padding:14px 24px;background:rgba(5,7,13,.72);backdrop-filter:blur(12px);
+  border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(59,148,255,.55),rgba(229,40,61,.55),transparent) 1}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-tile{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;
+  background:radial-gradient(circle at 50% 35%,#1B2B4D,#0A1122 70%);border:1px solid rgba(59,148,255,.4);box-shadow:0 0 22px -6px rgba(59,148,255,.65)}
+.brand-tile svg{width:37px;height:37px}
+.brand b{display:block;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.1}
+.brand small{display:block;font-size:10px;letter-spacing:.24em;color:var(--blue);margin-top:2px}
+.pill-btn{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.03);color:var(--text)}
+.pill-btn:empty{display:none}
+.demo-tag{color:#8EC1FF;border-color:rgba(59,148,255,.5)}
+
+/* ---- เมนูด้านข้าง ---- */
+.rail{position:fixed;left:16px;top:96px;z-index:25;display:flex;flex-direction:column;gap:4px;padding:10px 7px;border-radius:24px;
+  border:1px solid var(--line);background:rgba(9,14,26,.82);backdrop-filter:blur(10px)}
+.rail[hidden]{display:none}
+.rail a{display:flex;flex-direction:column;align-items:center;gap:3px;width:60px;padding:9px 0;border-radius:15px;color:var(--muted);font-size:11px;text-decoration:none;transition:color .15s,background .15s}
+.rail a svg{width:21px;height:21px}
+.rail a:hover{color:var(--text)}
+.rail a.active{color:#fff;background:linear-gradient(180deg,rgba(59,148,255,.26),rgba(59,148,255,.07));box-shadow:inset 0 0 0 1px rgba(59,148,255,.5)}
+.rail a.active svg{color:#8EC1FF}
+#dashView{max-width:1180px;padding-left:112px}
+#dashView section,#dashView details{scroll-margin-top:88px}
+
+/* ---- หัวหน้า ---- */
+.page-head{margin:10px 0 20px}
+.page-head h1{font-family:var(--display);font-size:30px;font-weight:600;margin:0 0 4px}
+.page-head p{margin:0;color:var(--muted);font-size:14px}
+
+/* ---- การ์ด ---- */
+.card{border-radius:var(--rc);border:1px solid var(--line);padding:20px;
+  background:linear-gradient(180deg,rgba(19,29,52,.78),rgba(9,14,26,.78));box-shadow:0 20px 40px -30px rgba(0,0,0,.8)}
+#dashView > .card,#dashView > section{margin-top:14px}
+.card-label{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.card-label::before{content:"";width:16px;height:1.5px;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--red))}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-head .card-label{margin:0;flex:1}
+.card-foot{margin:12px 0 0;font-size:13px;color:var(--muted)}
+.card-foot b{color:#8EC1FF;font-weight:500}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+
+/* ---- ช่องตัวเลข ---- */
+.tiles{display:grid;gap:10px}
+.t4{grid-template-columns:repeat(4,minmax(0,1fr))} .t3{grid-template-columns:repeat(3,minmax(0,1fr))} .t2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile{background:rgba(4,7,14,.6);border:1px solid rgba(110,150,230,.09);border-radius:13px;padding:12px 14px;min-width:0}
+.tile > span{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.tile > b{display:block;font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile > b.txt{font-size:16px;white-space:normal}
+.tile > small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.tile i{font-style:normal;color:var(--text)}
+.tile.buy{box-shadow:inset 3px 0 0 var(--green)} .tile.sell{box-shadow:inset 3px 0 0 var(--red)}
+.conn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
+.conn b{font-weight:500}
+.conn .muted{font-size:13px}
+.code-copy{background:none;border:0;padding:0;cursor:pointer;color:var(--text);font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:.04em;text-align:left}
+.code-copy:hover{color:#8EC1FF}
+.plan-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}
+.plan-actions .claim{margin:0}
+.plan-note{border-radius:12px}
+
+/* ---- กล่องไฮไลต์ (ติดตั้ง EA) ---- */
+.setup.hl{margin-top:0;border-radius:var(--rc);border:1px solid transparent;
+  background:linear-gradient(180deg,#131F38,#0A1224) padding-box, linear-gradient(135deg,rgba(59,148,255,.9),rgba(229,40,61,.9)) border-box;
+  box-shadow:0 0 50px -18px rgba(59,148,255,.55)}
+.setup.hl summary{padding:18px 20px;gap:14px}
+.hl-ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;background:rgba(59,148,255,.14);color:#8EC1FF}
+.hl-ico svg{width:22px;height:22px}
+.hl-t b{display:block;font-family:var(--display);font-size:18px;font-weight:600}
+.hl-t small{display:block;font-size:13px;color:var(--muted);font-weight:300}
+.setup.hl .setup-body{display:block;padding:0 20px 20px}
+.dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;font-size:16px;text-decoration:none;
+  background:linear-gradient(180deg,#63AEFF 0%,#2F74E6 100%) !important;box-shadow:0 12px 30px -12px rgba(59,148,255,.8), inset 0 1px 0 rgba(255,255,255,.3) !important}
+.dl-btn svg{width:20px;height:20px}
+.setup.hl .steps{margin-top:18px}
+.steps li::marker{color:var(--blue)}
+.copyrow{border-radius:12px}
+
+/* ---- กราฟ / กำไร / อื่นๆ ---- */
+.chart-card{padding:18px 18px 10px}
+.chart-head{flex-wrap:wrap}
+.chart-head .card-label{margin:0 6px 0 0}
+.profit .pstats{margin-bottom:16px}
+.profit-head .card-label{flex:1;margin:0}
+.profit-head{margin-bottom:14px}
+.profit .pstats b{font-size:22px}
+.pup i{background:linear-gradient(180deg,#46D39E,#2FBF8A)} .pdn i{background:linear-gradient(180deg,#E5283D,#B51A2D)}
+.lot-ladder{border-radius:12px}
+.lot-ladder .hot b{color:var(--gold)}
+.port-seg button{border-radius:13px;background:rgba(4,7,14,.6)}
+.port-seg button[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue), 0 0 24px -10px rgba(59,148,255,.8)}
+.port-seg button[aria-pressed="true"] b{color:#8EC1FF}
+.port-warn{border-radius:12px}
+.plan-opt{border-radius:14px}
+.plan-opt[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue), 0 0 24px -10px rgba(59,148,255,.8)}
+.pay-box{border-radius:14px}
+.slip{border-radius:14px}
+.sw input:checked + .track{background:linear-gradient(90deg,#2F74E6,#3B94FF)}
+.cfg-dot{background:var(--blue)}
+.cfg-group{border-color:var(--line)}
+.nrow .imp.Medium{background:var(--gold)}
+.settings-strip{border-color:var(--line)}
+.settings-strip b{color:#8EC1FF}
+dialog{border-radius:var(--rc);background:linear-gradient(180deg,#131F38,#0A1224);border-color:rgba(59,148,255,.35);box-shadow:0 30px 80px -20px rgba(0,0,0,.9)}
+.toast{border-radius:999px}
+
+/* ---- แอดมิน ---- */
+.adm-tabs{border:1px solid var(--line);border-radius:999px;padding:4px;display:inline-flex;gap:2px;background:rgba(5,8,16,.6)}
+.adm-tabs button{border:0;border-radius:999px;padding:8px 16px}
+.adm-tabs button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(59,148,255,.28),rgba(59,148,255,.12));color:#fff;box-shadow:inset 0 0 0 1px rgba(59,148,255,.45)}
+.table-wrap{border-radius:var(--rc);background:rgba(9,14,26,.7)}
+th{background:#0B1328;color:#9FB0CC}
+.table-wrap tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+.table-wrap tbody tr:hover td{background:rgba(59,148,255,.05)}
+.issued{border-color:var(--blue);border-radius:14px}
+.issued .code{color:#8EC1FF}
+.stats b{font-family:var(--display)}
+
+/* ---- หน้าเข้าสู่ระบบ ---- */
+.auth-brand{background:
+  radial-gradient(600px 380px at 0% 0%, rgba(229,40,61,.16), transparent 60%),
+  radial-gradient(700px 460px at 100% 100%, rgba(59,148,255,.16), transparent 60%),
+  linear-gradient(160deg,#0E1730 0%,#060A14 100%)}
+.eyebrow{color:#8EC1FF}
+.trial-badge{color:#8EC1FF;background:rgba(59,148,255,.14)}
+.auth .tabs{border-radius:999px;background:rgba(5,8,16,.7)}
+.auth .tab{border-radius:999px}
+.auth .tab[aria-selected="true"]{background:linear-gradient(180deg,rgba(59,148,255,.28),rgba(59,148,255,.12));color:#fff;box-shadow:inset 0 0 0 1px rgba(59,148,255,.45)}
+.feat li svg{background:linear-gradient(180deg,rgba(59,148,255,.2),rgba(229,40,61,.14));color:#8EC1FF}
+
+/* ---- มือถือ ---- */
+@media (max-width:900px){
+  #dashView{padding-left:16px;padding-right:16px;padding-bottom:96px}
+  .rail{left:0;right:0;top:auto;bottom:0;flex-direction:row;justify-content:space-around;border-radius:20px 20px 0 0;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-bottom:0}
+  .rail a{width:auto;flex:1;padding:7px 0;font-size:10.5px}
+  .rail a.rail-d{display:none}
+  .t4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .t3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #secPlan .t3 .tile:last-child{grid-column:1/-1}
+  .grid2{grid-template-columns:1fr}
+  .page-head h1{font-size:24px}
+  .bar{padding:10px 14px}
+  .brand-tile{width:36px;height:36px;border-radius:11px}
+  .brand-tile svg{width:32px;height:32px}
+  .brand b{font-size:17px}
+  .tile > b{font-size:19px}
+  .setup.hl summary .hint{display:none}
+  .setup.hl summary{padding:14px 16px}
+  .hl-t b{font-size:16px}
+  .hl-ico{width:38px;height:38px}
+}
+
+/* ---- หน้าเปิด (โลโก้แล้วจางหาย) ---- */
+#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+  background:radial-gradient(600px 360px at 50% 42%, rgba(59,148,255,.16), transparent 70%),
+             radial-gradient(520px 320px at 50% 60%, rgba(229,40,61,.10), transparent 70%), #05070D;
+  transition:opacity .7s ease, visibility .7s ease}
+#splash.hide{opacity:0;visibility:hidden}
+#splash.hide .sp-in{transform:scale(1.04);transition:transform .7s ease}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:6px;animation:spIn .9s cubic-bezier(.2,.8,.2,1) both}
+.sp-tile{width:112px;height:112px;border-radius:30px;display:grid;place-items:center;margin-bottom:16px;
+  background:radial-gradient(circle at 50% 35%,#1B2B4D,#0A1122 70%);border:1px solid rgba(59,148,255,.45);
+  box-shadow:0 0 50px -8px rgba(59,148,255,.7);animation:spGlow 1.8s ease-in-out infinite}
+.sp-tile svg{width:96px;height:96px}
+.sp-name{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:.01em}
+.sp-sub{font-size:12px;letter-spacing:.32em;color:var(--blue)}
+.sp-bar{display:block;height:2px;width:0;margin-top:18px;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--red));animation:spBar 1.3s .2s ease-out forwards}
+@keyframes spIn{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes spGlow{0%,100%{box-shadow:0 0 40px -10px rgba(59,148,255,.6)}50%{box-shadow:0 0 60px -6px rgba(229,40,61,.55)}}
+@keyframes spBar{to{width:150px}}
+@media (prefers-reduced-motion:reduce){.sp-in,.sp-tile,.sp-bar{animation:none}.sp-bar{width:150px}}
+
+/* ---- โลโก้ฉลามแนวนอน ---- */
+.brand-tile{width:auto;height:auto;border:0;background:none;box-shadow:none;border-radius:0}
+.brand-tile .mark-img{height:38px;width:auto;display:block;filter:drop-shadow(0 0 10px rgba(59,148,255,.35))}
+.sp-tile{width:auto;height:auto;border:0;background:none;box-shadow:none;border-radius:0;animation:none;margin-bottom:22px}
+.sp-tile .mark-img{width:min(340px,72vw);height:auto;display:block;animation:spMark 1.8s ease-in-out infinite}
+@keyframes spMark{0%,100%{filter:drop-shadow(0 0 18px rgba(59,148,255,.45))}50%{filter:drop-shadow(0 0 26px rgba(229,40,61,.45))}}
+@media (max-width:900px){.brand-tile .mark-img{height:32px}}
 </style>
 </head>
 <body>
 
+<div id="splash" aria-hidden="true">
+  <div class="sp-in">
+    <span class="sp-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
+    <b class="sp-name">GoldShark</b>
+    <small class="sp-sub">GOLD EA · MT5</small>
+    <i class="sp-bar"></i>
+  </div>
+</div>
+
 <header class="bar">
-  <div class="logo">
-    <svg class="fin" viewBox="0 0 26 22" aria-hidden="true"><path d="M1 21 C8 16 11 8 12 1 C16 7 21 14 25 21 Z" fill="#E0313F"/></svg>
-    GOLDSHARK
+  <div class="brand">
+    <span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
+    <div><b>GoldShark</b><small>GOLD EA · MT5</small></div>
   </div>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
-  <span class="muted" id="whoami"></span>
-  <button class="btn small ghost" id="logoutBtn" hidden>ออกจากระบบ</button>
+  <span class="pill-btn" id="whoami"></span>
+  <button class="btn small" id="logoutBtn" hidden>ออกจากระบบ</button>
 </header>
 
+<nav class="rail" id="rail" aria-label="เมนูสมาชิก" hidden>
+  <a href="#secOverview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>ภาพรวม</a>
+  <a href="#secPlan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3-2 10H6z"/></svg>แพ็กเกจ</a>
+  <a href="#secChart" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>กราฟ</a>
+  <a href="#secProfit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>กำไร</a>
+  <a href="#secNews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>ข่าว</a>
+  <a href="#cfgCard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>ตั้งค่า</a>
+  <a href="#setupBox" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>ติดตั้ง</a>
+</nav>
+
 <!-- ================= LOGIN ================= -->
-<main id="loginView" class="login">
-  <div class="login-box">
-    <h1>ดูพอร์ต EA<br>ของคุณแบบสด</h1>
-    <p>เข้าสู่ระบบเพื่อดูพอร์ต ตั้งค่าข่าวและเวลาเทรด และต่ออายุแพ็กเกจ สมัครใหม่ทดลองใช้ฟรี 15 วัน</p>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-tab="login">เข้าสู่ระบบ</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="reg">สมัครสมาชิก</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="admin">แอดมิน</button>
+<main id="loginView" class="auth">
+  <section class="auth-brand">
+    <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b>GoldShark</b><small>GOLD EA · MT5</small></div></div>
+    <div class="auth-copy">
+      <span class="eyebrow">EA เทรดทอง XAUUSD สำหรับ MetaTrader 5</span>
+      <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
+      <p>ติดตั้งครั้งเดียว ตั้งค่าผ่านเว็บ แล้วดูพอร์ต ไม้ที่เปิดอยู่ และกำไรรายชั่วโมงได้จากมือถือ</p>
+      <ul class="feat">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>แดชบอร์ดพอร์ตแบบสด<span>Equity ไม้ที่เปิดอยู่ และกำไรรายชั่วโมง อัปเดตทุก 30 วินาที</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>หลบข่าวแรงอัตโนมัติ<span>ดึงปฏิทินข่าว USD และหยุดเปิดไม้ใหม่ช่วงข่าวแดง</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>ตั้งเวลาเทรดได้เอง<span>เลือกวันและช่วงเวลาที่ให้ EA ทำงาน บันทึกแล้วมีผลภายใน 1 นาที</span></li>
+      </ul>
     </div>
-    <form id="loginForm">
-      <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
-      <div><label for="liPass">รหัสผ่าน</label><input id="liPass" class="field" type="password" autocomplete="current-password" required></div>
-      <button class="btn primary" type="submit">เข้าสู่ระบบ</button>
-    </form>
-    <form id="regForm" hidden>
-      <div><label for="rgName">ชื่อที่ใช้เรียก</label><input id="rgName" class="field" autocomplete="name" required></div>
-      <div><label for="rgLogin">เบอร์โทรหรืออีเมล (ใช้เข้าสู่ระบบ)</label><input id="rgLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
-      <div><label for="rgPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input id="rgPass" class="field" type="password" autocomplete="new-password" minlength="6" required></div>
-      <div><label for="rgPass2">ยืนยันรหัสผ่าน</label><input id="rgPass2" class="field" type="password" autocomplete="new-password" required></div>
-      <label class="risk"><input type="checkbox" id="rgRisk" required><span>ฉันเข้าใจว่าการเทรดทองมีความเสี่ยง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ และไม่มีการรับประกันกำไร</span></label>
-      <button class="btn primary" type="submit">สมัครและเริ่มทดลองฟรี 15 วัน</button>
-    </form>
-    <form id="adminForm" hidden>
-      <div><label for="passIn">รหัสแอดมิน</label><input id="passIn" class="field" type="password" autocomplete="current-password"></div>
-      <button class="btn primary" type="submit">เข้าแผงแอดมิน</button>
-    </form>
-    <div class="err" id="loginErr" role="alert"></div>
-  </div>
+    <div class="auth-curve" aria-hidden="true">
+      <svg viewBox="0 0 600 110" preserveAspectRatio="none">
+        <path d="M0 92 L40 86 L70 90 L110 74 L150 78 L190 62 L220 70 L260 52 L300 58 L340 44 L370 50 L410 34 L450 40 L490 26 L530 30 L570 16 L600 12 L600 110 L0 110 Z" fill="rgba(59,148,255,.10)"/>
+        <path d="M0 92 L40 86 L70 90 L110 74 L150 78 L190 62 L220 70 L260 52 L300 58 L340 44 L370 50 L410 34 L450 40 L490 26 L530 30 L570 16 L600 12" fill="none" stroke="#3B94FF" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+      </svg>
+    </div>
+    <p class="auth-risk">คำเตือน: การเทรดทองมีความเสี่ยงสูง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ ผลในอดีตไม่รับประกันผลในอนาคต</p>
+  </section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <div id="memberAuth">
+        <span class="trial-badge">ทดลองใช้ฟรี 15 วัน ไม่ต้องใช้บัตร</span>
+        <h2 id="authTitle">ยินดีต้อนรับกลับ</h2>
+        <p class="sub" id="authSub">เข้าสู่ระบบเพื่อดูพอร์ตและจัดการแพ็กเกจ</p>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="login">เข้าสู่ระบบ</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="reg">สมัครสมาชิก</button>
+        </div>
+        <form id="loginForm">
+          <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="08x-xxx-xxxx หรือ name@email.com" required></div>
+          <div><label for="liPass">รหัสผ่าน</label><div class="pw"><input id="liPass" class="field" type="password" autocomplete="current-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
+          <button class="btn primary" type="submit">เข้าสู่ระบบ</button>
+          <button type="button" class="forgot" id="forgotBtn">ลืมรหัสผ่าน?</button>
+        </form>
+        <form id="regForm" hidden>
+          <div><label for="rgName">ชื่อที่ใช้เรียก</label><input id="rgName" class="field" autocomplete="name" required></div>
+          <div><label for="rgLogin">เบอร์โทรหรืออีเมล (ใช้เข้าสู่ระบบ)</label><input id="rgLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="08x-xxx-xxxx หรือ name@email.com" required></div>
+          <div><label for="rgPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><div class="pw"><input id="rgPass" class="field" type="password" autocomplete="new-password" minlength="6" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
+          <div><label for="rgPass2">ยืนยันรหัสผ่าน</label><div class="pw"><input id="rgPass2" class="field" type="password" autocomplete="new-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
+          <label class="risk"><input type="checkbox" id="rgRisk" required><span>ฉันเข้าใจว่าการเทรดทองมีความเสี่ยง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ และไม่มีการรับประกันกำไร</span></label>
+          <button class="btn primary" type="submit">สมัครและเริ่มทดลองฟรี 15 วัน</button>
+        </form>
+      </div>
+
+      <div id="adminAuth" hidden>
+        <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b>GoldShark</b><small>GOLD EA · MT5</small></div></div>
+        <h2>แผงควบคุมแอดมิน</h2>
+        <p class="sub">สำหรับผู้ดูแลระบบเท่านั้น <span class="admin-badge">ADMIN</span></p>
+        <form id="adminForm">
+          <div><label for="passIn">รหัสแอดมิน</label><div class="pw"><input id="passIn" class="field" type="password" autocomplete="current-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
+          <button class="btn primary" type="submit">เข้าแผงแอดมิน</button>
+        </form>
+      </div>
+
+      <div class="err" id="loginErr" role="alert"></div>
+    </div>
+    <footer class="auth-foot">
+      <span>© 2026 GoldShark</span>
+      <button type="button" class="linkish" id="riskLink">คำเตือนความเสี่ยง</button>
+    </footer>
+  </section>
 </main>
 
 <!-- ================= CUSTOMER DASHBOARD ================= -->
-<main id="dashView" class="wrap" hidden>
-  <section class="hero">
-    <div>
-      <div class="eq-label">Equity</div>
-      <div class="eq" id="dEq">–</div>
-      <div class="eq-sub" id="dFloat"></div>
+<main id="dashView" class="wrap app" hidden>
+  <div class="page-head">
+    <h1>แดชบอร์ด EA</h1>
+    <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตจาก EA ทุก 30 วินาที</p>
+  </div>
+
+  <details class="setup hl" id="setupBox">
+    <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
+    <div class="setup-body">
+      <a class="btn primary dl-btn" href="GoldShark_Flow.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> ดาวน์โหลด EA (.ex5)</a>
+      <ol class="steps">
+        <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
+        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
+          <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
+        </li>
+        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b>GoldShark_Flow</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
+        <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
+          <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
+        </li>
+        <li>กด <b>ตกลง</b> และเปิดปุ่ม <b>Algo Trading</b> ให้เป็นสีเขียว ภายใน 1 นาทีหน้านี้จะขึ้นว่า EA ออนไลน์</li>
+      </ol>
     </div>
-    <div>
-      <div class="status"><span class="dot" id="dDot"></span><span id="dOnline">–</span></div>
-      <div class="status muted" id="dAcct" style="margin-top:6px"></div>
+  </details>
+
+  <section class="card" id="secOverview">
+    <div class="card-label">สถานะการเชื่อมต่อ MT5</div>
+    <div class="conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span></div>
+    <div class="tiles t4">
+      <div class="tile"><span>Balance</span><b class="num" id="dBal">–</b></div>
+      <div class="tile"><span>Equity</span><b class="num" id="dEq">–</b></div>
+      <div class="tile"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b></div>
+      <div class="tile"><span>ไม้ที่เปิดอยู่</span><b class="num" id="dOpen">–</b></div>
     </div>
+    <p class="card-foot" id="dFloat"></p>
   </section>
 
-  <section class="member-top">
-    <div class="card plan-card">
-      <div class="plan-head"><h3>แพ็กเกจของฉัน</h3><span class="pill plan" id="planPill">–</span></div>
-      <div class="big" id="lDays">–</div>
-      <dl class="rows">
-        <dt>หมดอายุ</dt><dd id="lExp">–</dd>
-        <dt>โค้ดใส่ใน EA</dt><dd><button class="btn small ghost code-copy" id="planCode" title="คลิกเพื่อคัดลอก">–</button></dd>
-      </dl>
-      <div class="plan-note" id="planNote"></div>
-      <div class="plan-actions"><button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button></div>
+  <section class="card" id="secPlan">
+    <div class="card-head"><div class="card-label">แพ็กเกจของคุณ</div><span class="pill plan" id="planPill">–</span></div>
+    <div class="tiles t3">
+      <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
+      <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
+      <div class="tile"><span>โค้ดใส่ใน EA</span><button class="code-copy" id="planCode" title="คลิกเพื่อคัดลอก">–</button></div>
+    </div>
+    <div class="plan-note" id="planNote"></div>
+    <div class="plan-actions">
+      <button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button>
       <details class="claim"><summary>มีโค้ดจากแอดมินอยู่แล้ว?</summary>
         <div class="claim-row"><input class="field" id="claimIn" placeholder="GS-XXXX-XXXX" maxlength="12" aria-label="โค้ดจากแอดมิน"><button class="btn" id="claimBtn">ผูกโค้ด</button></div>
       </details>
     </div>
-    <div class="card port-card">
-      <h3>ประเภทพอร์ต</h3>
-      <p class="pnote" style="margin:0 0 12px">เลือกให้ตรงกับบัญชี MT5 ที่ใช้ ค่า TP และตัดขาดทุนที่เป็นเงินจะปรับตามพอร์ตให้อัตโนมัติ</p>
+  </section>
+
+  <section class="grid2">
+    <div class="card">
+      <div class="card-label">ตะกร้าที่เปิดอยู่</div>
+      <div class="tiles t2">
+        <div class="tile buy"><span>Buy · <i id="bCount">–</i></span><b class="num" id="bPL">–</b><small>ล็อตรวม <i id="bLots">–</i></small></div>
+        <div class="tile sell"><span>Sell · <i id="sCount">–</i></span><b class="num" id="sPL">–</b><small>ล็อตรวม <i id="sLots">–</i></small></div>
+        <div class="tile"><span>Drawdown</span><b class="num" id="lDD">–</b><small>Spread <i id="lSpread">–</i></small></div>
+        <div class="tile"><span>สถานะ EA</span><b id="lTrade" class="txt">–</b><small>สกุลเงิน <i id="lCur">–</i></small></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">ประเภทพอร์ต</div>
+      <p class="pnote" style="margin:0 0 12px">เลือกให้ตรงกับบัญชี MT5 ค่า TP และตัดขาดทุนที่เป็นเงินจะปรับตามพอร์ตให้อัตโนมัติ</p>
       <div class="port-seg" role="group" aria-label="ประเภทพอร์ต">
         <button data-port="cent" aria-pressed="false"><b>Cent</b><span>บัญชี USC</span></button>
         <button data-port="usd" aria-pressed="false"><b>USD</b><span>บัญชีดอลลาร์ปกติ</span></button>
@@ -400,11 +779,12 @@ select.field{appearance:auto}
     </div>
   </section>
 
-  <section class="chart-box">
+  <section class="card chart-card" id="secChart">
     <div class="chart-head">
-      <span class="key"><i style="background:var(--gold)"></i>Equity</span>
+      <div class="card-label">กราฟพอร์ต</div>
+      <span class="key"><i style="background:var(--blue)"></i>Equity</span>
       <span class="key"><i style="background:var(--muted)"></i>Balance</span>
-      <span class="key"><i style="background:rgba(224,49,63,.5)"></i>ส่วนต่าง (ลอย)</span>
+      <span class="key"><i style="background:rgba(229,40,61,.55)"></i>ลอย</span>
       <span class="spacer"></span>
       <div class="seg" role="group" aria-label="ช่วงเวลา">
         <button data-range="1" aria-pressed="false">24 ชม.</button>
@@ -414,50 +794,26 @@ select.field{appearance:auto}
     <div id="chart"></div>
   </section>
 
-
-  <section class="card profit">
+  <section class="card profit" id="secProfit">
     <div class="profit-head">
-      <h3>กำไรที่ปิดแล้ว</h3>
+      <div class="card-label">กำไรที่ปิดแล้ว</div>
       <div class="seg" role="group" aria-label="มุมมองกำไร">
         <button data-p="24" aria-pressed="true">รายชั่วโมง</button>
         <button data-p="7" aria-pressed="false">รายวัน</button>
       </div>
     </div>
-    <div class="pstats">
-      <div><span>ชั่วโมงนี้</span><b id="pHour">–</b></div>
-      <div><span>วันนี้</span><b id="pToday">–</b></div>
-      <div><span>7 วัน</span><b id="pWeek">–</b></div>
+    <div class="tiles t3 pstats">
+      <div class="tile"><span>ชั่วโมงนี้</span><b id="pHour">–</b></div>
+      <div class="tile"><span>วันนี้</span><b id="pToday">–</b></div>
+      <div class="tile"><span>7 วัน</span><b id="pWeek">–</b></div>
     </div>
     <div id="pChart"></div>
     <p class="pnote">นับเฉพาะไม้ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย เวลาตามเครื่องที่เปิดดู</p>
   </section>
 
-  <section class="grid3">
-    <div class="card side-buy">
-      <h3>ตะกร้า Buy <span class="muted num" id="bCount" style="font-size:14px"></span></h3>
-      <div class="big" id="bPL">–</div>
-      <dl class="rows"><dt>ล็อตรวม</dt><dd id="bLots">–</dd></dl>
-    </div>
-    <div class="card side-sell">
-      <h3>ตะกร้า Sell <span class="muted num" id="sCount" style="font-size:14px"></span></h3>
-      <div class="big" id="sPL">–</div>
-      <dl class="rows"><dt>ล็อตรวม</dt><dd id="sLots">–</dd></dl>
-    </div>
-    <div class="card side-lic">
-      <h3>สถานะ EA</h3>
-      <div class="big" id="lTrade" style="font-family:var(--body);font-size:19px;font-weight:600">–</div>
-      <dl class="rows">
-        <dt>Drawdown</dt><dd id="lDD">–</dd>
-        <dt>Spread</dt><dd id="lSpread">–</dd>
-        <dt>สกุลเงินบัญชี</dt><dd id="lCur">–</dd>
-      </dl>
-    </div>
-  </section>
-
-
   <section class="card lotcard">
     <div>
-      <h3>ขนาดล็อต</h3>
+      <div class="card-label">ขนาดล็อต</div>
       <p class="pnote" style="margin:0 0 12px">ล็อตไม้แรกของแต่ละตะกร้า ไม้แก้จะคูณจากค่านี้</p>
       <div class="lot-row">
         <button class="btn" id="lotMinus" aria-label="ลดล็อต">−</button>
@@ -478,9 +834,9 @@ select.field{appearance:auto}
     </div>
   </section>
 
-  <section class="card newscard">
+  <section class="card newscard" id="secNews">
     <div class="profit-head">
-      <h3>ข่าว USD ที่ EA จะหลบ</h3>
+      <div class="card-label">ข่าว USD ที่ EA จะหลบ</div>
       <span class="pill" id="newsState"></span>
     </div>
     <div id="newsList"></div>
@@ -489,7 +845,7 @@ select.field{appearance:auto}
 
   <section class="card cfg" id="cfgCard">
     <div class="cfg-head">
-      <h3>ตั้งค่าข่าวและเวลาเทรด</h3>
+      <div class="card-label" style="flex:1">ตั้งค่าข่าวและเวลาเทรด</div>
       <button class="btn small ghost" id="cfgUndo" hidden>ยกเลิกที่แก้</button>
       <button class="btn primary" id="cfgSave" disabled>บันทึกการตั้งค่า</button>
     </div>
@@ -497,29 +853,8 @@ select.field{appearance:auto}
     <div id="cfgForm"></div>
   </section>
 
-  <details class="setup" id="setupBox">
-    <summary>ติดตั้ง EA <span class="spacer"></span><span class="hint">ดาวน์โหลดและวิธีติดตั้ง</span></summary>
-    <div class="setup-body">
-      <div class="dl">
-        <a class="btn primary" href="GoldShark_Flow.ex5" download>ดาวน์โหลด EA (.ex5)</a>
-        <span class="muted" style="font-size:13px">ใช้กับ MetaTrader 5 บนคอมพิวเตอร์ Windows หรือ VPS</span>
-      </div>
-      <ol class="steps">
-        <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → โฟลเดอร์ <b>MQL5 → Experts</b> แล้ววางไฟล์ที่ดาวน์โหลดไว้ที่นี่ จากนั้นปิดแล้วเปิด MT5 ใหม่</li>
-        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
-          <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
-        </li>
-        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b>GoldShark_Flow</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
-        <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
-          <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
-        </li>
-        <li>กด <b>ตกลง</b> และเปิดปุ่ม <b>Algo Trading</b> ให้เป็นสีเขียว ภายใน 1 นาทีหน้านี้จะขึ้นว่า EA ออนไลน์</li>
-      </ol>
-    </div>
-  </details>
-
   <div class="settings-strip" id="setStrip"></div>
-  <p class="foot-note">ข้อมูลอัปเดตอัตโนมัติทุก 30 วินาที ตามที่ EA ส่งขึ้นมา การเทรดมีความเสี่ยง ผลในอดีตไม่รับประกันผลในอนาคต</p>
+  <p class="foot-note">การเทรดมีความเสี่ยง ผลในอดีตไม่รับประกันผลในอนาคต © 2026 GoldShark</p>
 </main>
 
 <!-- ================= ADMIN ================= -->
@@ -670,6 +1005,16 @@ select.field{appearance:auto}
       <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
       <button type="button" class="btn primary" id="paySend" disabled>ส่งสลิป</button>
     </div>
+  </form>
+</dialog>
+
+<dialog id="riskDlg">
+  <form method="dialog">
+    <h3>คำเตือนความเสี่ยง</h3>
+    <p>การเทรดทองคำ (XAUUSD) และตราสารที่มีเลเวอเรจมีความเสี่ยงสูง อาจสูญเสียเงินลงทุนทั้งหมดหรือมากกว่านั้น</p>
+    <p>GoldShark EA ใช้ระบบไม้แก้ (Martingale) ที่เพิ่มขนาดล็อตเมื่อราคาสวนทาง หากราคาเคลื่อนไหวทางเดียวต่อเนื่อง อาจขาดทุนหนักหรือล้างพอร์ตได้</p>
+    <p>ผลการเทรดในอดีตไม่รับประกันผลในอนาคต เราไม่รับประกันกำไร ควรใช้เฉพาะเงินที่ยอมเสียได้ และทดสอบกับบัญชีทดลองก่อนใช้งานจริง</p>
+    <div class="dlg-actions"><button class="btn primary">เข้าใจแล้ว</button></div>
   </form>
 </dialog>
 
@@ -852,17 +1197,39 @@ let session = { mode: null, code: null, pass: null };
 let dashData = null, range = 7, timer = null;
 
 function show(view) {
+  document.body.dataset.view = view;
+  $("rail").hidden = view !== "dashView";
   ["loginView", "dashView", "adminView"].forEach(v => $(v).hidden = v !== view);
   $("logoutBtn").hidden = view === "loginView";
 }
 
+/* หน้าแอดมินแยก: goldshark.vercel.app/admin (ทดสอบในเครื่องใช้ #admin) */
+const IS_ADMIN = /\/admin\/?$/.test(location.pathname) || location.hash === "#admin";
+if (IS_ADMIN) {
+  document.body.classList.add("admin-mode");
+  $("memberAuth").hidden = true; $("adminAuth").hidden = false;
+  document.title = "GoldShark Admin";
+}
+
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
-  $("loginForm").hidden = t.dataset.tab !== "login";
-  $("regForm").hidden = t.dataset.tab !== "reg";
-  $("adminForm").hidden = t.dataset.tab !== "admin";
+  const reg = t.dataset.tab === "reg";
+  $("loginForm").hidden = reg;
+  $("regForm").hidden = !reg;
+  $("authTitle").textContent = reg ? "สร้างบัญชีสมาชิก" : "ยินดีต้อนรับกลับ";
+  $("authSub").textContent = reg ? "เริ่มทดลองใช้ฟรี 15 วัน สมัครเสร็จได้โค้ดใส่ EA ทันที" : "เข้าสู่ระบบเพื่อดูพอร์ตและจัดการแพ็กเกจ";
   $("loginErr").textContent = "";
 }));
+document.querySelectorAll(".pw-eye").forEach(b => b.addEventListener("click", () => {
+  const i = b.previousElementSibling, show = i.type === "password";
+  i.type = show ? "text" : "password";
+  b.textContent = show ? "ซ่อน" : "แสดง";
+  b.setAttribute("aria-label", show ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน");
+}));
+$("forgotBtn").addEventListener("click", () => {
+  $("loginErr").textContent = "ติดต่อแอดมินเพื่อตั้งรหัสผ่านใหม่ แจ้งเบอร์หรืออีเมลที่ใช้สมัคร";
+});
+$("riskLink").addEventListener("click", () => $("riskDlg").showModal());
 
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -903,7 +1270,7 @@ function logout(msg) {
   store.del("gs_token"); store.del("gs_admin"); store.del("gs_code");
   session = { mode: null };
   $("whoami").textContent = "";
-  document.querySelector('.tab[data-tab="login"]').click();
+  if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
   $("loginErr").textContent = msg || "";
   show("loginView");
 }
@@ -938,20 +1305,23 @@ function renderDash() {
   $("lCur").textContent = L.currency || "–";
   if (S) {
     const fl = S.equity - S.balance;
+    $("dBal").textContent = fmt(S.balance);
     $("dEq").textContent = fmt(S.equity);
-    $("dFloat").innerHTML = `Balance <span class="num">${fmt(S.balance)}</span> &nbsp; ลอย <span class="num ${cls(fl)}">${signed(fl)}</span>`;
+    $("dFlt").textContent = signed(fl); $("dFlt").className = "num " + cls(fl);
+    $("dOpen").textContent = (S.buyCount + S.sellCount) + " ไม้";
+    $("dFloat").innerHTML = `EA: <b>${esc(S.tradeStatus || "–")}</b>`;
     $("dDot").className = "dot " + (S.online ? "on" : "off");
     $("dOnline").textContent = (S.online ? "EA ออนไลน์" : "EA ออฟไลน์") + " อัปเดต " + ago(S.time);
     $("dAcct").textContent = [S.broker, L.account ? "บัญชี " + L.account : ""].filter(Boolean).join(" / ");
-    $("bPL").textContent = signed(S.buyPL); $("bPL").className = "big " + cls(S.buyPL);
-    $("sPL").textContent = signed(S.sellPL); $("sPL").className = "big " + cls(S.sellPL);
+    $("bPL").textContent = signed(S.buyPL); $("bPL").className = "num " + cls(S.buyPL);
+    $("sPL").textContent = signed(S.sellPL); $("sPL").className = "num " + cls(S.sellPL);
     $("bCount").textContent = S.buyCount + " ไม้"; $("sCount").textContent = S.sellCount + " ไม้";
     $("bLots").textContent = fmt(S.buyLots); $("sLots").textContent = fmt(S.sellLots);
     $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
     $("lTrade").textContent = S.tradeStatus || "–";
   } else {
-    $("dEq").textContent = "–";
-    $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA แล้วใส่โค้ดของคุณในช่อง โค้ดใช้งาน";
+    ["dBal", "dEq", "dFlt", "dOpen"].forEach(id => $(id).textContent = "–");
+    $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA ตามกล่องด้านบน แล้วใส่โค้ดของคุณในช่อง โค้ดใช้งาน";
     $("dDot").className = "dot off"; $("dOnline").textContent = "ยังไม่เชื่อมต่อ";
   }
   const names = { startLot: "ล็อตเริ่ม", gridDist: "ระยะแก้ไม้", lotMult: "ตัวคูณ", maxOrders: "ไม้สูงสุด", basketTP: "TP ตะกร้า" };
@@ -988,9 +1358,9 @@ function drawChart() {
   const ticks = [lo + (hi - lo) * 0.2, lo + (hi - lo) * 0.5, lo + (hi - lo) * 0.8];
   box.innerHTML = `<svg class="curve" viewBox="0 0 ${W} ${HT}" preserveAspectRatio="none" role="img" aria-label="กราฟ equity และ balance">
     ${ticks.map(v => `<line x1="0" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#26344A" stroke-width="1" vector-effect="non-scaling-stroke"/>`).join("")}
-    <path d="${gap}" fill="rgba(224,49,63,.22)" stroke="none"/>
+    <path d="${gap}" fill="rgba(229,40,61,.22)" stroke="none"/>
     <path d="${line("b")}" fill="none" stroke="#8A96A8" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>
-    <path d="${line("e")}" fill="none" stroke="#D9AE52" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+    <path d="${line("e")}" fill="none" stroke="#3B94FF" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
   </svg>
   <div style="display:flex;justify-content:space-between;font-size:12px" class="muted num chart-foot">
     <span>${new Date(t0).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
@@ -1071,6 +1441,7 @@ function renderLadder() {
   const C = (dashData && dashData.settings) || {};
   const lot = clampLot($("lotIn").value), mult = +C.lotMult || 1, maxO = +C.maxOrders || 0;
   const levels = [1, 5, 10, 15].filter(n => !maxO || n <= maxO);
+  $("lotLadder").style.gridTemplateColumns = `repeat(${Math.min(levels.length, 4)},minmax(0,1fr))`;
   $("lotLadder").innerHTML = levels.map(n => {
     const v = lot * Math.pow(mult, n - 1);
     return `<div class="${n >= 10 ? "hot" : ""}"><span>ไม้ที่ ${n}</span><b>${v >= 10 ? fmt(v, 1) : fmt(v)}</b></div>`;
@@ -1293,6 +1664,26 @@ function renderNews() {
 }
 
 
+/* ============ เมนูด้านข้าง ============ */
+(() => {
+  const links = [...document.querySelectorAll(".rail a")];
+  const setActive = id => links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + id));
+  links.forEach(a => a.addEventListener("click", e => {
+    const t = document.querySelector(a.getAttribute("href")); if (!t) return;
+    e.preventDefault();
+    if (t.tagName === "DETAILS") t.open = true;
+    t.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActive(t.id);
+  }));
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(es => {
+      const v = es.filter(x => x.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (v) setActive(v.target.id);
+    }, { rootMargin: "-20% 0px -65% 0px" });
+    links.forEach(a => { const t = document.querySelector(a.getAttribute("href")); if (t && t.id !== "setupBox") io.observe(t); });
+  }
+})();
+
 /* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
 const PLAN_LABEL = { trial: "ทดลองฟรี", month: "รายเดือน", year: "รายปี", life: "ถาวร" };
 const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
@@ -1309,9 +1700,10 @@ function renderPlan() {
   $("planPill").textContent = PLAN_LABEL[L.plan] || L.plan;
   const bad = L.status !== "active" || (!life && dl <= 0);
   $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : life ? "ใช้ได้ตลอด" : (dl > 0 ? "เหลือ " + dl + " วัน" : "หมดอายุ");
-  $("lDays").className = "big " + (bad ? "neg" : "");
+  $("lDays").className = bad ? "neg" : "";
   $("lDays").style.color = !bad && !life && dl <= 5 ? "var(--gold)" : "";
   $("lExp").textContent = life ? "ไม่หมดอายุ" : dateTH(L.expires);
+  $("lExp").className = bad ? "neg" : "pos";
   $("planCode").textContent = L.code;
   $("renewBtn").hidden = life;
   $("renewBtn").textContent = L.plan === "trial" ? "เลือกแพ็กเกจ" : "ต่ออายุ / อัปเกรด";
@@ -1707,13 +2099,30 @@ $("shopSave").addEventListener("click", async () => {
   if (r.ok) loadShop();
 });
 
+/* ============ หน้าเปิด ============ */
+const SPLASH_START = Date.now();
+const SPLASH_MIN = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches ? 500 : 1700;
+let splashDone = false;
+function hideSplash() {
+  if (splashDone) return; splashDone = true;
+  const el = $("splash"); if (!el) return;
+  setTimeout(() => { el.classList.add("hide"); setTimeout(() => el.remove(), 800); }, Math.max(0, SPLASH_MIN - (Date.now() - SPLASH_START)));
+}
+setTimeout(hideSplash, 6000);   // กันค้าง ถ้าเน็ตช้า
+
 /* ============ boot ============ */
 $("demoTag").hidden = !!API_URL;
 (async () => {
-  const a = store.get("gs_admin"), t = store.get("gs_token");
-  if (a) { const r = await api("admin_login", { pass: a }); if (r.ok) { session = { mode: "admin", pass: a }; return openAdmin(); } }
-  if (t) return openMember(t);
-  show("loginView");
+  try {
+    if (IS_ADMIN) {
+      const a = store.get("gs_admin");
+      if (a) { const r = await api("admin_login", { pass: a }); if (r.ok) { session = { mode: "admin", pass: a }; await openAdmin(); return; } }
+      show("loginView"); return;
+    }
+    const t = store.get("gs_token");
+    if (t) { await openMember(t); return; }
+    show("loginView");
+  } finally { hideSplash(); }
 })();
 </script>
 </body>
