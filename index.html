@@ -939,7 +939,9 @@ th{background:#0B1328;color:#9FB0CC}
     <section class="card" style="max-width:900px">
       <div class="card-label">ปฏิทินข่าว ForexFactory</div>
       <div class="news-stat"><span class="dot" id="nsDot"></span><span id="nsText">–</span></div>
-      <p class="pnote" style="margin:0">ดึงข่าว USD อัตโนมัติทุกชั่วโมง ถ้าดึงไม่ได้จะลองใหม่ทุก 10 นาที และใช้ข่าวที่ดึงได้ล่าสุดแทน</p>
+      <p class="pnote" style="margin:0 0 12px">ดึงข่าว USD อัตโนมัติทุกชั่วโมง ถ้าดึงไม่ได้จะลองใหม่ทุก 10 นาที และใช้ข่าวที่ดึงได้ล่าสุดแทน</p>
+      <button class="btn small" id="nsRefresh">ดึงข่าวใหม่ตอนนี้</button>
+      <div id="nsNext" style="margin-top:14px"></div>
     </section>
 
   </div>
@@ -1166,7 +1168,7 @@ function demoApi(action, d) {
     }
     if (action === "admin_breaking") {
       if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง" });
-      return res({ ok: true, status: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 }, calendar: 4 });
+      return res({ ok: true, status: { ok: true, time: d.refresh ? Date.now() : Date.now() - 600000, info: "หลัก HTTP 200", count: 34 }, calendar: 4, next: [{ t: Date.now() + 3600e3, title: "Core PCE Price Index m/m", impact: "High" }, { t: Date.now() + 86400e3, title: "Unemployment Claims", impact: "Medium" }] });
     }
     if (action === "pay_qr") return res(demo.qrImg ? { ok: true, image: demo.qrImg } : { ok: false, error: "ยังไม่มีรูป QR" });
     if (action.startsWith("admin_")) {
@@ -2139,8 +2141,8 @@ document.addEventListener("visibilitychange", () => {
 
 
 /* ============ admin: สถานะข่าว ============ */
-async function loadBreaking() {
-  const r = await api("admin_breaking", { pass: session.pass });
+async function loadBreaking(refresh) {
+  const r = await api("admin_breaking", { pass: session.pass, refresh: !!refresh });
   if (!r.ok) { toast(r.error); return; }
   renderBreaking(r);
 }
@@ -2150,7 +2152,15 @@ function renderBreaking(r) {
   $("nsText").textContent = !st ? "ยังไม่เคยดึงข่าว (จะดึงเมื่อมีคนเปิดหน้าสมาชิกหรือ EA เชื่อมต่อ)" :
     (st.ok ? `ดึงข่าวได้ปกติ · ${r.calendar != null ? r.calendar : st.count} ข่าว USD ที่เหลือสัปดาห์นี้ · ล่าสุด ${ago(st.time)}`
            : `ดึงข่าวไม่ได้ (${st.info}) · ใช้ข่าวสำรอง ${st.count} รายการ · ลองล่าสุด ${ago(st.time)}`);
+  const hm = t => new Date(t).toLocaleString("th-TH", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  $("nsNext").innerHTML = (r.next || []).map(n => `<div class="nrow"><span class="nt">${hm(n.t)}</span><span class="imp ${esc(n.impact)}"></span><span>${esc(n.title)}</span><span class="nb">${esc(n.impact)}</span></div>`).join("");
 }
+$("nsRefresh").addEventListener("click", async () => {
+  $("nsRefresh").disabled = true; $("nsRefresh").textContent = "กำลังดึง…";
+  await loadBreaking(true);
+  $("nsRefresh").disabled = false; $("nsRefresh").textContent = "ดึงข่าวใหม่ตอนนี้";
+  toast("ดึงข่าวใหม่แล้ว");
+});
 
 /* ============ หน้าเปิด ============ */
 const SPLASH_START = Date.now();
