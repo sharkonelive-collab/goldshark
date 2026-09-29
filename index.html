@@ -646,7 +646,7 @@ th{background:#0B1328;color:#9FB0CC}
       <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
       <p>ติดตั้งครั้งเดียว ตั้งค่าผ่านเว็บ แล้วดูพอร์ต ไม้ที่เปิดอยู่ และกำไรรายชั่วโมงได้จากมือถือ</p>
       <ul class="feat">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>แดชบอร์ดพอร์ตแบบสด<span>Equity ไม้ที่เปิดอยู่ และกำไรรายชั่วโมง อัปเดตทุก 30 วินาที</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>แดชบอร์ดพอร์ตแบบสด<span>Equity ไม้ที่เปิดอยู่ และกำไรรายชั่วโมง อัปเดตอัตโนมัติ</span></li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>หลบข่าวแรงอัตโนมัติ<span>ดึงปฏิทินข่าว USD และหยุดเปิดไม้ใหม่ช่วงข่าวแดง</span></li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>ตั้งเวลาเทรดได้เอง<span>เลือกวันและช่วงเวลาที่ให้ EA ทำงาน บันทึกแล้วมีผลภายใน 1 นาที</span></li>
       </ul>
@@ -709,7 +709,7 @@ th{background:#0B1328;color:#9FB0CC}
 <main id="dashView" class="wrap app" hidden>
   <div class="page-head">
     <h1>แดชบอร์ด EA</h1>
-    <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตจาก EA ทุก 30 วินาที</p>
+    <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
   </div>
 
   <details class="setup hl" id="setupBox">
@@ -1030,7 +1030,7 @@ th{background:#0B1328;color:#9FB0CC}
 <script>
 /* ============ ตั้งค่า ============ */
 const API_URL = location.protocol === "file:" ? "" : "/api";   // บนเว็บจริงเรียก /api (ตัวกลาง) ถ้าเปิดไฟล์ในเครื่อง = โหมดตัวอย่าง
-const REFRESH_MS = 30000;
+const REFRESH_MS = 45000;   // รีเฟรชอัตโนมัติ (หยุดเมื่อไม่ได้เปิดแท็บนี้)
 
 /* ============ utils ============ */
 const $ = id => document.getElementById(id);
@@ -1277,8 +1277,11 @@ function logout(msg) {
 $("logoutBtn").addEventListener("click", () => logout());
 
 /* ============ member dashboard ============ */
-async function loadMe() {
-  const r = await api("me", { token: session.token });
+let meBusy = false;
+async function loadMe(auto) {
+  if (auto === true && (document.hidden || meBusy)) return true;
+  meBusy = true;
+  const r = await api("me", { token: session.token }).finally(() => { meBusy = false; });
   if (!r.ok) {
     if (/เข้าสู่ระบบ|สมาชิก/.test(r.error || "")) logout(r.error);
     else toast(r.error);
@@ -1295,7 +1298,7 @@ async function openMember(token) {
   $("whoami").textContent = dashData.user.name;
   show("dashView");
   clearInterval(timer);
-  timer = setInterval(loadMe, REFRESH_MS);
+  timer = setInterval(() => loadMe(true), REFRESH_MS);
 }
 
 function renderDash() {
@@ -1860,7 +1863,7 @@ async function openAdmin() {
   show("adminView");
   await loadLics();
   clearInterval(timer);
-  timer = setInterval(loadLics, REFRESH_MS);
+  timer = setInterval(() => { if (!document.hidden) loadLics(); }, REFRESH_MS);
 }
 
 async function loadLics() {
@@ -2097,6 +2100,13 @@ $("shopSave").addEventListener("click", async () => {
   const r = await api("admin_config_set", { pass: session.pass, config });
   toast(r.ok ? "บันทึกการตั้งค่าร้านแล้ว" : r.error);
   if (r.ok) loadShop();
+});
+
+/* กลับมาเปิดแท็บ → ดึงข้อมูลใหม่ทันที */
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) return;
+  if (session.mode === "user" && session.token) loadMe(true);
+  if (session.mode === "admin") loadLics();
 });
 
 /* ============ หน้าเปิด ============ */
