@@ -2347,7 +2347,7 @@ $("payBody").addEventListener("click", async e => {
   toast(body.approve ? "กำลังอนุมัติ…" : "กำลังบันทึก…");
   const r = await api("admin_pay_decide", body);
   x._saving = false;
-  if (!r.ok) { Object.assign(x, before); renderPays(); toast(r.error); return; }
+  if (!r.ok) { Object.assign(x, before); renderPays(); toast(r.error); setTimeout(loadPays, 1500); return; }   // เช็กซ้ำ เผื่อบันทึกสำเร็จไปแล้ว
   if (r.payments) pays = r.payments;
   renderPays();
   if (r.pending != null) { $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || ""; }
