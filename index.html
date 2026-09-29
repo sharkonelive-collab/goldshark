@@ -664,6 +664,12 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
   body[data-view="dashView"] .fab-line{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .fab-line svg{width:30px;height:30px}
 }
+
+.notify-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(9,14,26,.7);font-size:14px}
+.notify-bar span{flex:1}
+.pay-notice{margin:8px 0 4px;padding:12px 16px;border-radius:14px;font-weight:500}
+.pay-notice.ok{background:rgba(47,191,138,.12);border:1px solid rgba(47,191,138,.45);color:#7BE3B8}
+.pay-notice.no{background:rgba(229,40,61,.10);border:1px solid rgba(229,40,61,.45);color:#FF9AA6}
 </style>
 </head>
 <body>
@@ -771,6 +777,7 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 
 <!-- ================= CUSTOMER DASHBOARD ================= -->
 <main id="dashView" class="wrap app" hidden>
+  <div class="pay-notice" id="payNotice" role="status" hidden></div>
   <div class="page-head">
     <h1>แดชบอร์ด EA</h1>
     <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
@@ -984,6 +991,7 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
   </div>
 
   <div id="atab-pays" hidden>
+    <div class="notify-bar"><span id="ntfText">แจ้งเตือนบนเครื่องนี้: ปิด</span><button class="btn small" id="ntfOn">เปิดเสียงและแจ้งเตือน</button></div>
     <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center">
       <div class="seg" role="group" aria-label="กรองรายการ">
         <button data-pf="pending" aria-pressed="true">รอตรวจ</button>
@@ -1400,6 +1408,7 @@ $("adminForm").addEventListener("submit", async e => {
 });
 
 function logout(msg) {
+  clearInterval(fastTimer);
   clearInterval(timer);
   try { Object.keys(localStorage).filter(k => k.startsWith("gs_me_")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port"); store.del("gs_adm_list"); store.del("gs_adm_pays");
@@ -1412,7 +1421,7 @@ function logout(msg) {
 $("logoutBtn").addEventListener("click", () => logout());
 
 /* ============ member dashboard ============ */
-let meBusy = false, meSeq = 0;
+let meBusy = false, meSeq = 0, fastTimer = null;
 function meCacheKey(code) { return "gs_me_" + String(session.token || "").slice(-12) + "_" + (code || session.port || store.get("gs_port") || ""); }
 function meCacheGet(code) { try { return JSON.parse(store.get(meCacheKey(code)) || "null"); } catch (e) { return null; } }
 function meCachePut(r) {
@@ -1436,10 +1445,30 @@ async function loadMe(auto) {
   dashData = r;
   if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
   meCachePut(r);
+  checkPayResult(r.payments || []);
   renderPorts();
   renderDash();
   schedulePrefetch();
   return true;
+}
+
+/* ---- แจ้งผลการตรวจสลิปให้สมาชิก ---- */
+function checkPayResult(pays) {
+  const key = "gs_paywait_" + String(session.token || "").slice(-12);
+  let wait = []; try { wait = JSON.parse(store.get(key) || "[]"); } catch (e) {}
+  pays.forEach(x => {
+    if (!wait.includes(x.id)) return;
+    if (x.status === "approved") payNotice("ok", `แอดมินอนุมัติแพ็กเกจ${PLAN_LABEL[x.plan] || ""}แล้ว ✅ ต่ออายุให้เรียบร้อย`);
+    if (x.status === "rejected") payNotice("no", "สลิปไม่ผ่านการตรวจสอบ" + (x.note ? ": " + x.note : "") + " กรุณาส่งใหม่หรือทัก LINE แอดมิน");
+  });
+  store.set(key, JSON.stringify(pays.filter(x => x.status === "pending").map(x => x.id)));
+}
+function payNotice(kind, text) {
+  toast(text);
+  const el = $("payNotice");
+  el.className = "pay-notice " + kind; el.textContent = text; el.hidden = false;
+  clearTimeout(payNotice.t); payNotice.t = setTimeout(() => { el.hidden = true; }, 15000);
+  try { if ("Notification" in window && Notification.permission === "granted" && document.hidden) new Notification("GoldShark", { body: text, icon: "icon.png" }); } catch (e) {}
 }
 
 /* ---- โหลดพอร์ตอื่นรอไว้ (ทีละพอร์ต ไม่ถี่) ---- */
@@ -1494,6 +1523,8 @@ async function openMember(token) {
   show("dashView");
   clearInterval(timer);
   timer = setInterval(() => loadMe(true), REFRESH_MS);
+  clearInterval(fastTimer);
+  fastTimer = setInterval(() => { if ((dashData.payments || []).some(x => x.status === "pending")) loadMe(true); }, 20000);
 }
 
 function renderDash() {
@@ -2178,6 +2209,7 @@ async function openAdmin() {
   } catch (e) {}
   $("whoami").textContent = "แอดมิน";
   show("adminView");
+  ntfRender();
   hideSplash();
   await loadLics();
   clearInterval(timer);
@@ -2192,6 +2224,44 @@ function admHydrate(r) {
   });
   return r;
 }
+/* ---- แจ้งเตือนแอดมินบนเครื่อง (ตอนเปิดหน้าแอดมินค้างไว้) ---- */
+let lastPending = null, audioCtx = null;
+function ntfEnabled() { return store.get("gs_ntf") === "1"; }
+function ntfRender() {
+  const on = ntfEnabled();
+  $("ntfText").textContent = "แจ้งเตือนบนเครื่องนี้: " + (on ? "เปิด (มีเสียงเมื่อมีสลิปใหม่)" : "ปิด");
+  $("ntfOn").textContent = on ? "ปิดแจ้งเตือน" : "เปิดเสียงและแจ้งเตือน";
+}
+function beep() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.18].forEach(t => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = "sine"; o.frequency.value = t ? 1175 : 880;
+      g.gain.setValueAtTime(0.0001, audioCtx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t + 0.16);
+      o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + 0.17);
+    });
+  } catch (e) {}
+}
+$("ntfOn").addEventListener("click", async () => {
+  if (ntfEnabled()) { store.del("gs_ntf"); ntfRender(); return; }
+  try { if ("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); } catch (e) {}
+  store.set("gs_ntf", "1"); beep(); ntfRender(); toast("เปิดแจ้งเตือนแล้ว ทดลองเสียงให้ฟัง 1 ครั้ง");
+});
+function onPending(n) {
+  if (lastPending !== null && n > lastPending) {
+    toast(`มีสลิปใหม่ ${n - lastPending} รายการ`);
+    if (ntfEnabled()) {
+      beep();
+      try { if ("Notification" in window && Notification.permission === "granted") new Notification("GoldShark: สลิปใหม่รอตรวจ", { body: `รอตรวจทั้งหมด ${n} รายการ`, icon: "icon.png" }); } catch (e) {}
+    }
+    document.title = `(${n}) GoldShark Admin`;
+  } else if (!n) document.title = "GoldShark Admin";
+  lastPending = n;
+}
+
 async function loadLics() {
   const r = await api("admin_list", { pass: session.pass });
   $("syncing").hidden = true;
@@ -2200,6 +2270,7 @@ async function loadLics() {
   try { store.set("gs_adm_list", JSON.stringify({ licenses: r.licenses, pending: r.pending })); } catch (e) {}
   lics = r.licenses;
   $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || "";
+  onPending(r.pending || 0);
   renderLics();
 }
 
@@ -2396,7 +2467,7 @@ $("payBody").addEventListener("click", async e => {
   if (!r.ok) { Object.assign(x, before); renderPays(); toast(r.error); setTimeout(loadPays, 1500); return; }   // เช็กซ้ำ เผื่อบันทึกสำเร็จไปแล้ว
   if (r.payments) pays = r.payments;
   renderPays();
-  if (r.pending != null) { $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || ""; }
+  if (r.pending != null) { $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || ""; lastPending = r.pending; if (!r.pending) document.title = "GoldShark Admin"; }
   toast(body.approve ? "อนุมัติแล้ว ต่ออายุโค้ดให้แล้ว" : "บันทึกว่าไม่ผ่านแล้ว");
   loadLics();   // อัปเดตตารางโค้ดเบื้องหลัง ไม่ต้องรอ
 });
