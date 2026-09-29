@@ -638,6 +638,7 @@ select.field{appearance:auto}
     <div id="admCfg"></div>
     <div class="danger-zone">
       <button type="button" class="btn small" id="dlgLink">ผูกกับสมาชิก</button>
+      <button type="button" class="btn small" id="dlgPw">ตั้งรหัสผ่านใหม่ให้สมาชิก</button>
       <button type="button" class="btn small" id="dlgReset">ย้ายบัญชี MT5</button>
       <button type="button" class="btn small ghost" id="dlgDelete" style="color:var(--red)">ลบโค้ด</button>
     </div>
@@ -830,6 +831,10 @@ function demoApi(action, d) {
         return res({ ok: true });
       }
       if (action === "admin_delete") { L.splice(L.indexOf(lic), 1); return res({ ok: true }); }
+      if (action === "admin_reset_pw" && lic) {
+        const u = demo.users.find(x => x.code === lic.code); if (!u) return res({ ok: false, error: "โค้ดนี้ยังไม่ได้ผูกกับสมาชิก" });
+        u.password = d.newPassword; return res({ ok: true, login: u.login });
+      }
       if (action === "admin_link" && lic) {
         const u = demo.users.find(x => x.login === d.login);
         if (d.login && !u) return res({ ok: false, error: "ไม่พบสมาชิก " + d.login });
@@ -1533,6 +1538,14 @@ $("licBody").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]"); if (b) runAct(b.dataset.act, b.dataset.code);
 });
 $("dlgReset").addEventListener("click", () => { $("setDlg").close(); runAct("reset", editCode); });
+$("dlgPw").addEventListener("click", async () => {
+  const pw = prompt("ตั้งรหัสผ่านใหม่ให้สมาชิกที่ผูกกับโค้ด " + editCode + "\n(อย่างน้อย 6 ตัว แล้วแจ้งสมาชิกให้เข้าด้วยรหัสนี้)");
+  if (pw === null) return;
+  if (pw.length < 6) { toast("รหัสผ่านต้องมีอย่างน้อย 6 ตัว"); return; }
+  $("setDlg").close();
+  const r = await api("admin_reset_pw", { pass: session.pass, code: editCode, newPassword: pw });
+  toast(r.ok ? "ตั้งรหัสใหม่ให้ " + r.login + " แล้ว" : r.error);
+});
 $("dlgLink").addEventListener("click", async () => {
   const l = lics.find(x => x.code === editCode);
   const login = prompt("ผูกโค้ด " + editCode + " กับสมาชิกคนไหน?\nใส่เบอร์โทรหรืออีเมลที่สมาชิกใช้เข้าสู่ระบบ\n(เว้นว่าง = ปลดออกจากสมาชิกเดิม)", (l && l.login) || "");
