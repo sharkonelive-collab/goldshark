@@ -714,7 +714,8 @@ th{background:#0B1328;color:#9FB0CC}
           <div><label for="rgPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><div class="pw"><input id="rgPass" class="field" type="password" autocomplete="new-password" minlength="6" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
           <div><label for="rgPass2">ยืนยันรหัสผ่าน</label><div class="pw"><input id="rgPass2" class="field" type="password" autocomplete="new-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
           <label class="risk"><input type="checkbox" id="rgRisk" required><span>ฉันเข้าใจว่าการเทรดทองมีความเสี่ยง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ และไม่มีการรับประกันกำไร</span></label>
-          <button class="btn primary" type="submit">สมัครและเริ่มทดลองฟรี 15 วัน</button>
+          <p class="pnote" style="margin:0">ทดลองฟรี 15 วัน 1 ครั้งต่อ 1 คน (ตรวจจากเจ้าของบัญชี MT5 จริง)</p>
+      <button class="btn primary" type="submit">สมัครและเริ่มทดลองฟรี 15 วัน</button>
         </form>
       </div>
 
@@ -1005,6 +1006,10 @@ th{background:#0B1328;color:#9FB0CC}
         </div>
       </div>
 
+      <h3>ทดลองฟรี</h3>
+      <label class="sw"><input type="checkbox" id="shopTrialReal"><span class="track"></span><span>ทดลองฟรีใช้ได้เฉพาะบัญชี MT5 จริง (Real) · ปิดไว้ = ให้ใช้กับบัญชี Demo ได้ด้วย</span></label>
+      <p class="pnote" style="margin:6px 0 0">ไม่ว่าเปิดหรือปิด ระบบจะให้ทดลองฟรีได้ 1 ครั้งต่อเจ้าของบัญชี MT5 และต่อเลขบัญชีเสมอ แต่บัญชี Demo ตั้งชื่อเจ้าของได้เอง จึงกันซ้ำได้ไม่เต็มที่</p>
+
       <h3>ค่าเริ่มต้นตามพอร์ต</h3>
       <p class="pnote" style="margin:0 0 10px">หน่วยเป็นเงินในบัญชี: Cent = USC (100 USC = $1), USD = ดอลลาร์ ใช้กับสมาชิกที่แอดมินยังไม่ได้ตั้งค่าเฉพาะคน</p>
       <div class="cfg-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
@@ -1158,7 +1163,7 @@ const demo = (() => {
     e = b - Math.max(0, cyc) - Math.random() * 25;
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
-  const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", qrMode: "auto", qrFile: "", qrVer: 0,
+  const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
     port: { cent: { basketTP: 5, cutLoss: 3000 }, usd: { basketTP: 0.05, cutLoss: 30 } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
@@ -1198,7 +1203,7 @@ function demoApi(action, d) {
         const nb = Date.now();
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
         const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance }; });
-        return res({ ok: true, user: { name: u.name, login: u.login }, ports, maxPorts: 10,
+        return res({ ok: true, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
           plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }],
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
           payments: demo.pays.filter(x => x.userId === u.id),
@@ -1816,7 +1821,7 @@ function renderPlan() {
   if (pend) note.textContent = `ส่งสลิปแพ็กเกจ${PLAN_LABEL[pend.plan]} ${fmt(pend.amount, 0)} บาทแล้ว รอแอดมินตรวจสอบ`;
   else if (last && last.status === "rejected") { note.className = "plan-note warn"; note.textContent = "สลิปล่าสุดไม่ผ่านการตรวจสอบ" + (last.note ? ": " + last.note : "") + " กรุณาส่งใหม่"; }
   else if (none) { note.className = "plan-note warn"; note.textContent = "พอร์ตนี้ยังไม่มีแพ็กเกจ EA จะยังไม่เปิดไม้ จนกว่าจะซื้อแพ็กเกจและแอดมินอนุมัติ"; }
-  else if (L.plan === "trial") note.textContent = "ช่วงทดลองใช้ล็อตเริ่มต้นได้สูงสุด 0.01 lot และทดลองได้ 1 ครั้งต่อ 1 บัญชี MT5";
+  else if (L.plan === "trial") note.textContent = "ทดลองฟรีได้ 1 ครั้งต่อเจ้าของบัญชี MT5" + (dashData.trialRealOnly ? " ใช้กับบัญชีจริง (Real) เท่านั้น" : "") + " ล็อตเริ่มต้นสูงสุด 0.01 lot";
   else if (!life && dl > 0 && dl <= 5) { note.className = "plan-note warn"; note.textContent = "ใกล้หมดอายุ ต่ออายุตอนนี้ วันที่เหลือจะบวกต่อให้ ไม่หายไปไหน"; }
   else note.textContent = "";
 }
@@ -2209,6 +2214,7 @@ async function loadShop() {
   const c = r.config;
   $("shopMonth").value = c.prices.month; $("shopYear").value = c.prices.year; $("shopLife").value = c.prices.life;
   $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
+  $("shopTrialReal").checked = c.trialRealOnly !== false;
   $("shopTPc").value = c.port.cent.basketTP; $("shopTPu").value = c.port.usd.basketTP;
   $("shopCLc").value = c.port.cent.cutLoss; $("shopCLu").value = c.port.usd.cutLoss;
   document.querySelectorAll('input[name="qrMode"]').forEach(r => r.checked = r.value === c.qrMode);
@@ -2239,6 +2245,7 @@ $("shopSave").addEventListener("click", async () => {
   const config = {
     prices: { month: +$("shopMonth").value, year: +$("shopYear").value, life: +$("shopLife").value },
     promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
+    trialRealOnly: $("shopTrialReal").checked,
     qrMode: (document.querySelector('input[name="qrMode"]:checked') || {}).value || "auto",
     port: { cent: { basketTP: +$("shopTPc").value, cutLoss: +$("shopCLc").value },
             usd:  { basketTP: +$("shopTPu").value, cutLoss: +$("shopCLu").value } }
