@@ -431,7 +431,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
   background:radial-gradient(circle at 50% 35%,#1B2B4D,#0A1122 70%);border:1px solid rgba(59,148,255,.4);box-shadow:0 0 22px -6px rgba(59,148,255,.65)}
 .brand-tile svg{width:37px;height:37px}
 .brand b{display:block;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.1}
-.brand small{display:block;font-size:10px;letter-spacing:.24em;color:var(--blue);margin-top:2px}
+.brand small{display:block;font-size:10px;letter-spacing:.24em;color:var(--blue);margin-top:2px;white-space:nowrap}
 .pill-btn{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.03);color:var(--text)}
 .pill-btn:empty{display:none}
 .demo-tag{color:#8EC1FF;border-color:rgba(59,148,255,.5)}
@@ -612,6 +612,29 @@ th{background:#0B1328;color:#9FB0CC}
 .bk-list .nrow{grid-template-columns:150px 1fr auto auto}
 .news-stat{display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:6px}
 @media (max-width:860px){.bk-form{grid-template-columns:1fr}.bk-list .nrow{grid-template-columns:1fr auto}}
+
+/* ---- แถบเลือกพอร์ต ---- */
+.ports{margin:4px 0 6px}
+.ports-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.ports-head .card-label{margin:0;flex:1}
+.ports-head .muted{font-size:13px}
+.port-list{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x mandatory}
+.pchip{flex:none;scroll-snap-align:start;min-width:210px;max-width:250px;text-align:left;cursor:pointer;border-radius:16px;padding:12px 14px;
+  border:1px solid var(--line);background:linear-gradient(180deg,rgba(19,29,52,.78),rgba(9,14,26,.78));color:var(--text);display:grid;gap:4px}
+.pchip:hover{border-color:rgba(59,148,255,.5)}
+.pchip.active{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue),0 0 26px -12px rgba(59,148,255,.9)}
+.pc-top{display:flex;align-items:center;gap:8px}
+.pc-top b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-top .dot{width:8px;height:8px}
+.pc-top .pill{font-size:11px;padding:1px 8px}
+.pc-eq{font-family:var(--display);font-size:20px;font-weight:600}
+.pc-eq small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+.pc-sub{font-size:12px;color:var(--muted)}
+.pchip.add{place-content:center;justify-items:center;text-align:center;border-style:dashed;color:#8EC1FF;min-width:170px}
+.pchip.add b{font-size:22px;line-height:1}
+.pchip.add small{font-size:12px;color:var(--muted)}
+.pill.none{background:rgba(242,184,75,.15);color:var(--gold)}
+@media (max-width:900px){.pchip{min-width:180px}}
 </style>
 </head>
 <body>
@@ -721,6 +744,15 @@ th{background:#0B1328;color:#9FB0CC}
     <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
   </div>
 
+  <section class="ports" id="secPorts">
+    <div class="ports-head">
+      <div class="card-label">พอร์ตของฉัน</div>
+      <span class="muted" id="portsSum"></span>
+    </div>
+    <div class="port-list" id="portList"></div>
+  </section>
+
+
   <details class="setup hl" id="setupBox">
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
@@ -752,7 +784,7 @@ th{background:#0B1328;color:#9FB0CC}
   </section>
 
   <section class="card" id="secPlan">
-    <div class="card-head"><div class="card-label">แพ็กเกจของคุณ</div><span class="pill plan" id="planPill">–</span></div>
+    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button></div><span class="pill plan" id="planPill">–</span></div>
     <div class="tiles t3">
       <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
       <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
@@ -761,7 +793,7 @@ th{background:#0B1328;color:#9FB0CC}
     <div class="plan-note" id="planNote"></div>
     <div class="plan-actions">
       <button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button>
-      <details class="claim"><summary>มีโค้ดจากแอดมินอยู่แล้ว?</summary>
+      <details class="claim"><summary>มีโค้ดจากแอดมิน? เพิ่มเป็นพอร์ตใหม่</summary>
         <div class="claim-row"><input class="field" id="claimIn" placeholder="GS-XXXX-XXXX" maxlength="12" aria-label="โค้ดจากแอดมิน"><button class="btn" id="claimBtn">ผูกโค้ด</button></div>
       </details>
     </div>
@@ -1006,9 +1038,31 @@ th{background:#0B1328;color:#9FB0CC}
 </dialog>
 
 
+<dialog id="newPortDlg">
+  <form method="dialog">
+    <h3>เปิดพอร์ตใหม่</h3>
+    <p class="muted" style="margin:0 0 16px;font-size:14px">ใช้กับบัญชี MT5 อีกบัญชีหนึ่ง แต่ละพอร์ตมีโค้ดของตัวเองและแพ็กเกจแยกกัน (ราคาเดียวกับแพ็กเกจปกติ)</p>
+    <div style="display:grid;gap:14px">
+      <label class="fld"><span>ชื่อพอร์ต (ไว้จำเอง)</span><input class="field" id="npLabel" maxlength="40" placeholder="เช่น Exness USD หลัก"></label>
+      <div><span class="muted" style="font-size:13px;display:block;margin-bottom:6px">ประเภทพอร์ต</span>
+        <div class="port-seg" id="npSeg">
+          <button type="button" data-np="cent" aria-pressed="true"><b>Cent</b><span>บัญชี USC</span></button>
+          <button type="button" data-np="usd" aria-pressed="false"><b>USD</b><span>บัญชีดอลลาร์ปกติ</span></button>
+        </div>
+      </div>
+    </div>
+    <p class="pnote" style="margin:14px 0 0">เปิดแล้วจะได้โค้ดใหม่ทันที ให้ซื้อแพ็กเกจก่อน EA ถึงจะเริ่มเทรด</p>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
+      <button type="button" class="btn primary" id="npCreate">เปิดพอร์ตและเลือกแพ็กเกจ</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="payDlg">
   <form method="dialog">
     <h3>ต่ออายุ / อัปเกรด</h3>
+    <p style="margin:0 0 4px;font-size:14px">สำหรับพอร์ต <b id="payFor" style="color:#8EC1FF"></b></p>
     <p class="muted" style="margin:0;font-size:14px">เลือกแพ็กเกจ โอนผ่านพร้อมเพย์ แล้วแนบสลิป แอดมินจะตรวจและต่ออายุให้</p>
     <div class="plan-opts" id="planOpts"></div>
     <div class="pay-box">
@@ -1106,7 +1160,8 @@ const demo = (() => {
   }
   const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", qrMode: "auto", qrFile: "", qrVer: 0,
     port: { cent: { basketTP: 5, cutLoss: 3000 }, usd: { basketTP: 0.05, cutLoss: 30 } } };
-  const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA" }];
+  const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
+  lics[0].label = "Exness Cent หลัก"; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "รายปี", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
   return { lics, hist, config, users, pays };
 })();
@@ -1125,20 +1180,29 @@ function demoApi(action, d) {
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
-    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit"].includes(action)) {
+    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit", "port_add", "port_rename"].includes(action)) {
       const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
-      const lic = L.find(l => l.code === u.code);
+      u.codes = u.codes || [u.code];
+      if (action === "port_add") {
+        const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", q = () => Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
+        const code = "GS-" + q() + "-" + q();
+        L.push({ code, name: u.name, label: d.label || ("พอร์ต " + (u.codes.length + 1)), account: "", expires: Date.now(), status: "active", plan: "none", port: d.port, currency: "", equity: null, online: false, created: Date.now(), login: u.login, settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 5 } });
+        u.codes.push(code); return res({ ok: true, code });
+      }
+      const lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
+      if (action === "port_rename") { lic.label = d.label; return res({ ok: true }); }
       if (action === "me") {
         const last = demo.hist[demo.hist.length - 1], snapOk = !!lic.equity;
         const nowH = Math.floor(Date.now() / 3600000), hp = [];
         for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
         const nb = Date.now();
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
-        return res({ ok: true, user: { name: u.name, login: u.login },
+        const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance }; });
+        return res({ ok: true, user: { name: u.name, login: u.login }, ports, maxPorts: 10,
           plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }],
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
           payments: demo.pays.filter(x => x.userId === u.id),
-          license: { code: lic.code, name: lic.name, account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency },
+          license: { code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency },
           settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
@@ -1158,11 +1222,11 @@ function demoApi(action, d) {
       }
       if (action === "claim_code") {
         const t = L.find(l => l.code === d.code); if (!t) return res({ ok: false, error: "ไม่พบโค้ดนี้" });
-        u.code = t.code; return res({ ok: true });
+        if (!u.codes.includes(t.code)) u.codes.push(t.code); return res({ ok: true, code: t.code });
       }
       if (action === "pay_submit") {
         const pl = { month: "รายเดือน", year: "รายปี", life: "ถาวร" };
-        demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: u.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
+        demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: lic.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
         return res({ ok: true });
       }
     }
@@ -1293,7 +1357,7 @@ $("adminForm").addEventListener("submit", async e => {
 
 function logout(msg) {
   clearInterval(timer);
-  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code");
+  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port");
   session = { mode: null };
   $("whoami").textContent = "";
   if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
@@ -1307,13 +1371,15 @@ let meBusy = false;
 async function loadMe(auto) {
   if (auto === true && (document.hidden || meBusy)) return true;
   meBusy = true;
-  const r = await api("me", { token: session.token }).finally(() => { meBusy = false; });
+  const r = await api("me", { token: session.token, code: session.port || store.get("gs_port") || "" }).finally(() => { meBusy = false; });
   if (!r.ok) {
     if (/เข้าสู่ระบบ|สมาชิก/.test(r.error || "")) logout(r.error);
     else toast(r.error);
     return false;
   }
   dashData = r;
+  if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
+  renderPorts();
   renderDash();
   return true;
 }
@@ -1349,7 +1415,9 @@ function renderDash() {
     $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
     $("lTrade").textContent = S.tradeStatus || "–";
   } else {
-    ["dBal", "dEq", "dFlt", "dOpen"].forEach(id => $(id).textContent = "–");
+    ["dBal", "dEq", "dFlt", "dOpen", "bPL", "sPL", "bCount", "sCount", "bLots", "sLots", "lDD", "lSpread", "lTrade"].forEach(id => $(id).textContent = "–");
+    $("dFlt").className = "num"; $("bPL").className = "num"; $("sPL").className = "num";
+    $("dAcct").textContent = L.account ? "บัญชี " + L.account : "";
     $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA ตามกล่องด้านบน แล้วใส่โค้ดของคุณในช่อง โค้ดใช้งาน";
     $("dDot").className = "dot off"; $("dOnline").textContent = "ยังไม่เชื่อมต่อ";
   }
@@ -1493,7 +1561,7 @@ document.querySelectorAll(".lot-steps .chip").forEach(c => c.addEventListener("c
 $("lotSave").addEventListener("click", async () => {
   const lot = clampLot($("lotIn").value);
   $("lotSave").disabled = true;
-  const r = await api("user_lot", { token: session.token, startLot: lot });
+  const r = await api("user_lot", { token: session.token, code: session.port, startLot: lot });
   if (!r.ok) { toast(r.error); $("lotSave").disabled = false; return; }
   dashData.settings = r.settings; lotDirty = false;
   toast("บันทึกล็อต " + lot.toFixed(2) + " แล้ว EA จะใช้กับตะกร้าถัดไป");
@@ -1664,7 +1732,7 @@ $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
   $("cfgSave").disabled = true;
-  const r = await api("user_settings", { token: session.token, settings });
+  const r = await api("user_settings", { token: session.token, code: session.port, settings });
   if (!r.ok) { toast(r.error); fillCfg(false); return; }
   dashData.settings = r.settings;
   toast("บันทึกการตั้งค่าแล้ว EA จะใช้ภายใน 1 นาที");
@@ -1717,7 +1785,7 @@ function renderNews() {
 })();
 
 /* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
-const PLAN_LABEL = { trial: "ทดลองฟรี", month: "รายเดือน", year: "รายปี", life: "ถาวร" };
+const PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "รายเดือน", year: "รายปี", life: "ถาวร" };
 const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
 
 function renderNoLicense() {
@@ -1728,28 +1796,75 @@ function renderNoLicense() {
 }
 
 function renderPlan() {
-  const L = dashData.license, dl = daysLeft(L.expires), life = L.plan === "life";
+  const L = dashData.license, dl = daysLeft(L.expires), life = L.plan === "life", none = L.plan === "none";
   $("planPill").textContent = PLAN_LABEL[L.plan] || L.plan;
+  $("planPill").className = "pill plan" + (none ? " none" : "");
+  $("planPortName").textContent = L.label || "";
   const bad = L.status !== "active" || (!life && dl <= 0);
-  $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : life ? "ใช้ได้ตลอด" : (dl > 0 ? "เหลือ " + dl + " วัน" : "หมดอายุ");
+  $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : life ? "ใช้ได้ตลอด" : (dl > 0 ? "เหลือ " + dl + " วัน" : "หมดอายุ");
   $("lDays").className = bad ? "neg" : "";
   $("lDays").style.color = !bad && !life && dl <= 5 ? "var(--gold)" : "";
-  $("lExp").textContent = life ? "ไม่หมดอายุ" : dateTH(L.expires);
+  $("lExp").textContent = none ? "–" : life ? "ไม่หมดอายุ" : dateTH(L.expires);
   $("lExp").className = bad ? "neg" : "pos";
   $("planCode").textContent = L.code;
   $("renewBtn").hidden = life;
-  $("renewBtn").textContent = L.plan === "trial" ? "เลือกแพ็กเกจ" : "ต่ออายุ / อัปเกรด";
-  const pays = dashData.payments || [];
+  $("renewBtn").textContent = L.plan === "trial" || none ? "ซื้อแพ็กเกจ" : "ต่ออายุ / อัปเกรด";
+  const pays = (dashData.payments || []).filter(x => !x.code || x.code === L.code);
   const pend = pays.find(x => x.status === "pending"), last = pays[0];
   const note = $("planNote");
   note.className = "plan-note";
   if (pend) note.textContent = `ส่งสลิปแพ็กเกจ${PLAN_LABEL[pend.plan]} ${fmt(pend.amount, 0)} บาทแล้ว รอแอดมินตรวจสอบ`;
   else if (last && last.status === "rejected") { note.className = "plan-note warn"; note.textContent = "สลิปล่าสุดไม่ผ่านการตรวจสอบ" + (last.note ? ": " + last.note : "") + " กรุณาส่งใหม่"; }
+  else if (none) { note.className = "plan-note warn"; note.textContent = "พอร์ตนี้ยังไม่มีแพ็กเกจ EA จะยังไม่เปิดไม้ จนกว่าจะซื้อแพ็กเกจและแอดมินอนุมัติ"; }
   else if (L.plan === "trial") note.textContent = "ช่วงทดลองใช้ล็อตเริ่มต้นได้สูงสุด 0.01 lot และทดลองได้ 1 ครั้งต่อ 1 บัญชี MT5";
   else if (!life && dl > 0 && dl <= 5) { note.className = "plan-note warn"; note.textContent = "ใกล้หมดอายุ ต่ออายุตอนนี้ วันที่เหลือจะบวกต่อให้ ไม่หายไปไหน"; }
   else note.textContent = "";
 }
 $("planCode").addEventListener("click", () => copy($("planCode").textContent));
+$("renamePort").addEventListener("click", async () => {
+  const L = dashData.license; if (!L) return;
+  const v = prompt("ตั้งชื่อพอร์ตนี้", L.label || "");
+  if (v === null) return;
+  const r = await api("port_rename", { token: session.token, code: L.code, label: v.trim() });
+  toast(r.ok ? "เปลี่ยนชื่อแล้ว" : r.error); if (r.ok) loadMe();
+});
+
+/* ============ แถบเลือกพอร์ต ============ */
+function renderPorts() {
+  const ports = dashData.ports || [], cur = dashData.license && dashData.license.code;
+  let usd = 0, on = 0;
+  ports.forEach(p => { if (p.equity != null) usd += isCent(p.currency) ? p.equity / 100 : p.equity; if (p.online) on++; });
+  $("portsSum").textContent = ports.length > 1 ? `${ports.length} พอร์ต · ออนไลน์ ${on} · รวมประมาณ $${fmt(usd)}` : "";
+  $("portList").innerHTML = ports.map(p => {
+    const dl = daysLeft(p.expires), none = p.plan === "none";
+    const left = p.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : p.plan === "life" ? "ถาวร" : dl > 0 ? `เหลือ ${dl} วัน` : "หมดอายุ";
+    const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : "";
+    return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
+      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span></span>
+      <span class="pc-eq">${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
+      <span class="pc-sub">${p.account ? "บัญชี " + esc(p.account) : "ยังไม่เชื่อม EA"} · ${left}</span></button>`;
+  }).join("") + (ports.length < (dashData.maxPorts || 10) ? `<button class="pchip add" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>แพ็กเกจแยกต่อพอร์ต</small></button>` : "");
+}
+$("portList").addEventListener("click", e => {
+  const b = e.target.closest("[data-pcode]");
+  if (b) { if (b.dataset.pcode === session.port) return; session.port = b.dataset.pcode; store.set("gs_port", session.port); fillCfg(true); lotDirty = false; loadMe(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (e.target.closest("#addPortBtn")) { $("npLabel").value = ""; $("newPortDlg").showModal(); }
+});
+let npType = "cent";
+document.querySelectorAll("#npSeg button").forEach(b => b.addEventListener("click", () => {
+  npType = b.dataset.np; document.querySelectorAll("#npSeg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
+$("npCreate").addEventListener("click", async () => {
+  $("npCreate").disabled = true;
+  const r = await api("port_add", { token: session.token, label: $("npLabel").value.trim(), port: npType });
+  $("npCreate").disabled = false;
+  if (!r.ok) { toast(r.error); return; }
+  $("newPortDlg").close();
+  session.port = r.code; store.set("gs_port", r.code);
+  await loadMe();
+  toast("เปิดพอร์ตใหม่แล้ว เลือกแพ็กเกจเพื่อเริ่มใช้งาน");
+  openPay();
+});
 
 function renderPort() {
   const L = dashData.license;
@@ -1766,7 +1881,7 @@ function renderPort() {
 document.querySelectorAll(".port-seg button").forEach(b => b.addEventListener("click", async () => {
   const port = b.dataset.port;
   if (dashData.license.port === port) return;
-  const r = await api("user_port", { token: session.token, port });
+  const r = await api("user_port", { token: session.token, code: session.port, port });
   if (!r.ok) { toast(r.error); return; }
   dashData.license.port = r.port; dashData.settings = r.settings;
   toast("เปลี่ยนเป็นพอร์ต " + (port === "cent" ? "Cent" : "USD") + " แล้ว EA จะใช้ภายใน 1 นาที");
@@ -1782,10 +1897,10 @@ $("claimIn").addEventListener("input", e => {
 $("claimBtn").addEventListener("click", async () => {
   const code = $("claimIn").value.trim();
   if (code.length < 12) { toast("โค้ดต้องมีรูปแบบ GS-XXXX-XXXX"); return; }
-  if (!confirm("ผูกโค้ด " + code + " กับบัญชีนี้? หน้าสมาชิกจะแสดงข้อมูลของโค้ดนี้แทนโค้ดเดิม")) return;
+  if (!confirm("เพิ่มโค้ด " + code + " เป็นพอร์ตใหม่ในบัญชีนี้?")) return;
   const r = await api("claim_code", { token: session.token, code });
   if (!r.ok) { toast(r.error); return; }
-  $("claimIn").value = ""; toast("ผูกโค้ดแล้ว"); loadMe();
+  $("claimIn").value = ""; toast("เพิ่มพอร์ตแล้ว"); session.port = r.code; loadMe();
 });
 
 /* PromptPay QR (EMVCo) */
@@ -1809,6 +1924,7 @@ function ppPayload(id, amount) {
 let payPlan = null, slipData = null, payQrCache = { ver: -1, img: "" };
 function openPay() {
   const plans = dashData.plans || [];
+  $("payFor").textContent = dashData.license ? `${dashData.license.label || ""} (${dashData.license.code})` : "";
   const cur = dashData.license && dashData.license.plan;
   payPlan = plans.find(x => x.id === (cur === "year" ? "year" : cur === "month" ? "month" : "year")) || plans[0];
   $("planOpts").innerHTML = plans.map(x => {
@@ -1876,7 +1992,7 @@ $("slipIn").addEventListener("change", async () => {
 $("paySend").addEventListener("click", async () => {
   if (!slipData || !payPlan) return;
   $("paySend").disabled = true; $("paySend").textContent = "กำลังส่ง…";
-  const r = await api("pay_submit", { token: session.token, plan: payPlan.id, slip: slipData });
+  const r = await api("pay_submit", { token: session.token, code: session.port, plan: payPlan.id, slip: slipData });
   $("paySend").textContent = "ส่งสลิป";
   if (!r.ok) { toast(r.error); renderPayBox(); return; }
   $("payDlg").close();
@@ -1920,7 +2036,7 @@ function renderLics() {
     const [st, stTxt] = licState(l); const dl = daysLeft(l.expires);
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
-      <td>${esc(l.name)}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
+      <td>${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
       <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</td>
       <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
