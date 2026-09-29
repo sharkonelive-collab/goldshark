@@ -603,6 +603,15 @@ th{background:#0B1328;color:#9FB0CC}
 .sp-tile .mark-img{width:min(340px,72vw);height:auto;display:block;animation:spMark 1.8s ease-in-out infinite}
 @keyframes spMark{0%,100%{filter:drop-shadow(0 0 18px rgba(59,148,255,.45))}50%{filter:drop-shadow(0 0 26px rgba(229,40,61,.45))}}
 @media (max-width:900px){.brand-tile .mark-img{height:32px}}
+
+.nrow .imp.Breaking{background:linear-gradient(135deg,#E5283D,#3B94FF)}
+.brk-tag{display:inline-block;font-size:11px;font-weight:600;color:#fff;background:var(--red);border-radius:999px;padding:0 8px;margin-right:6px}
+.nrow.breaking{background:rgba(229,40,61,.06)}
+.spike-note{font-size:13px;color:#8EC1FF;background:rgba(59,148,255,.08);border:1px solid rgba(59,148,255,.25);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.bk-form{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end}
+.bk-list .nrow{grid-template-columns:150px 1fr auto auto}
+.news-stat{display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:6px}
+@media (max-width:860px){.bk-form{grid-template-columns:1fr}.bk-list .nrow{grid-template-columns:1fr auto}}
 </style>
 </head>
 <body>
@@ -862,6 +871,7 @@ th{background:#0B1328;color:#9FB0CC}
   <nav class="adm-tabs">
     <button data-atab="codes" aria-pressed="true">โค้ด / สมาชิก</button>
     <button data-atab="pays" aria-pressed="false">การชำระเงิน<span class="badge" id="payBadge" hidden></span></button>
+    <button data-atab="news" aria-pressed="false">ข่าว</button>
     <button data-atab="shop" aria-pressed="false">ตั้งค่าร้าน</button>
   </nav>
   <div id="atab-codes">
@@ -923,6 +933,15 @@ th{background:#0B1328;color:#9FB0CC}
         <tbody id="payBody"></tbody>
       </table>
     </div>
+  </div>
+
+  <div id="atab-news" hidden>
+    <section class="card" style="max-width:900px">
+      <div class="card-label">ปฏิทินข่าว ForexFactory</div>
+      <div class="news-stat"><span class="dot" id="nsDot"></span><span id="nsText">–</span></div>
+      <p class="pnote" style="margin:0">ดึงข่าว USD อัตโนมัติทุกชั่วโมง ถ้าดึงไม่ได้จะลองใหม่ทุก 10 นาที และใช้ข่าวที่ดึงได้ล่าสุดแทน</p>
+    </section>
+
   </div>
 
   <div id="atab-shop" hidden>
@@ -1120,6 +1139,7 @@ function demoApi(action, d) {
           license: { code: lic.code, name: lic.name, account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency },
           settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
+          newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
           snapshot: snapOk ? { time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
       }
@@ -1143,6 +1163,10 @@ function demoApi(action, d) {
         demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: u.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
         return res({ ok: true });
       }
+    }
+    if (action === "admin_breaking") {
+      if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง" });
+      return res({ ok: true, status: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 }, calendar: 4 });
     }
     if (action === "pay_qr") return res(demo.qrImg ? { ok: true, image: demo.qrImg } : { ok: false, error: "ยังไม่มีรูป QR" });
     if (action.startsWith("admin_")) {
@@ -1651,19 +1675,22 @@ function renderNews() {
   const on = !!s.newsOn;
   $("newsState").textContent = on ? "หลบข่าว: เปิด" : "หลบข่าว: ปิด";
   $("newsState").className = "pill " + (on ? "active" : "expired");
-  const list = (dashData.news || []).filter(n => n.t + (+s.newsAfter || 0) * 60000 >= now).slice(0, 12);
-  if (!list.length) { $("newsList").innerHTML = `<div class="pempty" style="height:80px">ไม่มีข่าว USD ที่เหลือในสัปดาห์นี้</div>`; return; }
   const hm = t => new Date(t).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
-  $("newsList").innerHTML = list.map(n => {
+  const day = t => new Date(t).toLocaleDateString("th-TH", { weekday: "short", day: "numeric" });
+  const list = (dashData.news || []).filter(n => n.t + (+s.newsAfter || 0) * 60000 >= now).slice(0, 12);
+  const cal = list.map(n => {
     const hit = on && (+s.newsLevel === 1 || n.impact === "High");
     const a = n.t - s.newsBefore * 60000, b = n.t + s.newsAfter * 60000;
     const now_ = hit && now >= a && now <= b;
-    const d = new Date(n.t).toLocaleDateString("th-TH", { weekday: "short", day: "numeric" });
     return `<div class="nrow ${now_ ? "blocking" : ""}">
-      <span class="nt">${d} ${hm(n.t)}</span><span class="imp ${esc(n.impact)}" title="${esc(n.impact)}"></span>
+      <span class="nt">${day(n.t)} ${hm(n.t)}</span><span class="imp ${esc(n.impact)}" title="${esc(n.impact)}"></span>
       <span>${esc(n.title)}</span>
       <span class="nb">${now_ ? "กำลังหลบข่าว" : hit ? `หยุด ${hm(a)}–${hm(b)}` : "ไม่หลบ"}</span></div>`;
-  }).join("");
+  });
+  const st = dashData.newsStatus;
+  let empty = "ไม่มีข่าว USD ที่เหลือในสัปดาห์นี้";
+  if (st && !st.ok) empty = "โหลดปฏิทินข่าวจาก ForexFactory ไม่ได้ชั่วคราว ระบบจะลองใหม่อัตโนมัติทุก 10 นาที";
+  $("newsList").innerHTML = cal.join("") || `<div class="pempty" style="height:80px">${empty}</div>`;
 }
 
 
@@ -2000,8 +2027,9 @@ $("setupBox").addEventListener("toggle", () => { setupTouched = true; });
 let pays = [], payFilter = "pending";
 document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".adm-tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  ["codes", "pays", "shop"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  ["codes", "pays", "news", "shop"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
   if (b.dataset.atab === "pays") loadPays();
+  if (b.dataset.atab === "news") loadBreaking();
   if (b.dataset.atab === "shop") loadShop();
 }));
 
@@ -2108,6 +2136,21 @@ document.addEventListener("visibilitychange", () => {
   if (session.mode === "user" && session.token) loadMe(true);
   if (session.mode === "admin") loadLics();
 });
+
+
+/* ============ admin: สถานะข่าว ============ */
+async function loadBreaking() {
+  const r = await api("admin_breaking", { pass: session.pass });
+  if (!r.ok) { toast(r.error); return; }
+  renderBreaking(r);
+}
+function renderBreaking(r) {
+  const st = r.status;
+  $("nsDot").className = "dot " + (st && st.ok ? "on" : "off");
+  $("nsText").textContent = !st ? "ยังไม่เคยดึงข่าว (จะดึงเมื่อมีคนเปิดหน้าสมาชิกหรือ EA เชื่อมต่อ)" :
+    (st.ok ? `ดึงข่าวได้ปกติ · ${r.calendar != null ? r.calendar : st.count} ข่าว USD ที่เหลือสัปดาห์นี้ · ล่าสุด ${ago(st.time)}`
+           : `ดึงข่าวไม่ได้ (${st.info}) · ใช้ข่าวสำรอง ${st.count} รายการ · ลองล่าสุด ${ago(st.time)}`);
+}
 
 /* ============ หน้าเปิด ============ */
 const SPLASH_START = Date.now();
