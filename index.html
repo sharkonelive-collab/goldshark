@@ -137,6 +137,31 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--ink);padding:10px 18px;border-radius:var(--r);font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 
+@media (max-width:560px){
+  #whoami{display:none}
+  .bar{padding:12px 16px;gap:10px}
+  .chart-head{flex-wrap:wrap}
+  .chart-head .spacer{flex-basis:100%;height:0}
+  .chart-foot span:nth-child(2){display:none}
+}
+.btn,.seg button,.demo-tag{white-space:nowrap}
+
+.setup{margin-top:14px;background:var(--panel);border-radius:var(--r);border-left:3px solid var(--red)}
+.setup summary{list-style:none;cursor:pointer;padding:16px;display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:600;font-size:16px}
+.setup summary::-webkit-details-marker{display:none}
+.setup summary .spacer{flex:1}
+.setup summary .hint{font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
+.setup[open] summary .hint{display:none}
+.setup-body{padding:0 16px 18px;display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.dl{display:flex;flex-direction:column;gap:10px}
+.dl .btn{text-align:center;text-decoration:none;padding:12px 16px}
+.steps{margin:0;padding-left:22px;display:grid;gap:12px}
+.steps li{padding-left:4px}
+.steps li::marker{font-family:var(--display);font-weight:700;color:var(--red)}
+.steps b{font-weight:600}
+.copyrow{display:flex;align-items:center;gap:8px;margin-top:6px;background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:6px 6px 6px 12px;max-width:440px}
+.copyrow code{flex:1;font-family:var(--display);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:860px){.setup-body{grid-template-columns:1fr}}
 @media (max-width:860px){
   .grid3{grid-template-columns:1fr}
   .hero{grid-template-columns:1fr}
@@ -233,6 +258,28 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
     </div>
   </section>
 
+
+  <details class="setup" id="setupBox">
+    <summary>ติดตั้ง EA <span class="spacer"></span><span class="hint">ดาวน์โหลดและวิธีติดตั้ง</span></summary>
+    <div class="setup-body">
+      <div class="dl">
+        <a class="btn primary" href="GoldShark_Flow.ex5" download>ดาวน์โหลด EA (.ex5)</a>
+        <span class="muted" style="font-size:13px">ใช้กับ MetaTrader 5 บนคอมพิวเตอร์ Windows หรือ VPS</span>
+      </div>
+      <ol class="steps">
+        <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → โฟลเดอร์ <b>MQL5 → Experts</b> แล้ววางไฟล์ที่ดาวน์โหลดไว้ที่นี่ จากนั้นปิดแล้วเปิด MT5 ใหม่</li>
+        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
+          <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
+        </li>
+        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b>GoldShark_Flow</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
+        <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
+          <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
+        </li>
+        <li>กด <b>ตกลง</b> และเปิดปุ่ม <b>Algo Trading</b> ให้เป็นสีเขียว ภายใน 1 นาทีหน้านี้จะขึ้นว่า EA ออนไลน์</li>
+      </ol>
+    </div>
+  </details>
+
   <div class="settings-strip" id="setStrip"></div>
   <p class="foot-note">ข้อมูลอัปเดตอัตโนมัติทุก 30 วินาที ตามที่ EA ส่งขึ้นมา การเทรดมีความเสี่ยง ผลในอดีตไม่รับประกันผลในอนาคต</p>
 </main>
@@ -308,7 +355,7 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 
 <script>
 /* ============ ตั้งค่า ============ */
-const API_URL = "https://script.google.com/macros/s/AKfycbyP4XOua5eLHuRoR8_r810t-GwNzOkLVDNjVCkf_gmp7DMXn6wlsyf4N1O-Qbji50c/exec";   // ← ใส่ URL เว็บแอป Apps Script (…/exec) ว่างไว้ = โหมดตัวอย่าง
+const API_URL = location.protocol === "file:" ? "" : "/api";   // บนเว็บจริงเรียก /api (ตัวกลาง) ถ้าเปิดไฟล์ในเครื่อง = โหมดตัวอย่าง
 const REFRESH_MS = 30000;
 
 /* ============ utils ============ */
@@ -488,6 +535,8 @@ function renderDash() {
   $("lExp").textContent = dateTH(L.expires);
   const names = { startLot: "ล็อตเริ่ม", gridDist: "ระยะแก้ไม้", lotMult: "ตัวคูณ", maxOrders: "ไม้สูงสุด", basketTP: "TP ตะกร้า" };
   $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${esc(C[k])}</b></span>`).join("");
+  $("myCode").textContent = L.code;
+  if (!setupTouched) $("setupBox").open = !S;
   drawChart();
 }
 
@@ -518,7 +567,7 @@ function drawChart() {
     <path d="${line("b")}" fill="none" stroke="#8A96A8" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>
     <path d="${line("e")}" fill="none" stroke="#D9AE52" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
   </svg>
-  <div style="display:flex;justify-content:space-between;font-size:12px" class="muted num">
+  <div style="display:flex;justify-content:space-between;font-size:12px" class="muted num chart-foot">
     <span>${new Date(t0).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
     <span>สูงสุด ${fmt(Math.max(...H.map(p => p.e)))} / ต่ำสุด ${fmt(Math.min(...H.map(p => p.e)))}</span>
     <span>${new Date(t1).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
@@ -633,6 +682,14 @@ $("setDlg").addEventListener("close", async () => {
   toast(r.ok ? "บันทึกการตั้งค่าแล้ว" : r.error);
   if (r.ok) loadLics();
 });
+
+
+document.addEventListener("click", e => { const b = e.target.closest("[data-copy]"); if (b) copy(b.dataset.copy); });
+$("siteUrl").textContent = location.origin;
+$("copySite").addEventListener("click", () => copy(location.origin));
+$("copyMyCode").addEventListener("click", () => copy($("myCode").textContent));
+let setupTouched = false;
+$("setupBox").addEventListener("toggle", () => { setupTouched = true; });
 
 /* ============ boot ============ */
 $("demoTag").hidden = !!API_URL;
