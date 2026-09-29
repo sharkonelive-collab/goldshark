@@ -2213,7 +2213,11 @@ async function openAdmin() {
   hideSplash();
   await loadLics();
   clearInterval(timer);
-  timer = setInterval(() => { if (!document.hidden) loadLics(); }, REFRESH_MS);
+  timer = setInterval(() => {
+    if (document.hidden) return;
+    loadLics();
+    if (!$("atab-pays").hidden && !pays.some(x => x._saving)) loadPays(true);
+  }, 20000);
 }
 
 function admHydrate(r) {
@@ -2270,7 +2274,9 @@ async function loadLics() {
   try { store.set("gs_adm_list", JSON.stringify({ licenses: r.licenses, pending: r.pending })); } catch (e) {}
   lics = r.licenses;
   $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || "";
+  const prevPending = lastPending;
   onPending(r.pending || 0);
+  if (prevPending !== null && prevPending !== (r.pending || 0) && !$("atab-pays").hidden) loadPays(true);
   renderLics();
 }
 
@@ -2407,11 +2413,11 @@ document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("c
   if (b.dataset.atab === "shop") loadShop();
 }));
 
-async function loadPays() {
+async function loadPays(quiet) {
   if (!pays.length) { try { const c = JSON.parse(store.get("gs_adm_pays") || "null"); if (c) { pays = c; renderPays(); } } catch (e) {} }
-  $("syncing").hidden = false;
+  if (!quiet) $("syncing").hidden = false;
   const r = await api("admin_payments", { pass: session.pass });
-  $("syncing").hidden = true;
+  if (!quiet) $("syncing").hidden = true;
   if (!r.ok) { toast(r.error); return; }
   pays = r.payments; renderPays();
   try { store.set("gs_adm_pays", JSON.stringify(pays.slice(0, 100))); } catch (e) {}
@@ -2524,7 +2530,7 @@ $("shopSave").addEventListener("click", async () => {
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
   if (session.mode === "user" && session.token) loadMe(true);
-  if (session.mode === "admin") loadLics();
+  if (session.mode === "admin") { loadLics(); if (!$("atab-pays").hidden) loadPays(true); }
 });
 
 
