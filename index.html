@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
 /* ===== ตั้งค่า: ใส่ URL เว็บแอป Apps Script ที่ลงท้าย /exec  (ว่างไว้ = โหมดตัวอย่าง) ===== */
 :root{
@@ -128,7 +129,7 @@ td.code-cell{font-family:var(--display);font-weight:600;letter-spacing:.04em;whi
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .search{max-width:260px}
 
-dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r);padding:22px;width:min(440px,92vw)}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r);padding:22px;width:min(760px,94vw);max-height:88vh;overflow-y:auto}
 dialog::backdrop{background:rgba(5,8,14,.7)}
 dialog h3{margin:0 0 4px;font-family:var(--display)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -138,6 +139,11 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .toast.show{opacity:1}
 
 @media (max-width:560px){
+  #cfgForm .days input[type=time]{width:100px;padding:7px 6px}
+  #cfgForm .days .dname{width:52px}
+  #cfgForm .days td{padding-right:5px}
+  .profit .pstats{gap:18px}
+  .profit .pstats b{font-size:19px}
   #whoami{display:none}
   .bar{padding:12px 16px;gap:10px}
   .chart-head{flex-wrap:wrap}
@@ -161,6 +167,135 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .steps b{font-weight:600}
 .copyrow{display:flex;align-items:center;gap:8px;margin-top:6px;background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:6px 6px 6px 12px;max-width:440px}
 .copyrow code{flex:1;font-family:var(--display);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.profit{margin-top:14px}
+.profit-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.profit-head h3{margin:0;flex:1}
+.pstats{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:16px}
+.pstats span{display:block;font-size:13px;color:var(--muted)}
+.pstats b{font-family:var(--display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.pbars{display:flex;gap:3px;height:150px}
+.pcol{flex:1;display:flex;flex-direction:column;min-width:0}
+.pup{display:flex;align-items:flex-end;min-height:0}
+.pdn{display:flex;align-items:flex-start;border-top:1px solid var(--line);min-height:0}
+.pup i,.pdn i{display:block;width:100%;border-radius:2px}
+.pup i{background:var(--green)} .pdn i{background:var(--red)}
+.pcol:hover i{filter:brightness(1.25)}
+.plabels{display:flex;gap:3px;margin-top:6px}
+.plabels span{flex:1;min-width:0;text-align:center;font-size:11px;color:var(--muted);white-space:nowrap;overflow:visible}
+.pempty{height:150px;display:grid;place-items:center;color:var(--muted);text-align:center}
+.pnote{font-size:13px;color:var(--muted);margin:12px 0 0}
+
+.lotcard{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;align-items:center}
+.lotcard h3{margin:0 0 4px}
+.lot-row{display:flex;gap:8px;align-items:stretch}
+.lot-row .btn{min-width:44px;font-size:18px;padding:0 12px}
+.lot-row .btn.primary{font-size:15px;padding:0 18px}
+.lot-input{width:110px;text-align:center;font-family:var(--display);font-size:22px;font-weight:700;padding:8px}
+.lot-steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.lot-ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.lot-ladder div{background:var(--deep);padding:10px 12px}
+.lot-ladder span{display:block;font-size:12px;color:var(--muted)}
+.lot-ladder b{font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums}
+.lot-ladder .hot b{color:var(--gold)}
+
+/* ---------- ตั้งค่า EA ---------- */
+.cfg{margin-top:14px}
+.cfg-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.cfg-head h3{margin:0;flex:1}
+.cfg-group{border-top:1px solid var(--line)}
+.cfg-group summary{list-style:none;cursor:pointer;padding:13px 2px;display:flex;align-items:center;gap:10px;font-weight:500}
+.cfg-group summary::-webkit-details-marker{display:none}
+.cfg-group summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.cfg-group[open] summary::before{transform:rotate(45deg)}
+.cfg-group summary .spacer{flex:1}
+.cfg-sum{font-size:13px;color:var(--muted)}
+.cfg-sum.on{color:var(--green)}
+.cfg-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);display:none}
+.cfg-group.changed .cfg-dot{display:inline-block}
+.adv-tag{white-space:nowrap;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px 18px;padding:4px 2px 18px}
+.fld span{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.fld .field{padding:8px 10px}
+select.field{appearance:auto}
+.sw{display:flex;align-items:center;gap:10px;cursor:pointer;min-height:40px}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw .track{width:40px;height:22px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .15s}
+.sw .track::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text);transition:transform .15s}
+.sw input:checked + .track{background:var(--green)}
+.sw input:checked + .track::after{transform:translateX(18px)}
+.sw input:focus-visible + .track{outline:2px solid var(--gold);outline-offset:2px}
+.days{width:auto;border-collapse:collapse;min-width:0}
+.days td{padding:6px 8px 6px 0;border:0;white-space:nowrap}
+.days input[type=time]{width:120px;padding:7px 10px}
+.days .dname{width:70px}
+.cfg-hint{font-size:13px;color:var(--muted);margin:0 0 14px}
+/* ---------- ข่าว ---------- */
+.newscard{margin-top:14px}
+.nrow{display:grid;grid-template-columns:120px 10px 1fr auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.nrow:first-child{border-top:0}
+.nrow .nt{font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--muted)}
+.nrow .imp{width:10px;height:10px;border-radius:2px;background:var(--muted)}
+.nrow .imp.High{background:var(--red)} .nrow .imp.Medium{background:var(--gold)}
+.nrow .nb{font-size:13px;color:var(--muted);white-space:nowrap}
+.nrow.blocking{background:rgba(224,49,63,.08)}
+.nrow.blocking .nb{color:var(--red);font-weight:600}
+@media (max-width:560px){.nrow{grid-template-columns:78px 10px 1fr}.nrow .nb{grid-column:3}}
+
+/* ---------- สมาชิก / แพ็กเกจ / พอร์ต ---------- */
+.member-top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
+.plan-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.plan-head h3{margin:0;flex:1}
+.pill.plan{background:rgba(217,174,82,.15);color:var(--gold)}
+.plan-note{font-size:14px;margin:10px 0 0;padding:10px 12px;border-radius:var(--r);background:var(--deep);border:1px solid var(--line)}
+.plan-note:empty{display:none}
+.plan-note.warn{border-color:rgba(224,49,63,.5);color:#f3b7bd}
+.plan-actions{margin-top:14px}
+.claim{margin-top:12px;font-size:14px}
+.claim summary{cursor:pointer;color:var(--muted)}
+.claim-row{display:flex;gap:8px;margin-top:8px}
+.claim-row .field{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase}
+.port-seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.port-seg button{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left}
+.port-seg button b{display:block;font-family:var(--display);font-size:20px}
+.port-seg button span{font-size:13px;color:var(--muted)}
+.port-seg button[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.port-seg button[aria-pressed="true"] b{color:var(--gold)}
+.port-warn{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:var(--r);background:var(--deep);border:1px solid var(--line);color:var(--muted)}
+.port-warn.bad{border-color:rgba(224,49,63,.6);background:rgba(224,49,63,.1);color:#f3b7bd}
+.risk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);margin-top:14px;cursor:pointer}
+.risk input{margin-top:3px}
+.login form{display:grid;gap:12px}
+.login form label{margin:0}
+/* pay dialog */
+.plan-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.plan-opt{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left}
+.plan-opt b{display:block;font-family:var(--display);font-size:22px;margin:2px 0}
+.plan-opt span{font-size:13px;color:var(--muted)}
+.plan-opt[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.pay-box{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.qr{width:188px;min-height:188px;background:#fff;border-radius:6px;padding:4px;display:grid;place-items:center}
+.qr img,.qr canvas{display:block;max-width:100%}
+.qr .muted{color:#555;font-size:13px;text-align:center;padding:10px}
+.slip{display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px;border:1px dashed var(--line);border-radius:var(--r);cursor:pointer}
+.slip:hover{border-color:var(--muted)}
+.slip input{position:absolute;opacity:0;width:1px;height:1px}
+.slip img{height:72px;border-radius:4px}
+.slip:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+/* admin tabs */
+.adm-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.adm-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;cursor:pointer;color:var(--muted);white-space:nowrap}
+.adm-tabs button[aria-pressed="true"]{color:var(--text);border-color:var(--red)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:12px;text-align:center;margin-left:4px}
+.shop h3{margin:18px 0 10px}
+.shop h3:first-child{margin-top:0}
+.pill.pending{background:rgba(217,174,82,.15);color:var(--gold)}
+.pill.approved{background:rgba(63,182,139,.15);color:var(--green)}
+.pill.rejected{background:rgba(224,49,63,.15);color:var(--red)}
+.port-tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:6px}
+#slipDlg img{max-width:100%;border-radius:6px;display:block;margin:0 auto}
+@media (max-width:860px){.member-top{grid-template-columns:1fr}.plan-opts{grid-template-columns:1fr}.pay-box{grid-template-columns:1fr;justify-items:center;text-align:center}}
+@media (max-width:860px){.lotcard{grid-template-columns:1fr}.lot-ladder{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:860px){.setup-body{grid-template-columns:1fr}}
 @media (max-width:860px){
   .grid3{grid-template-columns:1fr}
@@ -188,20 +323,28 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 <main id="loginView" class="login">
   <div class="login-box">
     <h1>ดูพอร์ต EA<br>ของคุณแบบสด</h1>
-    <p>ใส่โค้ดที่ได้รับตอนซื้อ EA เพื่อดู equity ไม้ที่เปิดอยู่ และวันหมดอายุ</p>
+    <p>เข้าสู่ระบบเพื่อดูพอร์ต ตั้งค่าข่าวและเวลาเทรด และต่ออายุแพ็กเกจ สมัครใหม่ทดลองใช้ฟรี 15 วัน</p>
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-tab="user">ลูกค้า</button>
+      <button class="tab" role="tab" aria-selected="true" data-tab="login">เข้าสู่ระบบ</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="reg">สมัครสมาชิก</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="admin">แอดมิน</button>
     </div>
-    <form id="userForm">
-      <label for="codeIn">โค้ดใช้งาน</label>
-      <input id="codeIn" class="field code-input" placeholder="GS-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="12">
-      <button class="btn primary" style="width:100%;margin-top:14px" type="submit">เปิดแดชบอร์ด</button>
+    <form id="loginForm">
+      <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" required></div>
+      <div><label for="liPass">รหัสผ่าน</label><input id="liPass" class="field" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary" type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <form id="regForm" hidden>
+      <div><label for="rgName">ชื่อที่ใช้เรียก</label><input id="rgName" class="field" autocomplete="name" required></div>
+      <div><label for="rgLogin">เบอร์โทรหรืออีเมล (ใช้เข้าสู่ระบบ)</label><input id="rgLogin" class="field" autocomplete="username" required></div>
+      <div><label for="rgPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input id="rgPass" class="field" type="password" autocomplete="new-password" minlength="6" required></div>
+      <div><label for="rgPass2">ยืนยันรหัสผ่าน</label><input id="rgPass2" class="field" type="password" autocomplete="new-password" required></div>
+      <label class="risk"><input type="checkbox" id="rgRisk" required><span>ฉันเข้าใจว่าการเทรดทองมีความเสี่ยง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ และไม่มีการรับประกันกำไร</span></label>
+      <button class="btn primary" type="submit">สมัครและเริ่มทดลองฟรี 15 วัน</button>
     </form>
     <form id="adminForm" hidden>
-      <label for="passIn">รหัสแอดมิน</label>
-      <input id="passIn" class="field" type="password" autocomplete="current-password">
-      <button class="btn primary" style="width:100%;margin-top:14px" type="submit">เข้าแผงแอดมิน</button>
+      <div><label for="passIn">รหัสแอดมิน</label><input id="passIn" class="field" type="password" autocomplete="current-password"></div>
+      <button class="btn primary" type="submit">เข้าแผงแอดมิน</button>
     </form>
     <div class="err" id="loginErr" role="alert"></div>
   </div>
@@ -221,6 +364,31 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
     </div>
   </section>
 
+  <section class="member-top">
+    <div class="card plan-card">
+      <div class="plan-head"><h3>แพ็กเกจของฉัน</h3><span class="pill plan" id="planPill">–</span></div>
+      <div class="big" id="lDays">–</div>
+      <dl class="rows">
+        <dt>หมดอายุ</dt><dd id="lExp">–</dd>
+        <dt>โค้ดใส่ใน EA</dt><dd><button class="btn small ghost code-copy" id="planCode" title="คลิกเพื่อคัดลอก">–</button></dd>
+      </dl>
+      <div class="plan-note" id="planNote"></div>
+      <div class="plan-actions"><button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button></div>
+      <details class="claim"><summary>มีโค้ดจากแอดมินอยู่แล้ว?</summary>
+        <div class="claim-row"><input class="field" id="claimIn" placeholder="GS-XXXX-XXXX" maxlength="12" aria-label="โค้ดจากแอดมิน"><button class="btn" id="claimBtn">ผูกโค้ด</button></div>
+      </details>
+    </div>
+    <div class="card port-card">
+      <h3>ประเภทพอร์ต</h3>
+      <p class="pnote" style="margin:0 0 12px">เลือกให้ตรงกับบัญชี MT5 ที่ใช้ ค่า TP และตัดขาดทุนที่เป็นเงินจะปรับตามพอร์ตให้อัตโนมัติ</p>
+      <div class="port-seg" role="group" aria-label="ประเภทพอร์ต">
+        <button data-port="cent" aria-pressed="false"><b>Cent</b><span>บัญชี USC</span></button>
+        <button data-port="usd" aria-pressed="false"><b>USD</b><span>บัญชีดอลลาร์ปกติ</span></button>
+      </div>
+      <div class="port-warn" id="portWarn" hidden></div>
+    </div>
+  </section>
+
   <section class="chart-box">
     <div class="chart-head">
       <span class="key"><i style="background:var(--gold)"></i>Equity</span>
@@ -235,6 +403,24 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
     <div id="chart"></div>
   </section>
 
+
+  <section class="card profit">
+    <div class="profit-head">
+      <h3>กำไรที่ปิดแล้ว</h3>
+      <div class="seg" role="group" aria-label="มุมมองกำไร">
+        <button data-p="24" aria-pressed="true">รายชั่วโมง</button>
+        <button data-p="7" aria-pressed="false">รายวัน</button>
+      </div>
+    </div>
+    <div class="pstats">
+      <div><span>ชั่วโมงนี้</span><b id="pHour">–</b></div>
+      <div><span>วันนี้</span><b id="pToday">–</b></div>
+      <div><span>7 วัน</span><b id="pWeek">–</b></div>
+    </div>
+    <div id="pChart"></div>
+    <p class="pnote">นับเฉพาะไม้ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย เวลาตามเครื่องที่เปิดดู</p>
+  </section>
+
   <section class="grid3">
     <div class="card side-buy">
       <h3>ตะกร้า Buy <span class="muted num" id="bCount" style="font-size:14px"></span></h3>
@@ -247,17 +433,58 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
       <dl class="rows"><dt>ล็อตรวม</dt><dd id="sLots">–</dd></dl>
     </div>
     <div class="card side-lic">
-      <h3>โค้ดใช้งาน</h3>
-      <div class="big" id="lDays">–</div>
+      <h3>สถานะ EA</h3>
+      <div class="big" id="lTrade" style="font-family:var(--body);font-size:19px;font-weight:600">–</div>
       <dl class="rows">
-        <dt>หมดอายุ</dt><dd id="lExp">–</dd>
         <dt>Drawdown</dt><dd id="lDD">–</dd>
         <dt>Spread</dt><dd id="lSpread">–</dd>
-        <dt>สถานะ EA</dt><dd id="lTrade" style="font-family:var(--body)">–</dd>
+        <dt>สกุลเงินบัญชี</dt><dd id="lCur">–</dd>
       </dl>
     </div>
   </section>
 
+
+  <section class="card lotcard">
+    <div>
+      <h3>ขนาดล็อต</h3>
+      <p class="pnote" style="margin:0 0 12px">ล็อตไม้แรกของแต่ละตะกร้า ไม้แก้จะคูณจากค่านี้</p>
+      <div class="lot-row">
+        <button class="btn" id="lotMinus" aria-label="ลดล็อต">−</button>
+        <input id="lotIn" class="field lot-input" type="number" step="0.01" min="0.01" inputmode="decimal" aria-label="ล็อตเริ่มต้น">
+        <button class="btn" id="lotPlus" aria-label="เพิ่มล็อต">+</button>
+        <button class="btn primary" id="lotSave">บันทึกล็อต</button>
+      </div>
+      <div class="lot-steps">
+        <button class="chip" data-lot="0.01">0.01</button>
+        <button class="chip" data-lot="0.02">0.02</button>
+        <button class="chip" data-lot="0.05">0.05</button>
+        <button class="chip" data-lot="0.1">0.10</button>
+      </div>
+    </div>
+    <div>
+      <div class="lot-ladder" id="lotLadder"></div>
+      <p class="pnote">ถ้าราคาสวนต่อเนื่อง ล็อตจะโตตามตารางนี้ ล็อตใหม่ใช้กับตะกร้าถัดไป ตะกร้าที่เปิดอยู่ใช้ล็อตเดิมจนปิด ตั้งได้สูงสุด <span id="lotMax">1</span> lot</p>
+    </div>
+  </section>
+
+  <section class="card newscard">
+    <div class="profit-head">
+      <h3>ข่าว USD ที่ EA จะหลบ</h3>
+      <span class="pill" id="newsState"></span>
+    </div>
+    <div id="newsList"></div>
+    <p class="pnote">ปฏิทินข่าวจาก ForexFactory อัปเดตทุกชั่วโมง เวลาตามเครื่องที่เปิดดู เปิด/ปิดและตั้งช่วงหลบข่าวได้ด้านล่าง</p>
+  </section>
+
+  <section class="card cfg" id="cfgCard">
+    <div class="cfg-head">
+      <h3>ตั้งค่าข่าวและเวลาเทรด</h3>
+      <button class="btn small ghost" id="cfgUndo" hidden>ยกเลิกที่แก้</button>
+      <button class="btn primary" id="cfgSave" disabled>บันทึกการตั้งค่า</button>
+    </div>
+    <p class="cfg-hint">บันทึกแล้ว EA จะใช้ค่าใหม่ภายใน 1 นาที ไม่ต้องเข้าไปแก้ใน MT5</p>
+    <div id="cfgForm"></div>
+  </section>
 
   <details class="setup" id="setupBox">
     <summary>ติดตั้ง EA <span class="spacer"></span><span class="hint">ดาวน์โหลดและวิธีติดตั้ง</span></summary>
@@ -286,11 +513,18 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 
 <!-- ================= ADMIN ================= -->
 <main id="adminView" class="wrap" hidden>
+  <nav class="adm-tabs">
+    <button data-atab="codes" aria-pressed="true">โค้ด / สมาชิก</button>
+    <button data-atab="pays" aria-pressed="false">การชำระเงิน<span class="badge" id="payBadge" hidden></span></button>
+    <button data-atab="shop" aria-pressed="false">ตั้งค่าร้าน</button>
+  </nav>
+  <div id="atab-codes">
   <div class="admin-top">
     <section class="card">
       <h3>ออกโค้ดใหม่</h3>
       <form id="createForm" class="form-grid">
         <div><label for="cName">ชื่อลูกค้า</label><input id="cName" class="field" required></div>
+        <div><label for="cPlan">แพ็กเกจ</label><select id="cPlan" class="field"><option value="month">รายเดือน</option><option value="year">รายปี</option><option value="life">ถาวร</option><option value="trial">ทดลองฟรี</option></select></div>
         <div>
           <label>อายุโค้ด</label>
           <div class="chips" id="dayChips">
@@ -320,26 +554,63 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>โค้ด</th><th>ลูกค้า</th><th>บัญชี</th><th>เหลือ</th><th>สถานะ</th><th>EA</th><th>Equity</th><th></th></tr></thead>
+          <thead><tr><th>โค้ด</th><th>ลูกค้า</th><th>บัญชี</th><th>แพ็กเกจ</th><th>เหลือ</th><th>สถานะ</th><th>EA</th><th>Equity</th><th></th></tr></thead>
           <tbody id="licBody"></tbody>
         </table>
       </div>
+    </section>
+  </div>
+  </div>
+
+  <div id="atab-pays" hidden>
+    <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center">
+      <div class="seg" role="group" aria-label="กรองรายการ">
+        <button data-pf="pending" aria-pressed="true">รอตรวจ</button>
+        <button data-pf="all" aria-pressed="false">ทั้งหมด</button>
+      </div>
+      <span style="flex:1"></span>
+      <button class="btn small" id="payRefresh">รีเฟรช</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>เวลา</th><th>สมาชิก</th><th>โค้ด</th><th>แพ็กเกจ</th><th>ยอด</th><th>สถานะ</th><th></th></tr></thead>
+        <tbody id="payBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="atab-shop" hidden>
+    <section class="card shop" style="max-width:760px">
+      <h3>ราคาแพ็กเกจ (บาท)</h3>
+      <div class="cfg-grid">
+        <label class="fld"><span>รายเดือน (30 วัน)</span><input class="field num" type="number" min="0" id="shopMonth"></label>
+        <label class="fld"><span>รายปี (365 วัน)</span><input class="field num" type="number" min="0" id="shopYear"></label>
+        <label class="fld"><span>ถาวร</span><input class="field num" type="number" min="0" id="shopLife"></label>
+      </div>
+      <h3>รับเงินพร้อมเพย์</h3>
+      <div class="cfg-grid">
+        <label class="fld"><span>เบอร์หรือเลขบัตรประชาชนที่ผูกพร้อมเพย์</span><input class="field num" inputmode="numeric" id="shopPP"></label>
+        <label class="fld"><span>ชื่อบัญชีที่ลูกค้าเห็น</span><input class="field" id="shopName"></label>
+      </div>
+      <h3>ค่าเริ่มต้นตามพอร์ต</h3>
+      <p class="pnote" style="margin:0 0 10px">หน่วยเป็นเงินในบัญชี: Cent = USC (100 USC = $1), USD = ดอลลาร์ ใช้กับสมาชิกที่แอดมินยังไม่ได้ตั้งค่าเฉพาะคน</p>
+      <div class="cfg-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <label class="fld"><span>TP ตะกร้า — Cent</span><input class="field num" type="number" step="0.01" id="shopTPc"></label>
+        <label class="fld"><span>ตัดขาดทุน — Cent</span><input class="field num" type="number" step="0.01" id="shopCLc"></label>
+        <label class="fld"><span>TP ตะกร้า — USD</span><input class="field num" type="number" step="0.01" id="shopTPu"></label>
+        <label class="fld"><span>ตัดขาดทุน — USD</span><input class="field num" type="number" step="0.01" id="shopCLu"></label>
+      </div>
+      <button class="btn primary" id="shopSave" style="margin-top:18px">บันทึกการตั้งค่าร้าน</button>
     </section>
   </div>
 </main>
 
 <dialog id="setDlg">
   <form method="dialog" id="setForm">
-    <h3>ตั้งค่า EA จากเว็บ</h3>
-    <p class="muted" style="margin:0 0 14px;font-size:14px" id="setFor"></p>
-    <div class="two">
-      <div><label for="sStartLot">ล็อตเริ่มต้น</label><input class="field num" id="sStartLot" type="number" step="0.01" min="0.01"></div>
-      <div><label for="sGridDist">ระยะแก้ไม้ (points)</label><input class="field num" id="sGridDist" type="number" step="1" min="1"></div>
-      <div><label for="sLotMult">ตัวคูณล็อต</label><input class="field num" id="sLotMult" type="number" step="0.01" min="1"></div>
-      <div><label for="sMaxOrders">ไม้สูงสุด</label><input class="field num" id="sMaxOrders" type="number" step="1" min="0"></div>
-      <div><label for="sBasketTP">TP ตะกร้า</label><input class="field num" id="sBasketTP" type="number" step="0.01" min="0.01"></div>
-    </div>
-    <p class="muted" style="font-size:13px;margin:12px 0 0">EA จะรับค่าใหม่ในรอบ heartbeat ถัดไป (ประมาณ 1 นาที)</p>
+    <h3>ตั้งค่า EA</h3>
+    <p class="muted" style="margin:0 0 6px;font-size:14px" id="setFor"></p>
+    <p class="muted" style="font-size:13px;margin:0 0 8px">EA จะรับค่าใหม่ในรอบ heartbeat ถัดไป (ประมาณ 1 นาที) ลูกค้าแก้ได้เองเฉพาะล็อต ข่าว และเวลาเทรด</p>
+    <div id="admCfg"></div>
     <div class="danger-zone">
       <button type="button" class="btn small" id="dlgReset">ย้ายบัญชี MT5</button>
       <button type="button" class="btn small ghost" id="dlgDelete" style="color:var(--red)">ลบโค้ด</button>
@@ -348,6 +619,36 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
       <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
       <button class="btn primary" value="save" id="setSave">บันทึกการตั้งค่า</button>
     </div>
+  </form>
+</dialog>
+
+
+<dialog id="payDlg">
+  <form method="dialog">
+    <h3>ต่ออายุ / อัปเกรด</h3>
+    <p class="muted" style="margin:0;font-size:14px">เลือกแพ็กเกจ โอนผ่านพร้อมเพย์ แล้วแนบสลิป แอดมินจะตรวจและต่ออายุให้</p>
+    <div class="plan-opts" id="planOpts"></div>
+    <div class="pay-box">
+      <div class="qr" id="payQR"></div>
+      <div>
+        <div class="muted" style="font-size:13px">ยอดที่ต้องโอน</div>
+        <div class="big num" id="payAmt">–</div>
+        <div id="payTo" style="margin-top:6px"></div>
+        <p class="pnote">สแกน QR ด้วยแอปธนาคาร ยอดเงินจะขึ้นให้อัตโนมัติ</p>
+      </div>
+    </div>
+    <label class="slip"><input type="file" accept="image/*" id="slipIn"><img id="slipPrev" alt="" hidden><span id="slipText">แนบรูปสลิปการโอน</span></label>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
+      <button type="button" class="btn primary" id="paySend" disabled>ส่งสลิป</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="slipDlg">
+  <form method="dialog">
+    <img id="slipImg" alt="สลิปการโอน">
+    <div class="dlg-actions"><button class="btn">ปิด</button></div>
   </form>
 </dialog>
 
@@ -391,11 +692,16 @@ async function api(action, data = {}) {
   }
 }
 
-/* ============ demo data ============ */
+/* ============ demo data (โหมดตัวอย่าง เมื่อเปิดไฟล์ในเครื่อง) ============ */
 const demo = (() => {
   const now = Date.now();
-  const mk = (code, name, acct, days, status, eq) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 200, basketTP: 100 } });
-  const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55), mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1), mk("GS-ZX8C-QT3L", "คุณบอส", "", 88, "active", null), mk("GS-H2MB-8YUD", "คุณเจ", "33190284", -3, "active", null), mk("GS-W6JF-KR5P", "ทดสอบ", "71002231", 12, "suspended", 998.4)];
+  const base = () => ({ startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 });
+  const mk = (code, name, acct, days, status, eq, plan, port, login) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: base(), plan, port, login, currency: port === "usd" ? "USD" : port === "cent" ? "USC" : "" });
+  const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55, "month", "cent", "0812345678"),
+    mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1, "year", "usd", "prae@mail.com"),
+    mk("GS-ZX8C-QT3L", "คุณบอส", "", 12, "active", null, "trial", "", "0899999999"),
+    mk("GS-H2MB-8YUD", "คุณเจ", "33190284", -3, "active", null, "month", "cent", ""),
+    mk("GS-W6JF-KR5P", "ทดสอบ", "71002231", 12, "suspended", 998.4, "life", "usd", "")];
   const hist = []; let b = 10000, e = 10000;
   for (let i = 7 * 288; i >= 0; i--) {
     const t = now - i * 300000;
@@ -404,27 +710,85 @@ const demo = (() => {
     e = b - Math.max(0, cyc) - Math.random() * 25;
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
-  return { lics, hist };
+  const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark",
+    port: { cent: { basketTP: 100, cutLoss: 30000 }, usd: { basketTP: 1, cutLoss: 300 } } };
+  const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA" }];
+  const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "รายปี", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
+  return { lics, hist, config, users, pays };
 })();
 
 function demoApi(action, d) {
   const L = demo.lics;
+  const uOf = () => demo.users.find(u => "demo-" + u.id === d.token);
   return new Promise(res => setTimeout(() => {
-    if (action === "dashboard") {
-      const lic = L.find(l => l.code === String(d.code).toUpperCase());
-      if (!lic) return res({ ok: false, error: "ไม่พบโค้ดนี้ ตรวจสอบตัวอักษรอีกครั้ง (ลอง GS-7KQ2-M9XA)" });
-      const last = demo.hist[demo.hist.length - 1];
-      return res({ ok: true, license: lic, settings: lic.settings, history: demo.hist,
-        snapshot: { time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.1", tradeStatus: "พร้อมเทรด" } });
+    if (action === "login") {
+      const u = demo.users.find(x => x.login === String(d.login).replace(/[^0-9a-z@.]/gi, "").toLowerCase() && x.password === d.password);
+      return res(u ? { ok: true, token: "demo-" + u.id } : { ok: false, error: "เบอร์/อีเมล หรือรหัสผ่านไม่ถูกต้อง (โหมดตัวอย่าง: 0812345678 / demo123)" });
+    }
+    if (action === "register") {
+      const id = "u" + (demo.users.length + 1), code = "GS-DEMO-" + String(1000 + demo.users.length).slice(-4);
+      L.unshift(Object.assign({}, L[2], { code, name: d.name, login: d.login, account: "", plan: "trial", port: "", currency: "", expires: Date.now() + 15 * 86400000, equity: null, online: false, settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 } }));
+      demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
+      return res({ ok: true, token: "demo-" + id });
+    }
+    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit"].includes(action)) {
+      const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
+      const lic = L.find(l => l.code === u.code);
+      if (action === "me") {
+        const last = demo.hist[demo.hist.length - 1], snapOk = !!lic.equity;
+        const nowH = Math.floor(Date.now() / 3600000), hp = [];
+        for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
+        const nb = Date.now();
+        const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
+        return res({ ok: true, user: { name: u.name, login: u.login },
+          plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }],
+          pay: { promptpay: demo.config.promptpay, payName: demo.config.payName },
+          payments: demo.pays.filter(x => x.userId === u.id),
+          license: { code: lic.code, name: lic.name, account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency },
+          settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
+          news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
+          history: snapOk ? demo.hist : [],
+          snapshot: snapOk ? { time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
+      }
+      if (action === "user_port") {
+        if (lic.port !== d.port) { delete lic.settings.basketTP; }
+        lic.port = d.port;
+        return res({ ok: true, port: lic.port, settings: Object.assign({}, demo.config.port[lic.port], lic.settings) });
+      }
+      if (action === "user_settings" || action === "user_lot") {
+        const inp = action === "user_lot" ? { startLot: d.startLot } : d.settings;
+        if (inp.startLot !== undefined) inp.startLot = Math.min(inp.startLot, lic.plan === "trial" ? 0.01 : 1);
+        Object.assign(lic.settings, inp);
+        return res({ ok: true, settings: Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings) });
+      }
+      if (action === "claim_code") {
+        const t = L.find(l => l.code === d.code); if (!t) return res({ ok: false, error: "ไม่พบโค้ดนี้" });
+        u.code = t.code; return res({ ok: true });
+      }
+      if (action === "pay_submit") {
+        const pl = { month: "รายเดือน", year: "รายปี", life: "ถาวร" };
+        demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: u.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
+        return res({ ok: true });
+      }
     }
     if (action.startsWith("admin_")) {
       if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
       if (action === "admin_login") return res({ ok: true });
-      if (action === "admin_list") return res({ ok: true, licenses: L });
+      if (action === "admin_list") return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length });
+      if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
+      if (action === "admin_slip") { const x = demo.pays.find(p => p.id === d.id); return res({ ok: true, image: (x && x.slip) || "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="45%" font-size="22" text-anchor="middle" fill="#333">ตัวอย่างสลิป</text><text x="50%" y="55%" font-size="30" text-anchor="middle" fill="#0a7">9,900.00 บาท</text></svg>') }); }
+      if (action === "admin_pay_decide") {
+        const x = demo.pays.find(p => p.id === d.id); if (!x) return res({ ok: false, error: "ไม่พบรายการ" });
+        x.status = d.approve ? "approved" : "rejected"; x.note = d.note || "";
+        if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + (x.plan === "year" ? 365 : 30) * 86400000; } }
+        return res({ ok: true });
+      }
+      if (action === "admin_config") return res({ ok: true, config: demo.config });
+      if (action === "admin_config_set") { demo.config = d.config; return res({ ok: true, config: demo.config }); }
       if (action === "admin_create") {
         const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", p = () => Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
         const code = "GS-" + p() + "-" + p();
-        L.unshift({ code, name: d.name, account: d.account || "", expires: Date.now() + d.days * 86400000, status: "active", created: Date.now(), equity: null, online: false, settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 200, basketTP: 100 } });
+        L.unshift({ code, name: d.name, account: d.account || "", expires: d.plan === "life" ? Date.UTC(2099, 11, 31) : Date.now() + d.days * 86400000, status: "active", created: Date.now(), equity: null, online: false, plan: d.plan, port: "", login: "", settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 } });
         return res({ ok: true, code });
       }
       const lic = L.find(l => l.code === d.code);
@@ -452,24 +816,34 @@ function show(view) {
 
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
-  $("userForm").hidden = t.dataset.tab !== "user";
+  $("loginForm").hidden = t.dataset.tab !== "login";
+  $("regForm").hidden = t.dataset.tab !== "reg";
   $("adminForm").hidden = t.dataset.tab !== "admin";
   $("loginErr").textContent = "";
 }));
 
-$("codeIn").addEventListener("input", e => {
-  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (v.startsWith("GS")) v = v.slice(2);
-  v = v.slice(0, 8);
-  e.target.value = "GS-" + v.slice(0, 4) + (v.length > 4 ? "-" + v.slice(4) : "");
-  if (v.length === 0) e.target.value = "";
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.submitter; if (btn) btn.disabled = true;
+  const r = await api("login", { login: $("liLogin").value.trim(), password: $("liPass").value });
+  if (btn) btn.disabled = false;
+  if (!r.ok) { $("loginErr").textContent = r.error; return; }
+  store.set("gs_token", r.token);
+  $("liPass").value = "";
+  openMember(r.token);
 });
 
-$("userForm").addEventListener("submit", async e => {
+$("regForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const code = $("codeIn").value.trim().toUpperCase();
-  if (code.length < 12) { $("loginErr").textContent = "โค้ดต้องมีรูปแบบ GS-XXXX-XXXX"; return; }
-  await openDashboard(code);
+  if ($("rgPass").value !== $("rgPass2").value) { $("loginErr").textContent = "รหัสผ่านสองช่องไม่ตรงกัน"; return; }
+  const btn = e.submitter; if (btn) btn.disabled = true;
+  const r = await api("register", { name: $("rgName").value.trim(), login: $("rgLogin").value.trim(), password: $("rgPass").value });
+  if (btn) btn.disabled = false;
+  if (!r.ok) { $("loginErr").textContent = r.error; return; }
+  store.set("gs_token", r.token);
+  $("regForm").reset();
+  toast("สมัครแล้ว เริ่มทดลองฟรี 15 วัน");
+  openMember(r.token);
 });
 
 $("adminForm").addEventListener("submit", async e => {
@@ -482,34 +856,44 @@ $("adminForm").addEventListener("submit", async e => {
   openAdmin();
 });
 
-$("logoutBtn").addEventListener("click", () => {
+function logout(msg) {
   clearInterval(timer);
-  store.del("gs_code"); store.del("gs_admin");
+  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code");
   session = { mode: null };
   $("whoami").textContent = "";
-  $("loginErr").textContent = "";
+  document.querySelector('.tab[data-tab="login"]').click();
+  $("loginErr").textContent = msg || "";
   show("loginView");
-});
+}
+$("logoutBtn").addEventListener("click", () => logout());
 
-/* ============ customer dashboard ============ */
-async function openDashboard(code) {
-  const r = await api("dashboard", { code });
-  if (!r.ok) { $("loginErr").textContent = r.error; show("loginView"); return; }
-  session = { mode: "user", code };
-  store.set("gs_code", code);
-  $("whoami").textContent = code;
+/* ============ member dashboard ============ */
+async function loadMe() {
+  const r = await api("me", { token: session.token });
+  if (!r.ok) {
+    if (/เข้าสู่ระบบ|สมาชิก/.test(r.error || "")) logout(r.error);
+    else toast(r.error);
+    return false;
+  }
   dashData = r;
   renderDash();
+  return true;
+}
+
+async function openMember(token) {
+  session = { mode: "user", token };
+  if (!(await loadMe())) return;
+  $("whoami").textContent = dashData.user.name;
   show("dashView");
   clearInterval(timer);
-  timer = setInterval(async () => {
-    const x = await api("dashboard", { code });
-    if (x.ok) { dashData = x; renderDash(); }
-  }, REFRESH_MS);
+  timer = setInterval(loadMe, REFRESH_MS);
 }
 
 function renderDash() {
+  if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
+  renderPlan(); renderPort();
+  $("lCur").textContent = L.currency || "–";
   if (S) {
     const fl = S.equity - S.balance;
     $("dEq").textContent = fmt(S.equity);
@@ -525,24 +909,23 @@ function renderDash() {
     $("lTrade").textContent = S.tradeStatus || "–";
   } else {
     $("dEq").textContent = "–";
-    $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA แล้วใส่โค้ดนี้ในช่อง LicenseCode";
+    $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA แล้วใส่โค้ดของคุณในช่อง โค้ดใช้งาน";
     $("dDot").className = "dot off"; $("dOnline").textContent = "ยังไม่เชื่อมต่อ";
   }
-  const dl = daysLeft(L.expires);
-  $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : (dl > 0 ? dl + " วัน" : "หมดอายุ");
-  $("lDays").className = "big " + (L.status !== "active" || dl <= 0 ? "neg" : (dl <= 5 ? "" : ""));
-  $("lDays").style.color = L.status === "active" && dl > 0 && dl <= 5 ? "var(--gold)" : "";
-  $("lExp").textContent = dateTH(L.expires);
   const names = { startLot: "ล็อตเริ่ม", gridDist: "ระยะแก้ไม้", lotMult: "ตัวคูณ", maxOrders: "ไม้สูงสุด", basketTP: "TP ตะกร้า" };
   $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${esc(C[k])}</b></span>`).join("");
   $("myCode").textContent = L.code;
+  renderProfit();
+  syncLot();
+  renderNews();
+  fillCfg(false);
   if (!setupTouched) $("setupBox").open = !S;
   drawChart();
 }
 
-document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => {
+document.querySelectorAll(".chart-head .seg button").forEach(b => b.addEventListener("click", () => {
   range = +b.dataset.range;
-  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  document.querySelectorAll(".chart-head .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
   drawChart();
 }));
 
@@ -574,6 +957,452 @@ function drawChart() {
   </div>`;
 }
 
+
+/* ============ กำไรที่ปิดแล้ว ============ */
+let pMode = 24;
+document.querySelectorAll(".profit .seg button").forEach(b => b.addEventListener("click", () => {
+  pMode = +b.dataset.p;
+  document.querySelectorAll(".profit .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderProfit();
+}));
+
+function hourlyMap() {
+  const m = new Map();
+  const raw = dashData && dashData.snapshot && dashData.snapshot.hourly;
+  if (!raw) return m;
+  String(raw).split("|").forEach(x => {
+    const [h, v] = x.split("_");
+    if (h && v !== undefined && !isNaN(+h) && !isNaN(+v)) m.set(+h, (m.get(+h) || 0) + +v);
+  });
+  return m;
+}
+
+function renderProfit() {
+  const m = hourlyMap();
+  const nowH = Math.floor(Date.now() / 3600000);
+  const mid = new Date(); mid.setHours(0, 0, 0, 0);
+  const midH = Math.floor(mid.getTime() / 3600000);
+  let today = 0, week = 0;
+  m.forEach((v, h) => { if (h >= midH && h <= nowH) today += v; if (h > nowH - 168 && h <= nowH) week += v; });
+  const put = (id, v) => { $(id).textContent = signed(v); $(id).className = cls(v); };
+  put("pHour", m.get(nowH) || 0); put("pToday", today); put("pWeek", week);
+
+  const box = $("pChart");
+  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มีไม้ที่ปิดใน 7 วันล่าสุด</div>`; return; }
+
+  const bars = [];
+  if (pMode === 24) {
+    for (let i = 23; i >= 0; i--) {
+      const h = nowH - i, d = new Date(h * 3600000);
+      const hh = String(d.getHours()).padStart(2, "0");
+      bars.push({ v: m.get(h) || 0, label: i % 3 === 0 ? hh : "", tip: `${hh}:00–${hh}:59` });
+    }
+  } else {
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(mid); d.setDate(d.getDate() - i);
+      const sH = Math.floor(d.getTime() / 3600000);
+      let v = 0; for (let h = sH; h < sH + 24; h++) v += m.get(h) || 0;
+      const lbl = d.toLocaleDateString("th-TH", { weekday: "short", day: "numeric" });
+      bars.push({ v, label: lbl, tip: d.toLocaleDateString("th-TH", { weekday: "long", day: "numeric", month: "short" }) });
+    }
+  }
+  const maxV = Math.max(0, ...bars.map(b => b.v)), minV = Math.min(0, ...bars.map(b => b.v));
+  const span = (maxV - minV) || 1;
+  const up = maxV / span, dn = -minV / span;
+  box.innerHTML = `<div class="pbars">${bars.map(b => {
+    const hu = b.v > 0 && maxV ? b.v / maxV * 100 : 0;
+    const hd = b.v < 0 && minV ? b.v / minV * 100 : 0;
+    return `<div class="pcol" title="${esc(b.tip)}: ${signed(b.v)}">
+      <div class="pup" style="flex:${up || (dn ? 0 : 1)} 1 0"><i style="height:${hu}%"></i></div>
+      <div class="pdn" style="flex:${dn} 1 0"><i style="height:${hd}%"></i></div></div>`;
+  }).join("")}</div>
+  <div class="plabels">${bars.map(b => `<span>${esc(b.label)}</span>`).join("")}</div>`;
+}
+
+
+/* ============ ลูกค้าตั้งล็อต ============ */
+let lotDirty = false;
+const lotMaxV = () => (dashData && dashData.limits && dashData.limits.maxLot) || 1;
+const clampLot = v => Math.min(lotMaxV(), Math.max(0.01, Math.round((+v || 0) * 100) / 100));
+function setLot(v, dirty = true) { $("lotIn").value = clampLot(v).toFixed(2); lotDirty = dirty; renderLadder(); }
+function renderLadder() {
+  const C = (dashData && dashData.settings) || {};
+  const lot = clampLot($("lotIn").value), mult = +C.lotMult || 1, maxO = +C.maxOrders || 0;
+  const levels = [1, 5, 10, 15].filter(n => !maxO || n <= maxO);
+  $("lotLadder").innerHTML = levels.map(n => {
+    const v = lot * Math.pow(mult, n - 1);
+    return `<div class="${n >= 10 ? "hot" : ""}"><span>ไม้ที่ ${n}</span><b>${v >= 10 ? fmt(v, 1) : fmt(v)}</b></div>`;
+  }).join("");
+  $("lotMax").textContent = lotMaxV();
+  $("lotIn").max = lotMaxV();
+  const saved = +C.startLot;
+  $("lotSave").disabled = Math.abs(lot - saved) < 0.001;
+}
+function syncLot() {
+  if (lotDirty || document.activeElement === $("lotIn")) return renderLadder();
+  $("lotIn").value = (+dashData.settings.startLot || 0.01).toFixed(2);
+  renderLadder();
+}
+$("lotMinus").addEventListener("click", () => setLot(+$("lotIn").value - 0.01));
+$("lotPlus").addEventListener("click", () => setLot(+$("lotIn").value + 0.01));
+$("lotIn").addEventListener("input", () => { lotDirty = true; renderLadder(); });
+$("lotIn").addEventListener("change", () => setLot($("lotIn").value));
+document.querySelectorAll(".lot-steps .chip").forEach(c => c.addEventListener("click", () => setLot(c.dataset.lot)));
+$("lotSave").addEventListener("click", async () => {
+  const lot = clampLot($("lotIn").value);
+  $("lotSave").disabled = true;
+  const r = await api("user_lot", { token: session.token, startLot: lot });
+  if (!r.ok) { toast(r.error); $("lotSave").disabled = false; return; }
+  dashData.settings = r.settings; lotDirty = false;
+  toast("บันทึกล็อต " + lot.toFixed(2) + " แล้ว EA จะใช้กับตะกร้าถัดไป");
+  renderDash();
+});
+
+
+/* ============ ตั้งค่า EA ทั้งหมด (ต้องตรงกับ SCHEMA ใน Code.gs) ============ */
+const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
+const CFG_GROUPS = [
+  { id: "main", title: "ไม้หลัก / Martingale", fields: [
+    ["gridDist", "int", 270, "ระยะแก้ไม้ (points)", 1, 200000, 1],
+    ["lotMult", "num", 1.6, "ตัวคูณล็อต", 1, 5, 0.01],
+    ["repeatLot", "int", 0, "ใช้ล็อตซ้ำกี่ไม้ก่อนคูณ (0=ปิด)", 0, 100, 1],
+    ["maxOrders", "int", 200, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1]] },
+  { id: "close", title: "ปิดกำไร / ขาดทุน", fields: [
+    ["basketTP", "num", 100, "ปิดตะกร้าเมื่อกำไรถึง", 0.01, 1e7, 0.01],
+    ["firstTP", "int", 0, "ไม้เดียวไปถูกทาง: TP กี่ points (0=ใช้ TP ตะกร้า)", 0, 200000, 1],
+    ["beOffset", "int", 110, "มีไม้แก้แล้ว ปิดที่ทุน + กี่ points (0=ปิด)", 0, 200000, 1],
+    ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า"],
+    ["cutLoss", "num", 30000, "ตัดเมื่อขาดทุนถึง", 0.01, 1e8, 0.01],
+    ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
+    ["slPoints", "int", 500, "ระยะ SL (points)", 1, 200000, 1]] },
+  { id: "news", title: "กรองข่าว", toggle: "newsOn", fields: [
+    ["newsOn", "bool", false, "หยุดเข้าไม้ช่วงข่าว"],
+    ["newsLevel", "sel", 2, "ข่าวที่หลบ", [[1, "ทุกข่าว USD"], [2, "เฉพาะข่าวแดง (High)"]]],
+    ["newsBefore", "int", 15, "หยุดก่อนข่าว (นาที)", 0, 240, 1],
+    ["newsAfter", "int", 5, "หยุดหลังข่าว (นาที)", 0, 240, 1]] },
+  { id: "time", title: "เวลาเทรด", toggle: "timeOn", days: true, fields: [
+    ["timeOn", "bool", true, "จำกัดเวลาเทรด"]] },
+  { id: "follow", title: "ไม้ตามทาง / บอลลูน", fields: [
+    ["followOn", "bool", true, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
+    ["balloonOn", "bool", false, "บอลลูน (กริดชุดที่สอง)"],
+    ["balloonLot", "num", 0.1, "ล็อตบอลลูนเริ่มต้น", 0.01, 100, 0.01],
+    ["balloonDist", "int", 111, "ระยะบอลลูน (points)", 1, 200000, 1],
+    ["balloonMult", "num", 1.03, "ตัวคูณบอลลูน", 1, 5, 0.01]] },
+  { id: "entry", title: "สัญญาณเข้าออเดอร์", adv: true, fields: [
+    ["entryMode", "sel", 0, "วิธีเข้าไม้", [[0, "Pending (รอชนโซน)"], [1, "เปิดทันที"]]],
+    ["signalTF", "sel", 1, "TF สัญญาณ", TFO],
+    ["emaFast", "int", 20, "EMA เร็ว", 1, 1000, 1],
+    ["emaSlow", "int", 100, "EMA ช้า", 1, 1000, 1],
+    ["useMACD", "bool", false, "ยืนยันด้วย MACD"],
+    ["zoneBars", "int", 15, "จำนวนแท่งหาโซน", 1, 500, 1]] },
+  { id: "trend", title: "กรองเทรนด์", adv: true, fields: [
+    ["htfOn", "bool", false, "ยืนยันเทรนด์ TF ใหญ่"],
+    ["htfTF", "sel", 15, "TF ใหญ่", TFO],
+    ["htfFast", "int", 34, "EMA เร็ว (TF ใหญ่)", 1, 1000, 1],
+    ["htfSlow", "int", 200, "EMA ช้า (TF ใหญ่)", 1, 1000, 1],
+    ["emaCloseStop", "bool", true, "หยุดเข้าเมื่อ EMA ใกล้กัน"],
+    ["emaMinATR", "num", 0.15, "EMA ห่างขั้นต่ำ (x ATR)", 0, 10, 0.01],
+    ["emaMinPts", "int", 50, "EMA ห่างขั้นต่ำ (points)", 0, 200000, 1],
+    ["atrPeriod", "int", 14, "ATR period", 1, 500, 1],
+    ["midOn", "bool", false, "ยืนยัน TF กลาง"],
+    ["midTF", "sel", 5, "TF กลาง", TFO],
+    ["midFast", "int", 34, "EMA เร็ว (TF กลาง)", 1, 1000, 1],
+    ["midSlow", "int", 200, "EMA ช้า (TF กลาง)", 1, 1000, 1]] },
+  { id: "mom", title: "กรอง Momentum", adv: true, toggle: "momOn", fields: [
+    ["momOn", "bool", false, "ต้องมีแรงแต่ชะลอก่อนเข้า"],
+    ["momMinATR", "num", 0.5, "แรงขั้นต่ำเทียบ ATR", 0, 10, 0.01],
+    ["momSlowRatio", "num", 0.7, "แท่งล่าสุดต้องเล็กกว่าแท่งก่อน (x)", 0, 5, 0.01]] },
+  { id: "pend", title: "กรอง RSI / Volume / EMA200", adv: true, toggle: "pfOn", fields: [
+    ["pfOn", "bool", false, "เปิดกรองชุดนี้"],
+    ["rsiOn", "bool", true, "RSI กัน Buy ตอน overbought / Sell ตอน oversold"],
+    ["rsiTF", "sel", 5, "RSI TF", TFO],
+    ["rsiPeriod", "int", 14, "RSI period", 1, 500, 1],
+    ["rsiLookback", "int", 20, "RSI ย้อนดูกี่แท่ง", 1, 500, 1],
+    ["rsiOB", "num", 70, "Overbought", 50, 100, 0.1],
+    ["rsiOS", "num", 30, "Oversold", 0, 50, 0.1],
+    ["volOn", "bool", true, "ต้องมี volume spike"],
+    ["volTF", "sel", 5, "Volume TF", TFO],
+    ["volLookback", "int", 20, "Volume ย้อนดูกี่แท่ง", 1, 500, 1],
+    ["volMult", "num", 1.5, "Volume ต้องมากกว่าค่าเฉลี่ย (x)", 0.1, 20, 0.01],
+    ["ema200On", "bool", true, "Buy เหนือ EMA200 / Sell ใต้ EMA200"],
+    ["ema200TF", "sel", 5, "EMA200 TF", TFO],
+    ["ema200Period", "int", 200, "EMA200 period", 1, 1000, 1],
+    ["emaDistOn", "bool", true, "ไม่สวนเทรนด์เมื่อห่าง EMA เกินกำหนด"],
+    ["emaDistTF", "sel", 5, "EMA ระยะห่าง TF", TFO],
+    ["emaDistPeriod", "int", 200, "EMA ระยะห่าง period", 1, 1000, 1],
+    ["emaDistPts", "int", 7000, "ระยะห่างสูงสุด (points)", 0, 1000000, 1]] },
+  { id: "misc", title: "อื่นๆ", fields: [
+    ["notifyOn", "bool", false, "แจ้งเตือน Push ไปแอป MT5 บนมือถือ"],
+    ["logBlocks", "bool", true, "บันทึก log เหตุผลที่ไม่เข้าไม้"]] }
+];
+const DAYS = [["mon", "จันทร์", "05:30", "03:00"], ["tue", "อังคาร", "05:30", "03:00"], ["wed", "พุธ", "05:30", "03:00"], ["thu", "พฤหัส", "05:30", "03:00"], ["fri", "ศุกร์", "05:30", "19:59"]];
+const CFG_DEF = { startLot: 0.01 };
+CFG_GROUPS.forEach(g => g.fields.forEach(f => { CFG_DEF[f[0]] = f[2]; }));
+DAYS.forEach(([d, , st, en]) => { CFG_DEF[d + "On"] = true; CFG_DEF[d + "Start"] = st; CFG_DEF[d + "End"] = en; });
+
+function fieldHTML(f) {
+  const [k, t, , label, a, b, c] = f;
+  if (t === "bool") return `<label class="sw"><input type="checkbox" data-k="${k}"><span class="track"></span><span>${label}</span></label>`;
+  if (t === "sel") return `<label class="fld"><span>${label}</span><select class="field" data-k="${k}">${a.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("")}</select></label>`;
+  return `<label class="fld"><span>${label}</span><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}"></label>`;
+}
+
+/* ฟอร์มตั้งค่าที่ใช้ซ้ำได้ ทั้งหน้าสมาชิกและหน้าต่างแอดมิน */
+function makeCfgForm(root, groups, getSaved, onChange, open) {
+  const types = {};
+  groups.forEach(g => {
+    g.fields.forEach(f => types[f[0]] = f[1]);
+    if (g.days) DAYS.forEach(([d]) => { types[d + "On"] = "bool"; types[d + "Start"] = "time"; types[d + "End"] = "time"; });
+  });
+  let draft = null;
+  const saved = () => Object.assign({}, CFG_DEF, getSaved() || {});
+  const changed = () => Object.keys(types).filter(k => draft && String(draft[k]) !== String(saved()[k]));
+
+  root.innerHTML = groups.map(g => `
+    <details class="cfg-group" data-g="${g.id}" ${open ? "open" : ""}>
+      <summary>${g.title}${g.adv ? ' <span class="adv-tag">ขั้นสูง</span>' : ""}<span class="cfg-dot" title="มีค่าที่ยังไม่บันทึก"></span><span class="spacer"></span><span class="cfg-sum"></span></summary>
+      <div class="cfg-grid">${g.fields.map(fieldHTML).join("")}</div>
+      ${g.days ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days"><tbody>${DAYS.map(([d, name]) => `
+        <tr><td class="dname">${name}</td>
+          <td><label class="sw"><input type="checkbox" data-k="${d}On" aria-label="เทรดวัน${name}"><span class="track"></span></label></td>
+          <td><input class="field num" type="time" data-k="${d}Start" aria-label="${name} เริ่ม"></td><td class="muted">ถึง</td>
+          <td><input class="field num" type="time" data-k="${d}End" aria-label="${name} หยุด"></td></tr>`).join("")}</tbody></table>
+        <p class="pnote">ใช้เวลาเซิร์ฟเวอร์ของโบรก (ดูได้จากนาฬิกาในหน้าต่างตลาดของ MT5) ถ้าเวลาหยุดน้อยกว่าเวลาเริ่ม แปลว่าเทรดข้ามเที่ยงคืนไปถึงวันถัดไป เสาร์-อาทิตย์ไม่เทรด</p></div>` : ""}
+    </details>`).join("");
+
+  function status() {
+    const ch = changed();
+    groups.forEach(g => {
+      const keys = g.fields.map(f => f[0]).concat(g.days ? DAYS.flatMap(([d]) => [d + "On", d + "Start", d + "End"]) : []);
+      const box = root.querySelector(`.cfg-group[data-g="${g.id}"]`);
+      box.classList.toggle("changed", keys.some(k => ch.includes(k)));
+      const sum = box.querySelector(".cfg-sum");
+      if (g.toggle) { const on = !!draft[g.toggle]; sum.textContent = on ? "เปิด" : "ปิด"; sum.classList.toggle("on", on); }
+      else if (g.id === "main") sum.textContent = `${draft.gridDist} pts × ${draft.lotMult}`;
+      else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
+      else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
+    });
+    onChange(ch);
+  }
+  function onInput(e) {
+    const el = e.target.closest("[data-k]"); if (!el || !draft) return;
+    const k = el.dataset.k, t = types[k];
+    if (t === "bool") draft[k] = el.checked;
+    else if (t === "time") draft[k] = el.value;
+    else if (el.value !== "") draft[k] = Number(el.value);
+    status();
+  }
+  root.addEventListener("input", onInput);
+  root.addEventListener("change", onInput);
+  function fill(force) {
+    if (!force && draft && changed().length) return status();
+    draft = saved();
+    root.querySelectorAll("[data-k]").forEach(el => {
+      const v = draft[el.dataset.k];
+      if (el.type === "checkbox") el.checked = !!v; else el.value = v;
+    });
+    status();
+  }
+  return { fill, changed, get draft() { return draft; } };
+}
+
+/* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
+const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "news" || g.id === "time"),
+  () => dashData && dashData.settings,
+  ch => {
+    $("cfgSave").disabled = !ch.length;
+    $("cfgSave").textContent = ch.length ? `บันทึกการตั้งค่า (${ch.length})` : "บันทึกการตั้งค่า";
+    $("cfgUndo").hidden = !ch.length;
+  }, true);
+const fillCfg = force => userForm.fill(force);
+
+$("cfgUndo").addEventListener("click", () => fillCfg(true));
+$("cfgSave").addEventListener("click", async () => {
+  const ch = userForm.changed(); if (!ch.length) return;
+  const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
+  $("cfgSave").disabled = true;
+  const r = await api("user_settings", { token: session.token, settings });
+  if (!r.ok) { toast(r.error); fillCfg(false); return; }
+  dashData.settings = r.settings;
+  toast("บันทึกการตั้งค่าแล้ว EA จะใช้ภายใน 1 นาที");
+  fillCfg(true); renderDash();
+});
+
+/* ============ ข่าว ============ */
+function renderNews() {
+  const s = cfgSaved(), now = Date.now();
+  const on = !!s.newsOn;
+  $("newsState").textContent = on ? "หลบข่าว: เปิด" : "หลบข่าว: ปิด";
+  $("newsState").className = "pill " + (on ? "active" : "expired");
+  const list = (dashData.news || []).filter(n => n.t + (+s.newsAfter || 0) * 60000 >= now).slice(0, 12);
+  if (!list.length) { $("newsList").innerHTML = `<div class="pempty" style="height:80px">ไม่มีข่าว USD ที่เหลือในสัปดาห์นี้</div>`; return; }
+  const hm = t => new Date(t).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+  $("newsList").innerHTML = list.map(n => {
+    const hit = on && (+s.newsLevel === 1 || n.impact === "High");
+    const a = n.t - s.newsBefore * 60000, b = n.t + s.newsAfter * 60000;
+    const now_ = hit && now >= a && now <= b;
+    const d = new Date(n.t).toLocaleDateString("th-TH", { weekday: "short", day: "numeric" });
+    return `<div class="nrow ${now_ ? "blocking" : ""}">
+      <span class="nt">${d} ${hm(n.t)}</span><span class="imp ${esc(n.impact)}" title="${esc(n.impact)}"></span>
+      <span>${esc(n.title)}</span>
+      <span class="nb">${now_ ? "กำลังหลบข่าว" : hit ? `หยุด ${hm(a)}–${hm(b)}` : "ไม่หลบ"}</span></div>`;
+  }).join("");
+}
+
+
+/* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
+const PLAN_LABEL = { trial: "ทดลองฟรี", month: "รายเดือน", year: "รายปี", life: "ถาวร" };
+const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
+
+function renderNoLicense() {
+  $("planPill").textContent = "ยังไม่มีแพ็กเกจ";
+  $("lDays").textContent = "–"; $("lExp").textContent = "–"; $("planCode").textContent = "–";
+  $("planNote").textContent = "บัญชีนี้ยังไม่มีโค้ดใช้งาน ถ้ามีโค้ดจากแอดมิน ให้ผูกโค้ดด้านล่าง";
+  $("renewBtn").hidden = true;
+}
+
+function renderPlan() {
+  const L = dashData.license, dl = daysLeft(L.expires), life = L.plan === "life";
+  $("planPill").textContent = PLAN_LABEL[L.plan] || L.plan;
+  const bad = L.status !== "active" || (!life && dl <= 0);
+  $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : life ? "ใช้ได้ตลอด" : (dl > 0 ? "เหลือ " + dl + " วัน" : "หมดอายุ");
+  $("lDays").className = "big " + (bad ? "neg" : "");
+  $("lDays").style.color = !bad && !life && dl <= 5 ? "var(--gold)" : "";
+  $("lExp").textContent = life ? "ไม่หมดอายุ" : dateTH(L.expires);
+  $("planCode").textContent = L.code;
+  $("renewBtn").hidden = life;
+  $("renewBtn").textContent = L.plan === "trial" ? "เลือกแพ็กเกจ" : "ต่ออายุ / อัปเกรด";
+  const pays = dashData.payments || [];
+  const pend = pays.find(x => x.status === "pending"), last = pays[0];
+  const note = $("planNote");
+  note.className = "plan-note";
+  if (pend) note.textContent = `ส่งสลิปแพ็กเกจ${PLAN_LABEL[pend.plan]} ${fmt(pend.amount, 0)} บาทแล้ว รอแอดมินตรวจสอบ`;
+  else if (last && last.status === "rejected") { note.className = "plan-note warn"; note.textContent = "สลิปล่าสุดไม่ผ่านการตรวจสอบ" + (last.note ? ": " + last.note : "") + " กรุณาส่งใหม่"; }
+  else if (L.plan === "trial") note.textContent = "ช่วงทดลองใช้ล็อตเริ่มต้นได้สูงสุด 0.01 lot และทดลองได้ 1 ครั้งต่อ 1 บัญชี MT5";
+  else if (!life && dl > 0 && dl <= 5) { note.className = "plan-note warn"; note.textContent = "ใกล้หมดอายุ ต่ออายุตอนนี้ วันที่เหลือจะบวกต่อให้ ไม่หายไปไหน"; }
+  else note.textContent = "";
+}
+$("planCode").addEventListener("click", () => copy($("planCode").textContent));
+
+function renderPort() {
+  const L = dashData.license;
+  document.querySelectorAll(".port-seg button").forEach(b => b.setAttribute("aria-pressed", L.port === b.dataset.port));
+  const w = $("portWarn");
+  w.className = "port-warn"; w.hidden = false;
+  if (!L.port) w.textContent = "ยังไม่ได้เลือก ระบบจะตั้งให้ตามบัญชี MT5 ที่ต่อครั้งแรก";
+  else if (L.currency && isCent(L.currency) !== (L.port === "cent")) {
+    w.className = "port-warn bad";
+    w.textContent = `บัญชี MT5 ที่ต่ออยู่เป็น ${L.currency} แต่เลือกพอร์ต ${L.port === "cent" ? "Cent" : "USD"} อยู่ EA จะหยุดเปิดไม้ใหม่จนกว่าจะเลือกให้ตรงกัน`;
+  } else if (L.currency) w.textContent = `ตรงกับบัญชี MT5 ที่ต่ออยู่ (${L.currency})`;
+  else w.hidden = true;
+}
+document.querySelectorAll(".port-seg button").forEach(b => b.addEventListener("click", async () => {
+  const port = b.dataset.port;
+  if (dashData.license.port === port) return;
+  const r = await api("user_port", { token: session.token, port });
+  if (!r.ok) { toast(r.error); return; }
+  dashData.license.port = r.port; dashData.settings = r.settings;
+  toast("เปลี่ยนเป็นพอร์ต " + (port === "cent" ? "Cent" : "USD") + " แล้ว EA จะใช้ภายใน 1 นาที");
+  renderDash();
+}));
+
+$("claimIn").addEventListener("input", e => {
+  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (v.startsWith("GS")) v = v.slice(2);
+  v = v.slice(0, 8);
+  e.target.value = v ? "GS-" + v.slice(0, 4) + (v.length > 4 ? "-" + v.slice(4) : "") : "";
+});
+$("claimBtn").addEventListener("click", async () => {
+  const code = $("claimIn").value.trim();
+  if (code.length < 12) { toast("โค้ดต้องมีรูปแบบ GS-XXXX-XXXX"); return; }
+  if (!confirm("ผูกโค้ด " + code + " กับบัญชีนี้? หน้าสมาชิกจะแสดงข้อมูลของโค้ดนี้แทนโค้ดเดิม")) return;
+  const r = await api("claim_code", { token: session.token, code });
+  if (!r.ok) { toast(r.error); return; }
+  $("claimIn").value = ""; toast("ผูกโค้ดแล้ว"); loadMe();
+});
+
+/* PromptPay QR (EMVCo) */
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+  }
+  return crc.toString(16).toUpperCase().padStart(4, "0");
+}
+function ppPayload(id, amount) {
+  const f = (tag, v) => tag + String(v.length).padStart(2, "0") + v;
+  id = String(id).replace(/[^0-9]/g, "");
+  const acc = id.length >= 13 ? f("02", id) : f("01", ("0000000000000" + id.replace(/^0/, "66")).slice(-13));
+  const p = f("00", "01") + f("01", amount ? "12" : "11") + f("29", f("00", "A000000677010111") + acc)
+          + f("58", "TH") + f("53", "764") + (amount ? f("54", Number(amount).toFixed(2)) : "") + "6304";
+  return p + crc16(p);
+}
+
+let payPlan = null, slipData = null;
+function openPay() {
+  const plans = dashData.plans || [];
+  const cur = dashData.license && dashData.license.plan;
+  payPlan = plans.find(x => x.id === (cur === "year" ? "year" : cur === "month" ? "month" : "year")) || plans[0];
+  $("planOpts").innerHTML = plans.map(x => {
+    const sub = x.id === "month" ? "30 วัน" : x.id === "year" ? `365 วัน (เดือนละ ${fmt(x.price / 12, 0)})` : "จ่ายครั้งเดียว ใช้ได้ตลอด";
+    return `<button type="button" class="plan-opt" data-plan="${x.id}"><span>${esc(x.label)}</span><b>${fmt(x.price, 0)} ฿</b><span>${sub}</span></button>`;
+  }).join("");
+  slipData = null; $("slipIn").value = ""; $("slipPrev").hidden = true; $("slipText").textContent = "แนบรูปสลิปการโอน";
+  renderPayBox();
+  $("payDlg").showModal();
+}
+function renderPayBox() {
+  document.querySelectorAll(".plan-opt").forEach(b => b.setAttribute("aria-pressed", payPlan && b.dataset.plan === payPlan.id));
+  const pay = dashData.pay || {}, amt = payPlan ? payPlan.price : 0;
+  $("payAmt").textContent = fmt(amt, 0) + " ฿";
+  $("payTo").textContent = pay.promptpay ? `พร้อมเพย์ ${pay.promptpay}${pay.payName ? " (" + pay.payName + ")" : ""}` : "";
+  const qr = $("payQR"); qr.innerHTML = "";
+  if (!pay.promptpay) qr.innerHTML = `<div class="muted">ยังไม่ได้ตั้งเลขพร้อมเพย์ ติดต่อแอดมินเพื่อรับเลขบัญชี</div>`;
+  else if (window.QRCode) new QRCode(qr, { text: ppPayload(pay.promptpay, amt), width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+  else qr.innerHTML = `<div class="muted">โหลด QR ไม่ได้ โอนเข้าพร้อมเพย์ ${esc(pay.promptpay)}</div>`;
+  $("paySend").disabled = !slipData || !payPlan;
+}
+$("renewBtn").addEventListener("click", openPay);
+$("planOpts").addEventListener("click", e => {
+  const b = e.target.closest(".plan-opt"); if (!b) return;
+  payPlan = dashData.plans.find(x => x.id === b.dataset.plan); renderPayBox();
+});
+function shrinkImage(file, max = 1400, q = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", q));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("เปิดรูปไม่ได้")); };
+    img.src = url;
+  });
+}
+$("slipIn").addEventListener("change", async () => {
+  const f = $("slipIn").files[0]; if (!f) return;
+  try {
+    slipData = await shrinkImage(f);
+    $("slipPrev").src = slipData; $("slipPrev").hidden = false; $("slipText").textContent = f.name + " (กดเพื่อเปลี่ยนรูป)";
+  } catch (err) { slipData = null; toast("เปิดรูปไม่ได้ ลองเลือกไฟล์ภาพอื่น"); }
+  renderPayBox();
+});
+$("paySend").addEventListener("click", async () => {
+  if (!slipData || !payPlan) return;
+  $("paySend").disabled = true; $("paySend").textContent = "กำลังส่ง…";
+  const r = await api("pay_submit", { token: session.token, plan: payPlan.id, slip: slipData });
+  $("paySend").textContent = "ส่งสลิป";
+  if (!r.ok) { toast(r.error); renderPayBox(); return; }
+  $("payDlg").close();
+  toast("ส่งสลิปแล้ว รอแอดมินตรวจสอบ");
+  loadMe();
+});
+
 /* ============ admin ============ */
 let lics = [], editCode = null, pickDays = 30;
 
@@ -589,6 +1418,7 @@ async function loadLics() {
   const r = await api("admin_list", { pass: session.pass });
   if (!r.ok) { toast(r.error); return; }
   lics = r.licenses;
+  $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || "";
   renderLics();
 }
 
@@ -609,9 +1439,10 @@ function renderLics() {
     const [st, stTxt] = licState(l); const dl = daysLeft(l.expires);
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
-      <td>${esc(l.name)}${l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
+      <td>${esc(l.name)}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
       <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</td>
-      <td class="num" style="${dl <= 5 && dl > 0 ? "color:var(--gold)" : ""}">${dl > 0 ? dl + " วัน" : "–"}</td>
+      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}</td>
+      <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td><span class="pill ${st}">${stTxt}</span></td>
       <td><span class="dot ${l.online ? "on" : ""}" style="display:inline-block" title="${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
       <td class="num">${l.equity != null ? fmt(l.equity) : '<span class="muted">–</span>'}</td>
@@ -620,7 +1451,7 @@ function renderLics() {
         <button class="btn small" data-act="${l.status === "active" ? "suspend" : "activate"}" data-code="${esc(l.code)}">${l.status === "active" ? "ระงับ" : "เปิดใช้"}</button>
         <button class="btn small" data-act="settings" data-code="${esc(l.code)}">ตั้งค่า</button>
       </div></td></tr>`;
-  }).join("") : `<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">${q ? "ไม่พบโค้ดที่ตรงกับคำค้นหา" : "ยังไม่มีโค้ด ออกโค้ดแรกจากฟอร์มด้านซ้าย"}</td></tr>`;
+  }).join("") : `<tr><td colspan="9" class="muted" style="text-align:center;padding:28px">${q ? "ไม่พบโค้ดที่ตรงกับคำค้นหา" : "ยังไม่มีโค้ด ออกโค้ดแรกจากฟอร์มด้านซ้าย"}</td></tr>`;
 }
 
 $("search").addEventListener("input", renderLics);
@@ -634,7 +1465,7 @@ document.querySelectorAll("#dayChips .chip").forEach(c => c.addEventListener("cl
 $("createForm").addEventListener("submit", async e => {
   e.preventDefault();
   $("createBtn").disabled = true;
-  const r = await api("admin_create", { pass: session.pass, name: $("cName").value.trim(), days: pickDays, account: $("cAcct").value.trim(), note: $("cNote").value.trim() });
+  const r = await api("admin_create", { pass: session.pass, name: $("cName").value.trim(), plan: $("cPlan").value, days: $("cPlan").value === "trial" ? 15 : pickDays, account: $("cAcct").value.trim(), note: $("cNote").value.trim() });
   $("createBtn").disabled = false;
   if (!r.ok) { toast(r.error); return; }
   $("issuedCode").textContent = r.code; $("issued").hidden = false;
@@ -667,17 +1498,21 @@ async function runAct(act, code) {
   loadLics();
 }
 
-const SET_KEYS = ["startLot", "gridDist", "lotMult", "maxOrders", "basketTP"];
+let admLic = null;
+const ADMIN_GROUPS = [{ id: "lot", title: "ล็อตเริ่มต้น", fields: [["startLot", "num", 0.01, "ล็อตเริ่มต้น", 0.01, 100, 0.01]] }].concat(CFG_GROUPS);
+const admForm = makeCfgForm($("admCfg"), ADMIN_GROUPS, () => admLic && admLic.settings,
+  ch => { $("setSave").textContent = ch.length ? `บันทึกการตั้งค่า (${ch.length})` : "บันทึกการตั้งค่า"; }, false);
 function openSettings(code) {
-  const l = lics.find(x => x.code === code); editCode = code;
-  $("setFor").textContent = code + " — " + (l.name || "");
-  $("dlgReset").hidden = !l.account;
-  SET_KEYS.forEach(k => $("s" + k[0].toUpperCase() + k.slice(1)).value = l.settings[k]);
+  admLic = lics.find(x => x.code === code); editCode = code;
+  $("setFor").textContent = code + " — " + (admLic.name || "");
+  $("dlgReset").hidden = !admLic.account;
+  admForm.fill(true);
   $("setDlg").showModal();
 }
 $("setDlg").addEventListener("close", async () => {
   if ($("setDlg").returnValue !== "save") return;
-  const settings = {}; SET_KEYS.forEach(k => settings[k] = Number($("s" + k[0].toUpperCase() + k.slice(1)).value));
+  const ch = admForm.changed(); if (!ch.length) return;
+  const settings = {}; ch.forEach(k => settings[k] = admForm.draft[k]);
   const r = await api("admin_update", { pass: session.pass, code: editCode, settings });
   toast(r.ok ? "บันทึกการตั้งค่าแล้ว" : r.error);
   if (r.ok) loadLics();
@@ -691,12 +1526,95 @@ $("copyMyCode").addEventListener("click", () => copy($("myCode").textContent));
 let setupTouched = false;
 $("setupBox").addEventListener("toggle", () => { setupTouched = true; });
 
+
+/* ============ admin: แท็บ / การชำระเงิน / ตั้งค่าร้าน ============ */
+let pays = [], payFilter = "pending";
+document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".adm-tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  ["codes", "pays", "shop"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  if (b.dataset.atab === "pays") loadPays();
+  if (b.dataset.atab === "shop") loadShop();
+}));
+
+async function loadPays() {
+  const r = await api("admin_payments", { pass: session.pass });
+  if (!r.ok) { toast(r.error); return; }
+  pays = r.payments; renderPays();
+}
+document.querySelectorAll("[data-pf]").forEach(b => b.addEventListener("click", () => {
+  payFilter = b.dataset.pf;
+  document.querySelectorAll("[data-pf]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderPays();
+}));
+$("payRefresh").addEventListener("click", loadPays);
+
+function renderPays() {
+  const rows = pays.filter(x => payFilter === "all" || x.status === "pending");
+  const ST = { pending: "รอตรวจ", approved: "อนุมัติแล้ว", rejected: "ไม่ผ่าน" };
+  $("payBody").innerHTML = rows.length ? rows.map(x => `<tr>
+    <td class="num">${new Date(x.created).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+    <td>${esc(x.login)}</td><td class="code-cell">${esc(x.code)}</td><td>${esc(x.planLabel)}</td>
+    <td class="num">${fmt(x.amount, 0)} ฿</td>
+    <td><span class="pill ${esc(x.status)}">${ST[x.status] || esc(x.status)}</span>${x.note ? `<div class="muted" style="font-size:12px">${esc(x.note)}</div>` : ""}</td>
+    <td><div class="actions">
+      <button class="btn small" data-pay="slip" data-id="${esc(x.id)}">ดูสลิป</button>
+      ${x.status === "pending" ? `<button class="btn small primary" data-pay="ok" data-id="${esc(x.id)}">อนุมัติ</button>
+      <button class="btn small ghost" data-pay="no" data-id="${esc(x.id)}" style="color:var(--red)">ไม่ผ่าน</button>` : ""}
+    </div></td></tr>`).join("")
+    : `<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">${payFilter === "pending" ? "ไม่มีสลิปที่รอตรวจ" : "ยังไม่มีรายการชำระเงิน"}</td></tr>`;
+}
+$("payBody").addEventListener("click", async e => {
+  const b = e.target.closest("[data-pay]"); if (!b) return;
+  const x = pays.find(p => p.id === b.dataset.id); if (!x) return;
+  if (b.dataset.pay === "slip") {
+    b.disabled = true;
+    const r = await api("admin_slip", { pass: session.pass, id: x.id });
+    b.disabled = false;
+    if (!r.ok) { toast(r.error); return; }
+    $("slipImg").src = r.image; $("slipDlg").showModal(); return;
+  }
+  let body = { pass: session.pass, id: x.id };
+  if (b.dataset.pay === "ok") {
+    if (!confirm(`อนุมัติ ${x.login} แพ็กเกจ${x.planLabel} ${fmt(x.amount, 0)} บาท? โค้ด ${x.code} จะต่ออายุทันที`)) return;
+    body.approve = true;
+  } else {
+    const note = prompt("เหตุผลที่ไม่ผ่าน (สมาชิกจะเห็นข้อความนี้)", "ยอดโอนไม่ตรง / ไม่พบรายการโอน");
+    if (note === null) return;
+    body.approve = false; body.note = note;
+  }
+  const r = await api("admin_pay_decide", body);
+  if (!r.ok) { toast(r.error); return; }
+  toast(body.approve ? "อนุมัติแล้ว ต่ออายุโค้ดให้แล้ว" : "บันทึกว่าไม่ผ่านแล้ว");
+  loadPays(); loadLics();
+});
+
+async function loadShop() {
+  const r = await api("admin_config", { pass: session.pass });
+  if (!r.ok) { toast(r.error); return; }
+  const c = r.config;
+  $("shopMonth").value = c.prices.month; $("shopYear").value = c.prices.year; $("shopLife").value = c.prices.life;
+  $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
+  $("shopTPc").value = c.port.cent.basketTP; $("shopTPu").value = c.port.usd.basketTP;
+  $("shopCLc").value = c.port.cent.cutLoss; $("shopCLu").value = c.port.usd.cutLoss;
+}
+$("shopSave").addEventListener("click", async () => {
+  const config = {
+    prices: { month: +$("shopMonth").value, year: +$("shopYear").value, life: +$("shopLife").value },
+    promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
+    port: { cent: { basketTP: +$("shopTPc").value, cutLoss: +$("shopCLc").value },
+            usd:  { basketTP: +$("shopTPu").value, cutLoss: +$("shopCLu").value } }
+  };
+  const r = await api("admin_config_set", { pass: session.pass, config });
+  toast(r.ok ? "บันทึกการตั้งค่าร้านแล้ว" : r.error);
+  if (r.ok) loadShop();
+});
+
 /* ============ boot ============ */
 $("demoTag").hidden = !!API_URL;
 (async () => {
-  const a = store.get("gs_admin"), c = store.get("gs_code");
+  const a = store.get("gs_admin"), t = store.get("gs_token");
   if (a) { const r = await api("admin_login", { pass: a }); if (r.ok) { session = { mode: "admin", pass: a }; return openAdmin(); } }
-  if (c) return openDashboard(c);
+  if (t) return openMember(t);
   show("loginView");
 })();
 </script>
