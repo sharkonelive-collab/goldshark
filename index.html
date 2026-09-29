@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GoldShark — แดชบอร์ด EA</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦈</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== ตั้งค่า: ใส่ URL เว็บแอป Apps Script ที่ลงท้าย /exec  (ว่างไว้ = โหมดตัวอย่าง) ===== */
+:root{
+  --ink:#0F1622;      /* พื้นหลัง น้ำทะเลลึก */
+  --deep:#0A1019;     /* ช่องข้อมูลที่จมลงไป */
+  --panel:#162132;
+  --line:#26344A;
+  --text:#E8ECF2;
+  --muted:#8A96A8;
+  --red:#E0313F;      /* สีแบรนด์ */
+  --gold:#D9AE52;     /* เส้น equity ทอง */
+  --green:#3FB68B;
+  --r:6px;
+  --display:"Chakra Petch", "IBM Plex Sans Thai", system-ui, sans-serif;
+  --body:"IBM Plex Sans Thai", "Chakra Petch", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.pos{color:var(--green)} .neg{color:var(--red)}
+.wrap{max-width:1120px;margin:0 auto;padding:20px}
+[hidden]{display:none!important}
+
+/* ---------- top bar ---------- */
+.bar{display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.logo{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+.fin{width:26px;height:22px;flex:none}
+.bar .spacer{flex:1}
+.demo-tag{font-size:12px;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 10px}
+
+/* ---------- buttons & inputs ---------- */
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:9px 16px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;width:100%}
+.field:focus{border-color:var(--gold);outline:none}
+
+/* ---------- login ---------- */
+.login{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:24px}
+.login-box{width:100%;max-width:420px}
+.login h1{font-family:var(--display);font-size:40px;line-height:1.05;margin:0 0 8px;font-weight:700}
+.login p{margin:0 0 28px;color:var(--muted)}
+.code-input{font-family:var(--display);font-size:24px;letter-spacing:.12em;text-transform:uppercase;text-align:center;padding:14px}
+.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;cursor:pointer;color:var(--muted)}
+.tab[aria-selected="true"]{color:var(--text);border-color:var(--red)}
+.err{color:var(--red);font-size:14px;min-height:22px;margin-top:10px}
+
+/* ---------- dashboard ---------- */
+.hero{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin:8px 0 18px}
+.eq-label{color:var(--muted);font-size:14px}
+.eq{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,68px);line-height:1;font-variant-numeric:tabular-nums}
+.eq-sub{margin-top:8px;font-size:15px}
+.status{display:flex;align-items:center;gap:8px;justify-content:flex-end;font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(63,182,139,.18)}
+.dot.off{background:var(--red)}
+
+.chart-box{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:14px 14px 8px}
+.chart-head{display:flex;align-items:center;gap:14px;margin-bottom:6px;font-size:13px;color:var(--muted)}
+.chart-head .spacer{flex:1}
+.key{display:inline-flex;align-items:center;gap:6px}
+.key i{width:14px;height:3px;display:inline-block;border-radius:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.seg button{background:none;border:0;padding:4px 10px;cursor:pointer;color:var(--muted);font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--text)}
+svg.curve{width:100%;height:260px;display:block}
+.chart-empty{height:260px;display:grid;place-items:center;color:var(--muted);text-align:center}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.card{background:var(--panel);border-radius:var(--r);padding:16px}
+.card h3{margin:0 0 12px;font-family:var(--display);font-weight:600;font-size:16px;display:flex;justify-content:space-between;align-items:baseline}
+.side-buy{border-top:3px solid var(--green)}
+.side-sell{border-top:3px solid var(--red)}
+.side-lic{border-top:3px solid var(--gold)}
+.big{font-family:var(--display);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.rows{margin-top:10px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.rows dt{color:var(--muted)} .rows dd{margin:0;text-align:right;font-family:var(--display);font-variant-numeric:tabular-nums}
+.settings-strip{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;color:var(--muted);padding:12px 0;border-top:1px solid var(--line)}
+.settings-strip b{color:var(--text);font-family:var(--display);font-weight:600;margin-left:6px}
+.foot-note{font-size:13px;color:var(--muted);margin-top:18px}
+
+/* ---------- admin ---------- */
+.admin-top{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
+.admin-top>section{min-width:0}
+#adminView{max-width:1400px}
+.form-grid{display:grid;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--deep);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px}
+.chip[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.issued{background:var(--deep);border:1px dashed var(--gold);border-radius:var(--r);padding:14px;margin-top:14px}
+.issued .code{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:.08em;color:var(--gold)}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:14px}
+.stats div{font-size:13px;color:var(--muted)}
+.stats b{display:block;font-family:var(--display);font-size:26px;color:var(--text)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:860px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);background:var(--deep);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.actions{flex-wrap:nowrap!important}
+.code-copy{border:0;padding:4px 6px;font-family:var(--display);font-weight:600;letter-spacing:.04em}
+.danger-zone{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td.code-cell{font-family:var(--display);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px}
+.pill.active{background:rgba(63,182,139,.15);color:var(--green)}
+.pill.suspended{background:rgba(224,49,63,.15);color:var(--red)}
+.pill.expired{background:rgba(138,150,168,.15);color:var(--muted)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.search{max-width:260px}
+
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r);padding:22px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(5,8,14,.7)}
+dialog h3{margin:0 0 4px;font-family:var(--display)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--ink);padding:10px 18px;border-radius:var(--r);font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+@media (max-width:860px){
+  .grid3{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .status{justify-content:flex-start}
+  .admin-top{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="logo">
+    <svg class="fin" viewBox="0 0 26 22" aria-hidden="true"><path d="M1 21 C8 16 11 8 12 1 C16 7 21 14 25 21 Z" fill="#E0313F"/></svg>
+    GOLDSHARK
+  </div>
+  <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
+  <div class="spacer"></div>
+  <span class="muted" id="whoami"></span>
+  <button class="btn small ghost" id="logoutBtn" hidden>ออกจากระบบ</button>
+</header>
+
+<!-- ================= LOGIN ================= -->
+<main id="loginView" class="login">
+  <div class="login-box">
+    <h1>ดูพอร์ต EA<br>ของคุณแบบสด</h1>
+    <p>ใส่โค้ดที่ได้รับตอนซื้อ EA เพื่อดู equity ไม้ที่เปิดอยู่ และวันหมดอายุ</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="user">ลูกค้า</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="admin">แอดมิน</button>
+    </div>
+    <form id="userForm">
+      <label for="codeIn">โค้ดใช้งาน</label>
+      <input id="codeIn" class="field code-input" placeholder="GS-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="12">
+      <button class="btn primary" style="width:100%;margin-top:14px" type="submit">เปิดแดชบอร์ด</button>
+    </form>
+    <form id="adminForm" hidden>
+      <label for="passIn">รหัสแอดมิน</label>
+      <input id="passIn" class="field" type="password" autocomplete="current-password">
+      <button class="btn primary" style="width:100%;margin-top:14px" type="submit">เข้าแผงแอดมิน</button>
+    </form>
+    <div class="err" id="loginErr" role="alert"></div>
+  </div>
+</main>
+
+<!-- ================= CUSTOMER DASHBOARD ================= -->
+<main id="dashView" class="wrap" hidden>
+  <section class="hero">
+    <div>
+      <div class="eq-label">Equity</div>
+      <div class="eq" id="dEq">–</div>
+      <div class="eq-sub" id="dFloat"></div>
+    </div>
+    <div>
+      <div class="status"><span class="dot" id="dDot"></span><span id="dOnline">–</span></div>
+      <div class="status muted" id="dAcct" style="margin-top:6px"></div>
+    </div>
+  </section>
+
+  <section class="chart-box">
+    <div class="chart-head">
+      <span class="key"><i style="background:var(--gold)"></i>Equity</span>
+      <span class="key"><i style="background:var(--muted)"></i>Balance</span>
+      <span class="key"><i style="background:rgba(224,49,63,.5)"></i>ส่วนต่าง (ลอย)</span>
+      <span class="spacer"></span>
+      <div class="seg" role="group" aria-label="ช่วงเวลา">
+        <button data-range="1" aria-pressed="false">24 ชม.</button>
+        <button data-range="7" aria-pressed="true">7 วัน</button>
+      </div>
+    </div>
+    <div id="chart"></div>
+  </section>
+
+  <section class="grid3">
+    <div class="card side-buy">
+      <h3>ตะกร้า Buy <span class="muted num" id="bCount" style="font-size:14px"></span></h3>
+      <div class="big" id="bPL">–</div>
+      <dl class="rows"><dt>ล็อตรวม</dt><dd id="bLots">–</dd></dl>
+    </div>
+    <div class="card side-sell">
+      <h3>ตะกร้า Sell <span class="muted num" id="sCount" style="font-size:14px"></span></h3>
+      <div class="big" id="sPL">–</div>
+      <dl class="rows"><dt>ล็อตรวม</dt><dd id="sLots">–</dd></dl>
+    </div>
+    <div class="card side-lic">
+      <h3>โค้ดใช้งาน</h3>
+      <div class="big" id="lDays">–</div>
+      <dl class="rows">
+        <dt>หมดอายุ</dt><dd id="lExp">–</dd>
+        <dt>Drawdown</dt><dd id="lDD">–</dd>
+        <dt>Spread</dt><dd id="lSpread">–</dd>
+        <dt>สถานะ EA</dt><dd id="lTrade" style="font-family:var(--body)">–</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div class="settings-strip" id="setStrip"></div>
+  <p class="foot-note">ข้อมูลอัปเดตอัตโนมัติทุก 30 วินาที ตามที่ EA ส่งขึ้นมา การเทรดมีความเสี่ยง ผลในอดีตไม่รับประกันผลในอนาคต</p>
+</main>
+
+<!-- ================= ADMIN ================= -->
+<main id="adminView" class="wrap" hidden>
+  <div class="admin-top">
+    <section class="card">
+      <h3>ออกโค้ดใหม่</h3>
+      <form id="createForm" class="form-grid">
+        <div><label for="cName">ชื่อลูกค้า</label><input id="cName" class="field" required></div>
+        <div>
+          <label>อายุโค้ด</label>
+          <div class="chips" id="dayChips">
+            <button type="button" class="chip" data-days="7" aria-pressed="false">7 วัน</button>
+            <button type="button" class="chip" data-days="30" aria-pressed="true">30 วัน</button>
+            <button type="button" class="chip" data-days="90" aria-pressed="false">90 วัน</button>
+            <button type="button" class="chip" data-days="365" aria-pressed="false">1 ปี</button>
+          </div>
+        </div>
+        <div><label for="cAcct">เลขบัญชี MT5 (เว้นว่าง = ผูกอัตโนมัติตอน EA เชื่อมครั้งแรก)</label><input id="cAcct" class="field" inputmode="numeric"></div>
+        <div><label for="cNote">หมายเหตุ</label><input id="cNote" class="field"></div>
+        <button class="btn primary" type="submit" id="createBtn">ออกโค้ด</button>
+      </form>
+      <div class="issued" id="issued" hidden>
+        <div class="muted" style="font-size:13px">ออกโค้ดแล้ว ส่งให้ลูกค้าได้เลย</div>
+        <div class="code" id="issuedCode"></div>
+        <button class="btn small" id="copyIssued" style="margin-top:8px">คัดลอกโค้ด</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="stats" id="stats"></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center">
+        <input class="field search" id="search" placeholder="ค้นหาโค้ด ชื่อ หรือเลขบัญชี">
+        <span class="spacer" style="flex:1"></span>
+        <button class="btn small" id="refreshBtn">รีเฟรช</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>โค้ด</th><th>ลูกค้า</th><th>บัญชี</th><th>เหลือ</th><th>สถานะ</th><th>EA</th><th>Equity</th><th></th></tr></thead>
+          <tbody id="licBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<dialog id="setDlg">
+  <form method="dialog" id="setForm">
+    <h3>ตั้งค่า EA จากเว็บ</h3>
+    <p class="muted" style="margin:0 0 14px;font-size:14px" id="setFor"></p>
+    <div class="two">
+      <div><label for="sStartLot">ล็อตเริ่มต้น</label><input class="field num" id="sStartLot" type="number" step="0.01" min="0.01"></div>
+      <div><label for="sGridDist">ระยะแก้ไม้ (points)</label><input class="field num" id="sGridDist" type="number" step="1" min="1"></div>
+      <div><label for="sLotMult">ตัวคูณล็อต</label><input class="field num" id="sLotMult" type="number" step="0.01" min="1"></div>
+      <div><label for="sMaxOrders">ไม้สูงสุด</label><input class="field num" id="sMaxOrders" type="number" step="1" min="0"></div>
+      <div><label for="sBasketTP">TP ตะกร้า</label><input class="field num" id="sBasketTP" type="number" step="0.01" min="0.01"></div>
+    </div>
+    <p class="muted" style="font-size:13px;margin:12px 0 0">EA จะรับค่าใหม่ในรอบ heartbeat ถัดไป (ประมาณ 1 นาที)</p>
+    <div class="danger-zone">
+      <button type="button" class="btn small" id="dlgReset">ย้ายบัญชี MT5</button>
+      <button type="button" class="btn small ghost" id="dlgDelete" style="color:var(--red)">ลบโค้ด</button>
+    </div>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
+      <button class="btn primary" value="save" id="setSave">บันทึกการตั้งค่า</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============ ตั้งค่า ============ */
+const API_URL = "https://script.google.com/macros/s/AKfycbyP4XOua5eLHuRoR8_r810t-GwNzOkLVDNjVCkf_gmp7DMXn6wlsyf4N1O-Qbji50c/exec";   // ← ใส่ URL เว็บแอป Apps Script (…/exec) ว่างไว้ = โหมดตัวอย่าง
+const REFRESH_MS = 30000;
+
+/* ============ utils ============ */
+const $ = id => document.getElementById(id);
+const fmt = (n, d = 2) => (n == null || isNaN(n)) ? "–" : Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const signed = n => (n > 0 ? "+" : "") + fmt(n);
+const cls = n => n > 0 ? "pos" : (n < 0 ? "neg" : "");
+const dateTH = ms => ms ? new Date(ms).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" }) : "–";
+const daysLeft = ms => Math.ceil((ms - Date.now()) / 86400000);
+function ago(ms) {
+  const s = Math.round((Date.now() - ms) / 1000);
+  if (s < 60) return s + " วินาทีก่อน";
+  if (s < 3600) return Math.round(s / 60) + " นาทีก่อน";
+  if (s < 86400) return Math.round(s / 3600) + " ชม. ก่อน";
+  return Math.round(s / 86400) + " วันก่อน";
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2200); }
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} }
+};
+
+/* ============ API ============ */
+async function api(action, data = {}) {
+  if (!API_URL) return demoApi(action, data);
+  try {
+    const r = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, ...data }) });
+    return await r.json();
+  } catch (e) {
+    return { ok: false, error: "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่" };
+  }
+}
+
+/* ============ demo data ============ */
+const demo = (() => {
+  const now = Date.now();
+  const mk = (code, name, acct, days, status, eq) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 200, basketTP: 100 } });
+  const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55), mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1), mk("GS-ZX8C-QT3L", "คุณบอส", "", 88, "active", null), mk("GS-H2MB-8YUD", "คุณเจ", "33190284", -3, "active", null), mk("GS-W6JF-KR5P", "ทดสอบ", "71002231", 12, "suspended", 998.4)];
+  const hist = []; let b = 10000, e = 10000;
+  for (let i = 7 * 288; i >= 0; i--) {
+    const t = now - i * 300000;
+    const cyc = Math.sin(i / 37) * 180 + Math.sin(i / 11) * 60;
+    if (i % 150 === 0) b += 55 + Math.random() * 40;
+    e = b - Math.max(0, cyc) - Math.random() * 25;
+    hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
+  }
+  return { lics, hist };
+})();
+
+function demoApi(action, d) {
+  const L = demo.lics;
+  return new Promise(res => setTimeout(() => {
+    if (action === "dashboard") {
+      const lic = L.find(l => l.code === String(d.code).toUpperCase());
+      if (!lic) return res({ ok: false, error: "ไม่พบโค้ดนี้ ตรวจสอบตัวอักษรอีกครั้ง (ลอง GS-7KQ2-M9XA)" });
+      const last = demo.hist[demo.hist.length - 1];
+      return res({ ok: true, license: lic, settings: lic.settings, history: demo.hist,
+        snapshot: { time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.1", tradeStatus: "พร้อมเทรด" } });
+    }
+    if (action.startsWith("admin_")) {
+      if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
+      if (action === "admin_login") return res({ ok: true });
+      if (action === "admin_list") return res({ ok: true, licenses: L });
+      if (action === "admin_create") {
+        const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", p = () => Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
+        const code = "GS-" + p() + "-" + p();
+        L.unshift({ code, name: d.name, account: d.account || "", expires: Date.now() + d.days * 86400000, status: "active", created: Date.now(), equity: null, online: false, settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 200, basketTP: 100 } });
+        return res({ ok: true, code });
+      }
+      const lic = L.find(l => l.code === d.code);
+      if (action === "admin_update" && lic) {
+        if (d.status) lic.status = d.status;
+        if (d.addDays) lic.expires = Math.max(lic.expires, Date.now()) + d.addDays * 86400000;
+        if (d.resetAccount) lic.account = "";
+        if (d.settings) Object.assign(lic.settings, d.settings);
+        return res({ ok: true });
+      }
+      if (action === "admin_delete") { L.splice(L.indexOf(lic), 1); return res({ ok: true }); }
+    }
+    res({ ok: false, error: "ไม่รู้จักคำสั่งนี้" });
+  }, 250));
+}
+
+/* ============ views ============ */
+let session = { mode: null, code: null, pass: null };
+let dashData = null, range = 7, timer = null;
+
+function show(view) {
+  ["loginView", "dashView", "adminView"].forEach(v => $(v).hidden = v !== view);
+  $("logoutBtn").hidden = view === "loginView";
+}
+
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  $("userForm").hidden = t.dataset.tab !== "user";
+  $("adminForm").hidden = t.dataset.tab !== "admin";
+  $("loginErr").textContent = "";
+}));
+
+$("codeIn").addEventListener("input", e => {
+  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (v.startsWith("GS")) v = v.slice(2);
+  v = v.slice(0, 8);
+  e.target.value = "GS-" + v.slice(0, 4) + (v.length > 4 ? "-" + v.slice(4) : "");
+  if (v.length === 0) e.target.value = "";
+});
+
+$("userForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = $("codeIn").value.trim().toUpperCase();
+  if (code.length < 12) { $("loginErr").textContent = "โค้ดต้องมีรูปแบบ GS-XXXX-XXXX"; return; }
+  await openDashboard(code);
+});
+
+$("adminForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const pass = $("passIn").value;
+  const r = await api("admin_login", { pass });
+  if (!r.ok) { $("loginErr").textContent = r.error; return; }
+  session = { mode: "admin", pass };
+  store.set("gs_admin", pass);
+  openAdmin();
+});
+
+$("logoutBtn").addEventListener("click", () => {
+  clearInterval(timer);
+  store.del("gs_code"); store.del("gs_admin");
+  session = { mode: null };
+  $("whoami").textContent = "";
+  $("loginErr").textContent = "";
+  show("loginView");
+});
+
+/* ============ customer dashboard ============ */
+async function openDashboard(code) {
+  const r = await api("dashboard", { code });
+  if (!r.ok) { $("loginErr").textContent = r.error; show("loginView"); return; }
+  session = { mode: "user", code };
+  store.set("gs_code", code);
+  $("whoami").textContent = code;
+  dashData = r;
+  renderDash();
+  show("dashView");
+  clearInterval(timer);
+  timer = setInterval(async () => {
+    const x = await api("dashboard", { code });
+    if (x.ok) { dashData = x; renderDash(); }
+  }, REFRESH_MS);
+}
+
+function renderDash() {
+  const { license: L, snapshot: S, settings: C } = dashData;
+  if (S) {
+    const fl = S.equity - S.balance;
+    $("dEq").textContent = fmt(S.equity);
+    $("dFloat").innerHTML = `Balance <span class="num">${fmt(S.balance)}</span> &nbsp; ลอย <span class="num ${cls(fl)}">${signed(fl)}</span>`;
+    $("dDot").className = "dot " + (S.online ? "on" : "off");
+    $("dOnline").textContent = (S.online ? "EA ออนไลน์" : "EA ออฟไลน์") + " อัปเดต " + ago(S.time);
+    $("dAcct").textContent = [S.broker, L.account ? "บัญชี " + L.account : ""].filter(Boolean).join(" / ");
+    $("bPL").textContent = signed(S.buyPL); $("bPL").className = "big " + cls(S.buyPL);
+    $("sPL").textContent = signed(S.sellPL); $("sPL").className = "big " + cls(S.sellPL);
+    $("bCount").textContent = S.buyCount + " ไม้"; $("sCount").textContent = S.sellCount + " ไม้";
+    $("bLots").textContent = fmt(S.buyLots); $("sLots").textContent = fmt(S.sellLots);
+    $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
+    $("lTrade").textContent = S.tradeStatus || "–";
+  } else {
+    $("dEq").textContent = "–";
+    $("dFloat").textContent = "EA ยังไม่เคยส่งข้อมูลขึ้นมา ติดตั้ง EA แล้วใส่โค้ดนี้ในช่อง LicenseCode";
+    $("dDot").className = "dot off"; $("dOnline").textContent = "ยังไม่เชื่อมต่อ";
+  }
+  const dl = daysLeft(L.expires);
+  $("lDays").textContent = L.status !== "active" ? "ถูกระงับ" : (dl > 0 ? dl + " วัน" : "หมดอายุ");
+  $("lDays").className = "big " + (L.status !== "active" || dl <= 0 ? "neg" : (dl <= 5 ? "" : ""));
+  $("lDays").style.color = L.status === "active" && dl > 0 && dl <= 5 ? "var(--gold)" : "";
+  $("lExp").textContent = dateTH(L.expires);
+  const names = { startLot: "ล็อตเริ่ม", gridDist: "ระยะแก้ไม้", lotMult: "ตัวคูณ", maxOrders: "ไม้สูงสุด", basketTP: "TP ตะกร้า" };
+  $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${esc(C[k])}</b></span>`).join("");
+  drawChart();
+}
+
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => {
+  range = +b.dataset.range;
+  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  drawChart();
+}));
+
+function drawChart() {
+  const box = $("chart");
+  const since = Date.now() - range * 86400000;
+  const H = (dashData.history || []).filter(p => p.t >= since);
+  if (H.length < 2) { box.innerHTML = `<div class="chart-empty">ยังมีข้อมูลไม่พอวาดกราฟ<br>EA จะบันทึกจุดทุก 5 นาทีหลังเชื่อมต่อ</div>`; return; }
+  const W = 1000, HT = 260, pad = 8;
+  const t0 = H[0].t, t1 = H[H.length - 1].t;
+  let lo = Infinity, hi = -Infinity;
+  H.forEach(p => { lo = Math.min(lo, p.b, p.e); hi = Math.max(hi, p.b, p.e); });
+  const span = (hi - lo) || 1; lo -= span * 0.08; hi += span * 0.08;
+  const X = t => pad + (t - t0) / ((t1 - t0) || 1) * (W - pad * 2);
+  const Y = v => HT - pad - (v - lo) / (hi - lo) * (HT - pad * 2);
+  const line = k => H.map((p, i) => (i ? "L" : "M") + X(p.t).toFixed(1) + " " + Y(p[k]).toFixed(1)).join(" ");
+  const gap = line("e") + " " + H.slice().reverse().map(p => "L" + X(p.t).toFixed(1) + " " + Y(p.b).toFixed(1)).join(" ") + " Z";
+  const ticks = [lo + (hi - lo) * 0.2, lo + (hi - lo) * 0.5, lo + (hi - lo) * 0.8];
+  box.innerHTML = `<svg class="curve" viewBox="0 0 ${W} ${HT}" preserveAspectRatio="none" role="img" aria-label="กราฟ equity และ balance">
+    ${ticks.map(v => `<line x1="0" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#26344A" stroke-width="1" vector-effect="non-scaling-stroke"/>`).join("")}
+    <path d="${gap}" fill="rgba(224,49,63,.22)" stroke="none"/>
+    <path d="${line("b")}" fill="none" stroke="#8A96A8" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>
+    <path d="${line("e")}" fill="none" stroke="#D9AE52" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+  </svg>
+  <div style="display:flex;justify-content:space-between;font-size:12px" class="muted num">
+    <span>${new Date(t0).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+    <span>สูงสุด ${fmt(Math.max(...H.map(p => p.e)))} / ต่ำสุด ${fmt(Math.min(...H.map(p => p.e)))}</span>
+    <span>${new Date(t1).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+  </div>`;
+}
+
+/* ============ admin ============ */
+let lics = [], editCode = null, pickDays = 30;
+
+async function openAdmin() {
+  $("whoami").textContent = "แอดมิน";
+  show("adminView");
+  await loadLics();
+  clearInterval(timer);
+  timer = setInterval(loadLics, REFRESH_MS);
+}
+
+async function loadLics() {
+  const r = await api("admin_list", { pass: session.pass });
+  if (!r.ok) { toast(r.error); return; }
+  lics = r.licenses;
+  renderLics();
+}
+
+function licState(l) {
+  if (l.status !== "active") return ["suspended", "ระงับ"];
+  if (daysLeft(l.expires) <= 0) return ["expired", "หมดอายุ"];
+  return ["active", "ใช้งาน"];
+}
+
+function renderLics() {
+  const q = $("search").value.trim().toLowerCase();
+  const rows = lics.filter(l => !q || [l.code, l.name, l.account].some(v => String(v || "").toLowerCase().includes(q)));
+  const act = lics.filter(l => licState(l)[0] === "active").length;
+  const on = lics.filter(l => l.online).length;
+  const soon = lics.filter(l => licState(l)[0] === "active" && daysLeft(l.expires) <= 5).length;
+  $("stats").innerHTML = `<div><b>${lics.length}</b>โค้ดทั้งหมด</div><div><b>${act}</b>ใช้งานอยู่</div><div><b>${on}</b>EA ออนไลน์</div><div><b style="color:var(--gold)">${soon}</b>หมดใน 5 วัน</div>`;
+  $("licBody").innerHTML = rows.length ? rows.map(l => {
+    const [st, stTxt] = licState(l); const dl = daysLeft(l.expires);
+    return `<tr>
+      <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
+      <td>${esc(l.name)}${l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
+      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</td>
+      <td class="num" style="${dl <= 5 && dl > 0 ? "color:var(--gold)" : ""}">${dl > 0 ? dl + " วัน" : "–"}</td>
+      <td><span class="pill ${st}">${stTxt}</span></td>
+      <td><span class="dot ${l.online ? "on" : ""}" style="display:inline-block" title="${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
+      <td class="num">${l.equity != null ? fmt(l.equity) : '<span class="muted">–</span>'}</td>
+      <td><div class="actions">
+        <button class="btn small" data-act="add30" data-code="${esc(l.code)}">+30 วัน</button>
+        <button class="btn small" data-act="${l.status === "active" ? "suspend" : "activate"}" data-code="${esc(l.code)}">${l.status === "active" ? "ระงับ" : "เปิดใช้"}</button>
+        <button class="btn small" data-act="settings" data-code="${esc(l.code)}">ตั้งค่า</button>
+      </div></td></tr>`;
+  }).join("") : `<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">${q ? "ไม่พบโค้ดที่ตรงกับคำค้นหา" : "ยังไม่มีโค้ด ออกโค้ดแรกจากฟอร์มด้านซ้าย"}</td></tr>`;
+}
+
+$("search").addEventListener("input", renderLics);
+$("refreshBtn").addEventListener("click", async () => { await loadLics(); toast("รีเฟรชแล้ว"); });
+
+document.querySelectorAll("#dayChips .chip").forEach(c => c.addEventListener("click", () => {
+  pickDays = +c.dataset.days;
+  document.querySelectorAll("#dayChips .chip").forEach(x => x.setAttribute("aria-pressed", x === c));
+}));
+
+$("createForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("createBtn").disabled = true;
+  const r = await api("admin_create", { pass: session.pass, name: $("cName").value.trim(), days: pickDays, account: $("cAcct").value.trim(), note: $("cNote").value.trim() });
+  $("createBtn").disabled = false;
+  if (!r.ok) { toast(r.error); return; }
+  $("issuedCode").textContent = r.code; $("issued").hidden = false;
+  $("createForm").reset();
+  toast("ออกโค้ดแล้ว");
+  loadLics();
+});
+
+$("copyIssued").addEventListener("click", () => copy($("issuedCode").textContent));
+async function copy(t) { try { await navigator.clipboard.writeText(t); toast("คัดลอก " + t + " แล้ว"); } catch { toast("คัดลอกไม่ได้ เลือกข้อความแล้วคัดลอกเอง"); } }
+
+$("licBody").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if (b) runAct(b.dataset.act, b.dataset.code);
+});
+$("dlgReset").addEventListener("click", () => { $("setDlg").close(); runAct("reset", editCode); });
+$("dlgDelete").addEventListener("click", () => { $("setDlg").close(); runAct("delete", editCode); });
+async function runAct(act, code) {
+  const P = { pass: session.pass, code };
+  if (act === "copy") return copy(code);
+  if (act === "settings") return openSettings(code);
+  let r;
+  if (act === "add30") r = await api("admin_update", { ...P, addDays: 30 });
+  if (act === "suspend") { if (!confirm(`ระงับ ${code}? EA จะหยุดเปิดไม้ใหม่ แต่ยังดูแลไม้ที่เปิดอยู่`)) return; r = await api("admin_update", { ...P, status: "suspended" }); }
+  if (act === "activate") r = await api("admin_update", { ...P, status: "active" });
+  if (act === "reset") { if (!confirm(`ปลดบัญชีออกจาก ${code}? บัญชี MT5 ถัดไปที่เชื่อมจะถูกผูกแทน`)) return; r = await api("admin_update", { ...P, resetAccount: true }); }
+  if (act === "delete") { if (!confirm(`ลบ ${code} ถาวร? กู้คืนไม่ได้`)) return; r = await api("admin_delete", P); }
+  if (!r) return;
+  if (!r.ok) { toast(r.error); return; }
+  toast({ add30: "ต่ออายุ 30 วันแล้ว", suspend: "ระงับแล้ว", activate: "เปิดใช้แล้ว", reset: "ย้ายบัญชีได้แล้ว", delete: "ลบแล้ว" }[act]);
+  loadLics();
+}
+
+const SET_KEYS = ["startLot", "gridDist", "lotMult", "maxOrders", "basketTP"];
+function openSettings(code) {
+  const l = lics.find(x => x.code === code); editCode = code;
+  $("setFor").textContent = code + " — " + (l.name || "");
+  $("dlgReset").hidden = !l.account;
+  SET_KEYS.forEach(k => $("s" + k[0].toUpperCase() + k.slice(1)).value = l.settings[k]);
+  $("setDlg").showModal();
+}
+$("setDlg").addEventListener("close", async () => {
+  if ($("setDlg").returnValue !== "save") return;
+  const settings = {}; SET_KEYS.forEach(k => settings[k] = Number($("s" + k[0].toUpperCase() + k.slice(1)).value));
+  const r = await api("admin_update", { pass: session.pass, code: editCode, settings });
+  toast(r.ok ? "บันทึกการตั้งค่าแล้ว" : r.error);
+  if (r.ok) loadLics();
+});
+
+/* ============ boot ============ */
+$("demoTag").hidden = !!API_URL;
+(async () => {
+  const a = store.get("gs_admin"), c = store.get("gs_code");
+  if (a) { const r = await api("admin_login", { pass: a }); if (r.ok) { session = { mode: "admin", pass: a }; return openAdmin(); } }
+  if (c) return openDashboard(c);
+  show("loginView");
+})();
+</script>
+</body>
+</html>
