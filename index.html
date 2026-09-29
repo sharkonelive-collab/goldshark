@@ -1375,7 +1375,7 @@ $("adminForm").addEventListener("submit", async e => {
 function logout(msg) {
   clearInterval(timer);
   try { Object.keys(localStorage).filter(k => k.startsWith("gs_me_")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
-  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port");
+  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port"); store.del("gs_adm_list"); store.del("gs_adm_pays");
   session = { mode: null };
   $("whoami").textContent = "";
   if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
@@ -2122,16 +2122,36 @@ $("paySend").addEventListener("click", async () => {
 let lics = [], editCode = null, pickDays = 30;
 
 async function openAdmin() {
+  try {
+    const c = JSON.parse(store.get("gs_adm_list") || "null");
+    if (c && c.licenses) {
+      lics = c.licenses; renderLics();
+      $("payBadge").hidden = !c.pending; $("payBadge").textContent = c.pending || "";
+      $("syncing").hidden = false;
+    }
+  } catch (e) {}
   $("whoami").textContent = "แอดมิน";
   show("adminView");
+  hideSplash();
   await loadLics();
   clearInterval(timer);
   timer = setInterval(() => { if (!document.hidden) loadLics(); }, REFRESH_MS);
 }
 
+function admHydrate(r) {
+  (r.licenses || []).forEach(l => {
+    if (l.settings || !r.portDefaults) return;
+    l.settings = Object.assign({}, r.portDefaults[l.port === "usd" ? "usd" : "cent"], l.own || {});
+    if (l.plan === "trial") l.settings.startLot = Math.min(l.settings.startLot, r.trialMaxLot || 0.01);
+  });
+  return r;
+}
 async function loadLics() {
   const r = await api("admin_list", { pass: session.pass });
-  if (!r.ok) { toast(r.error); return; }
+  $("syncing").hidden = true;
+  if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else toast(r.error); return false; }
+  admHydrate(r);
+  try { store.set("gs_adm_list", JSON.stringify({ licenses: r.licenses, pending: r.pending })); } catch (e) {}
   lics = r.licenses;
   $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || "";
   renderLics();
@@ -2271,9 +2291,13 @@ document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("c
 }));
 
 async function loadPays() {
+  if (!pays.length) { try { const c = JSON.parse(store.get("gs_adm_pays") || "null"); if (c) { pays = c; renderPays(); } } catch (e) {} }
+  $("syncing").hidden = false;
   const r = await api("admin_payments", { pass: session.pass });
+  $("syncing").hidden = true;
   if (!r.ok) { toast(r.error); return; }
   pays = r.payments; renderPays();
+  try { store.set("gs_adm_pays", JSON.stringify(pays.slice(0, 100))); } catch (e) {}
 }
 document.querySelectorAll("[data-pf]").forEach(b => b.addEventListener("click", () => {
   payFilter = b.dataset.pf;
@@ -2426,7 +2450,7 @@ $("demoTag").hidden = !!API_URL;
   try {
     if (IS_ADMIN) {
       const a = store.get("gs_admin");
-      if (a) { const r = await api("admin_login", { pass: a }); if (r.ok) { session = { mode: "admin", pass: a }; await openAdmin(); return; } }
+      if (a) { session = { mode: "admin", pass: a }; await openAdmin(); return; }   // รหัสผิดจะถูกเด้งกลับหน้าเข้าสู่ระบบเอง
       show("loginView"); return;
     }
     const t = store.get("gs_token");
