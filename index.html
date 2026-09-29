@@ -1262,7 +1262,7 @@ function demoApi(action, d) {
         const x = demo.pays.find(p => p.id === d.id); if (!x) return res({ ok: false, error: "ไม่พบรายการ" });
         x.status = d.approve ? "approved" : "rejected"; x.note = d.note || "";
         if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + (x.plan === "year" ? 365 : 30) * 86400000; } }
-        return res({ ok: true });
+        return res({ ok: true, payments: demo.pays.map(p => Object.assign({}, p)), pending: demo.pays.filter(p => p.status === "pending").length });
       }
       if (action === "admin_config") return res({ ok: true, config: demo.config });
       if (action === "admin_config_set") { demo.config = Object.assign({}, demo.config, d.config); return res({ ok: true, config: demo.config }); }
@@ -2283,13 +2283,13 @@ document.querySelectorAll("[data-pf]").forEach(b => b.addEventListener("click", 
 $("payRefresh").addEventListener("click", loadPays);
 
 function renderPays() {
-  const rows = pays.filter(x => payFilter === "all" || x.status === "pending");
+  const rows = pays.filter(x => payFilter === "all" || x.status === "pending" || x._saving);
   const ST = { pending: "รอตรวจ", approved: "อนุมัติแล้ว", rejected: "ไม่ผ่าน" };
   $("payBody").innerHTML = rows.length ? rows.map(x => `<tr>
     <td class="num">${new Date(x.created).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
     <td>${esc(x.login)}</td><td class="code-cell">${esc(x.code)}</td><td>${esc(x.planLabel)}</td>
     <td class="num">${fmt(x.amount, 0)} ฿</td>
-    <td><span class="pill ${esc(x.status)}">${ST[x.status] || esc(x.status)}</span>${x.note ? `<div class="muted" style="font-size:12px">${esc(x.note)}</div>` : ""}</td>
+    <td><span class="pill ${esc(x.status)}">${ST[x.status] || esc(x.status)}</span>${x._saving ? ' <span class="syncing">กำลังบันทึก…</span>' : ""}${x.note ? `<div class="muted" style="font-size:12px">${esc(x.note)}</div>` : ""}</td>
     <td><div class="actions">
       <button class="btn small" data-pay="slip" data-id="${esc(x.id)}">ดูสลิป</button>
       ${x.status === "pending" ? `<button class="btn small primary" data-pay="ok" data-id="${esc(x.id)}">อนุมัติ</button>
@@ -2316,10 +2316,19 @@ $("payBody").addEventListener("click", async e => {
     if (note === null) return;
     body.approve = false; body.note = note;
   }
+  // เปลี่ยนสถานะในตารางทันที แล้วบันทึกเบื้องหลัง
+  const before = { status: x.status, note: x.note };
+  x.status = body.approve ? "approved" : "rejected"; x.note = body.note || "";
+  x._saving = true; renderPays();
+  toast(body.approve ? "กำลังอนุมัติ…" : "กำลังบันทึก…");
   const r = await api("admin_pay_decide", body);
-  if (!r.ok) { toast(r.error); return; }
+  x._saving = false;
+  if (!r.ok) { Object.assign(x, before); renderPays(); toast(r.error); return; }
+  if (r.payments) pays = r.payments;
+  renderPays();
+  if (r.pending != null) { $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || ""; }
   toast(body.approve ? "อนุมัติแล้ว ต่ออายุโค้ดให้แล้ว" : "บันทึกว่าไม่ผ่านแล้ว");
-  loadPays(); loadLics();
+  loadLics();   // อัปเดตตารางโค้ดเบื้องหลัง ไม่ต้องรอ
 });
 
 async function loadShop() {
