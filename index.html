@@ -642,6 +642,14 @@ th{background:#0B1328;color:#9FB0CC}
 .syncing[hidden]{display:none}
 
 #dashView.port-loading > section:not(#secPorts),#dashView.port-loading > details{opacity:.45;transition:opacity .15s;pointer-events:none}
+
+.t5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tile.today small{font-weight:500}
+.tile.today small.pos{color:var(--green)} .tile.today small.neg{color:var(--red)}
+.tile.today.up{box-shadow:inset 3px 0 0 var(--green);background:linear-gradient(180deg,rgba(47,191,138,.10),rgba(4,7,14,.6))}
+.tile.today.down{box-shadow:inset 3px 0 0 var(--red);background:linear-gradient(180deg,rgba(229,40,61,.10),rgba(4,7,14,.6))}
+@media (max-width:1100px){.t5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:900px){.t5{grid-template-columns:repeat(2,minmax(0,1fr))}.t5 .tile.today{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -783,9 +791,10 @@ th{background:#0B1328;color:#9FB0CC}
   <section class="card" id="secOverview">
     <div class="card-label">สถานะการเชื่อมต่อ MT5</div>
     <div class="conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span></div>
-    <div class="tiles t4">
+    <div class="tiles t5">
       <div class="tile"><span>Balance</span><b class="num" id="dBal">–</b></div>
       <div class="tile"><span>Equity</span><b class="num" id="dEq">–</b></div>
+      <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
       <div class="tile"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b></div>
       <div class="tile"><span>ไม้ที่เปิดอยู่</span><b class="num" id="dOpen">–</b></div>
     </div>
@@ -1481,6 +1490,7 @@ function renderDash() {
     $("dEq").textContent = fmt(S.equity);
     $("dFlt").textContent = signed(fl); $("dFlt").className = "num " + cls(fl);
     $("dOpen").textContent = (S.buyCount + S.sellCount) + " ไม้";
+    renderToday(S);
     $("dFloat").innerHTML = `EA: <b>${esc(S.tradeStatus || "–")}</b>`;
     $("dDot").className = "dot " + (S.online ? "on" : "off");
     $("dOnline").textContent = (S.online ? "EA ออนไลน์" : "EA ออฟไลน์") + " อัปเดต " + ago(S.time);
@@ -1492,6 +1502,7 @@ function renderDash() {
     $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
     $("lTrade").textContent = S.tradeStatus || "–";
   } else {
+    $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today";
     ["dBal", "dEq", "dFlt", "dOpen", "bPL", "sPL", "bCount", "sCount", "bLots", "sLots", "lDD", "lSpread", "lTrade"].forEach(id => $(id).textContent = "–");
     $("dFlt").className = "num"; $("bPL").className = "num"; $("sPL").className = "num";
     $("dAcct").textContent = L.account ? "บัญชี " + L.account : "";
@@ -1543,6 +1554,23 @@ function drawChart() {
   </div>`;
 }
 
+
+/* ============ กำไรวันนี้ (ไม้ที่ปิดแล้ว ตั้งแต่เที่ยงคืนตามเวลาเครื่อง) ============ */
+function renderToday(S) {
+  const m = hourlyMap();
+  const mid = new Date(); mid.setHours(0, 0, 0, 0);
+  const midH = Math.floor(mid.getTime() / 3600000), nowH = Math.floor(Date.now() / 3600000);
+  let today = 0;
+  m.forEach((v, h) => { if (h >= midH && h <= nowH) today += v; });
+  const start = S.balance - today;                         // ยอดเงินตอนเริ่มวัน
+  const pct = start > 0 ? today / start * 100 : 0;
+  const c = cls(today), arrow = today > 0 ? "▲" : today < 0 ? "▼" : "•";
+  $("dToday").textContent = signed(today);
+  $("dToday").className = "num " + c;
+  $("dTodayPct").textContent = `${arrow} ${pct > 0 ? "+" : ""}${pct.toFixed(2)}% วันนี้`;
+  $("dTodayPct").className = c;
+  $("tToday").className = "tile today" + (today > 0 ? " up" : today < 0 ? " down" : "");
+}
 
 /* ============ กำไรที่ปิดแล้ว ============ */
 let pMode = 24;
