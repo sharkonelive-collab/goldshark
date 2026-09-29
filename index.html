@@ -330,13 +330,13 @@ select.field{appearance:auto}
       <button class="tab" role="tab" aria-selected="false" data-tab="admin">แอดมิน</button>
     </div>
     <form id="loginForm">
-      <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" required></div>
+      <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
       <div><label for="liPass">รหัสผ่าน</label><input id="liPass" class="field" type="password" autocomplete="current-password" required></div>
       <button class="btn primary" type="submit">เข้าสู่ระบบ</button>
     </form>
     <form id="regForm" hidden>
       <div><label for="rgName">ชื่อที่ใช้เรียก</label><input id="rgName" class="field" autocomplete="name" required></div>
-      <div><label for="rgLogin">เบอร์โทรหรืออีเมล (ใช้เข้าสู่ระบบ)</label><input id="rgLogin" class="field" autocomplete="username" required></div>
+      <div><label for="rgLogin">เบอร์โทรหรืออีเมล (ใช้เข้าสู่ระบบ)</label><input id="rgLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
       <div><label for="rgPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input id="rgPass" class="field" type="password" autocomplete="new-password" minlength="6" required></div>
       <div><label for="rgPass2">ยืนยันรหัสผ่าน</label><input id="rgPass2" class="field" type="password" autocomplete="new-password" required></div>
       <label class="risk"><input type="checkbox" id="rgRisk" required><span>ฉันเข้าใจว่าการเทรดทองมีความเสี่ยง EA ใช้ระบบไม้แก้ (Martingale) ที่อาจขาดทุนหนักหรือล้างพอร์ตได้ และไม่มีการรับประกันกำไร</span></label>
@@ -612,6 +612,7 @@ select.field{appearance:auto}
     <p class="muted" style="font-size:13px;margin:0 0 8px">EA จะรับค่าใหม่ในรอบ heartbeat ถัดไป (ประมาณ 1 นาที) ลูกค้าแก้ได้เองเฉพาะล็อต ข่าว และเวลาเทรด</p>
     <div id="admCfg"></div>
     <div class="danger-zone">
+      <button type="button" class="btn small" id="dlgLink">ผูกกับสมาชิก</button>
       <button type="button" class="btn small" id="dlgReset">ย้ายบัญชี MT5</button>
       <button type="button" class="btn small ghost" id="dlgDelete" style="color:var(--red)">ลบโค้ด</button>
     </div>
@@ -711,7 +712,7 @@ const demo = (() => {
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
   const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark",
-    port: { cent: { basketTP: 100, cutLoss: 30000 }, usd: { basketTP: 1, cutLoss: 300 } } };
+    port: { cent: { basketTP: 5, cutLoss: 3000 }, usd: { basketTP: 0.05, cutLoss: 30 } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA" }];
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "รายปี", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
   return { lics, hist, config, users, pays };
@@ -800,6 +801,13 @@ function demoApi(action, d) {
         return res({ ok: true });
       }
       if (action === "admin_delete") { L.splice(L.indexOf(lic), 1); return res({ ok: true }); }
+      if (action === "admin_link" && lic) {
+        const u = demo.users.find(x => x.login === d.login);
+        if (d.login && !u) return res({ ok: false, error: "ไม่พบสมาชิก " + d.login });
+        demo.users.forEach(x => { if (x.code === lic.code) x.code = ""; });
+        if (u) u.code = lic.code; lic.login = u ? u.login : "";
+        return res({ ok: true });
+      }
     }
     res({ ok: false, error: "ไม่รู้จักคำสั่งนี้" });
   }, 250));
@@ -1481,6 +1489,15 @@ $("licBody").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]"); if (b) runAct(b.dataset.act, b.dataset.code);
 });
 $("dlgReset").addEventListener("click", () => { $("setDlg").close(); runAct("reset", editCode); });
+$("dlgLink").addEventListener("click", async () => {
+  const l = lics.find(x => x.code === editCode);
+  const login = prompt("ผูกโค้ด " + editCode + " กับสมาชิกคนไหน?\nใส่เบอร์โทรหรืออีเมลที่สมาชิกใช้เข้าสู่ระบบ\n(เว้นว่าง = ปลดออกจากสมาชิกเดิม)", (l && l.login) || "");
+  if (login === null) return;
+  $("setDlg").close();
+  const r = await api("admin_link", { pass: session.pass, code: editCode, login: login.trim() });
+  toast(r.ok ? (login.trim() ? "ผูกกับ " + login.trim() + " แล้ว" : "ปลดออกจากสมาชิกแล้ว") : r.error);
+  if (r.ok) loadLics();
+});
 $("dlgDelete").addEventListener("click", () => { $("setDlg").close(); runAct("delete", editCode); });
 async function runAct(act, code) {
   const P = { pass: session.pass, code };
