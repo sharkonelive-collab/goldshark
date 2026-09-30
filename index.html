@@ -1192,7 +1192,7 @@ async function api(action, data = {}) {
 /* ============ demo data (โหมดตัวอย่าง เมื่อเปิดไฟล์ในเครื่อง) ============ */
 const demo = (() => {
   const now = Date.now();
-  const base = () => ({ startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 });
+  const base = () => ({ startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 100 });
   const mk = (code, name, acct, days, status, eq, plan, port, login) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: base(), plan, port, login, currency: port === "usd" ? "USD" : port === "cent" ? "USC" : "" });
   const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55, "month", "cent", "0812345678"),
     mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1, "year", "usd", "prae@mail.com"),
@@ -1225,7 +1225,7 @@ function demoApi(action, d) {
     }
     if (action === "register") {
       const id = "u" + (demo.users.length + 1), code = "GS-DEMO-" + String(1000 + demo.users.length).slice(-4);
-      L.unshift(Object.assign({}, L[2], { code, name: d.name, login: d.login, account: "", plan: "trial", port: "", currency: "", expires: Date.now() + 15 * 86400000, equity: null, online: false, settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 } }));
+      L.unshift(Object.assign({}, L[2], { code, name: d.name, login: d.login, account: "", plan: "trial", port: "", currency: "", expires: Date.now() + 15 * 86400000, equity: null, online: false, settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 100 } }));
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
@@ -1235,7 +1235,7 @@ function demoApi(action, d) {
       if (action === "port_add") {
         const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", q = () => Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
         const code = "GS-" + q() + "-" + q();
-        L.push({ code, name: u.name, label: d.label || ("พอร์ต " + (u.codes.length + 1)), account: "", expires: Date.now(), status: "active", plan: "none", port: d.port, currency: "", equity: null, online: false, created: Date.now(), login: u.login, settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 5 } });
+        L.push({ code, name: u.name, label: d.label || ("พอร์ต " + (u.codes.length + 1)), account: "", expires: Date.now(), status: "active", plan: "none", port: d.port, currency: "", equity: null, online: false, created: Date.now(), login: u.login, settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 5 } });
         u.codes.push(code); return res({ ok: true, code });
       }
       let lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
@@ -1306,7 +1306,7 @@ function demoApi(action, d) {
       if (action === "admin_create") {
         const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", p = () => Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
         const code = "GS-" + p() + "-" + p();
-        L.unshift({ code, name: d.name, account: d.account || "", expires: d.plan === "life" ? Date.UTC(2099, 11, 31) : Date.now() + d.days * 86400000, status: "active", created: Date.now(), equity: null, online: false, plan: d.plan, port: "", login: "", settings: { startLot: 0.01, gridDist: 3000, lotMult: 1.6, maxOrders: 8, basketTP: 100 } });
+        L.unshift({ code, name: d.name, account: d.account || "", expires: d.plan === "life" ? Date.UTC(2099, 11, 31) : Date.now() + d.days * 86400000, status: "active", created: Date.now(), equity: null, online: false, plan: d.plan, port: "", login: "", settings: { startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 100 } });
         return res({ ok: true, code });
       }
       const lic = L.find(l => l.code === d.code);
@@ -1559,7 +1559,7 @@ function renderDash() {
     $("dDot").className = "dot off"; $("dOnline").textContent = "ยังไม่เชื่อมต่อ";
   }
   const names = { startLot: "ล็อตเริ่ม", gridDist: "ระยะแก้ไม้", lotMult: "ตัวคูณ", maxOrders: "ไม้สูงสุด", basketTP: "TP ตะกร้า" };
-  $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${esc(C[k])}</b></span>`).join("");
+  $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${k === "gridDist" ? Number(C[k]).toFixed(1) : esc(C[k])}</b></span>`).join("");
   $("myCode").textContent = L.code;
   renderProfit();
   syncLot();
@@ -1727,18 +1727,19 @@ $("lotSave").addEventListener("click", async () => {
 const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
 const CFG_GROUPS = [
   { id: "main", title: "ไม้หลัก / Martingale", fields: [
-    ["gridDist", "int", 270, "ระยะแก้ไม้ (points)", 1, 200000, 1],
-    ["lotMult", "num", 1.6, "ตัวคูณล็อต", 1, 5, 0.01],
+    ["gridDist", "num", 270, "ระยะแก้ไม้ (points · 100 = $1 ทุกโบรก)", 0.1, 200000, 0.1],
+    ["lotMult", "num", 1.5, "ตัวคูณล็อต", 1, 5, 0.01],
+    ["grid2Same", "bool", true, "ไม้แก้ไม้แรกใช้ล็อตเท่าไม้เริ่ม แล้วค่อยคูณ"],
     ["repeatLot", "int", 0, "ใช้ล็อตซ้ำกี่ไม้ก่อนคูณ (0=ปิด)", 0, 100, 1],
     ["maxOrders", "int", 200, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1]] },
   { id: "close", title: "ปิดกำไร / ขาดทุน", fields: [
-    ["basketTP", "num", 100, "ปิดตะกร้าเมื่อกำไรถึง", 0.01, 1e7, 0.01],
-    ["firstTP", "int", 0, "ไม้เดียวไปถูกทาง: TP กี่ points (0=ใช้ TP ตะกร้า)", 0, 200000, 1],
-    ["beOffset", "int", 110, "มีไม้แก้แล้ว ปิดที่ทุน + กี่ points (0=ปิด)", 0, 200000, 1],
+    ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
+    ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (points · 100 = $1, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
+    ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (points · 100 = $1, 0=ปิด)", 0, 200000, 0.1],
     ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า"],
-    ["cutLoss", "num", 30000, "ตัดเมื่อขาดทุนถึง", 0.01, 1e8, 0.01],
+    ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01],
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
-    ["slPoints", "int", 500, "ระยะ SL (points)", 1, 200000, 1]] },
+    ["slPoints", "num", 500, "ระยะ SL (points · 100 = $1)", 0.1, 200000, 0.1]] },
   { id: "news", title: "กรองข่าว", toggle: "newsOn", fields: [
     ["newsOn", "bool", false, "หยุดเข้าไม้ช่วงข่าว"],
     ["newsLevel", "sel", 2, "ข่าวที่หลบ", [[1, "ทุกข่าว USD"], [2, "เฉพาะข่าวแดง (High)"]]],
@@ -1750,10 +1751,12 @@ const CFG_GROUPS = [
     ["followOn", "bool", true, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
     ["balloonOn", "bool", false, "บอลลูน (กริดชุดที่สอง)"],
     ["balloonLot", "num", 0.1, "ล็อตบอลลูนเริ่มต้น", 0.01, 100, 0.01],
-    ["balloonDist", "int", 111, "ระยะบอลลูน (points)", 1, 200000, 1],
+    ["balloonDist", "num", 111, "ระยะบอลลูน (points · 100 = $1)", 0.1, 200000, 0.1],
     ["balloonMult", "num", 1.03, "ตัวคูณบอลลูน", 1, 5, 0.01]] },
   { id: "entry", title: "สัญญาณเข้าออเดอร์", adv: true, fields: [
-    ["entryMode", "sel", 0, "วิธีเข้าไม้", [[0, "Pending (รอชนโซน)"], [1, "เปิดทันที"]]],
+    ["entryMode", "sel", 2, "วิธีเข้าไม้", [[2, "Breakout Stop (ดักราคาทะลุ)"], [0, "Pending Limit (รอราคาย่อ)"], [1, "เปิดทันที"]]],
+    ["stopBuf", "num", 5, "Breakout Stop: ห่างจากจุดสูง/ต่ำ (points · 100 = $1)", 0, 100000, 0.1],
+    ["oneSide", "bool", true, "ตะกร้าเดียวทีละฝั่ง (มีไม้เปิดอยู่ ไม่เข้าอีกฝั่ง)"],
     ["signalTF", "sel", 1, "TF สัญญาณ", TFO],
     ["emaFast", "int", 20, "EMA เร็ว", 1, 1000, 1],
     ["emaSlow", "int", 100, "EMA ช้า", 1, 1000, 1],
@@ -1764,9 +1767,9 @@ const CFG_GROUPS = [
     ["htfTF", "sel", 15, "TF ใหญ่", TFO],
     ["htfFast", "int", 34, "EMA เร็ว (TF ใหญ่)", 1, 1000, 1],
     ["htfSlow", "int", 200, "EMA ช้า (TF ใหญ่)", 1, 1000, 1],
-    ["emaCloseStop", "bool", true, "หยุดเข้าเมื่อ EMA ใกล้กัน"],
+    ["emaCloseStop", "bool", false, "หยุดเข้าเมื่อ EMA ใกล้กัน"],
     ["emaMinATR", "num", 0.15, "EMA ห่างขั้นต่ำ (x ATR)", 0, 10, 0.01],
-    ["emaMinPts", "int", 50, "EMA ห่างขั้นต่ำ (points)", 0, 200000, 1],
+    ["emaMinPts", "num", 50, "EMA ต้องห่างกันอย่างน้อย (points · 100 = $1, 0=ปิด)", 0, 200000, 0.1],
     ["atrPeriod", "int", 14, "ATR period", 1, 500, 1],
     ["midOn", "bool", false, "ยืนยัน TF กลาง"],
     ["midTF", "sel", 5, "TF กลาง", TFO],
@@ -1794,7 +1797,7 @@ const CFG_GROUPS = [
     ["emaDistOn", "bool", true, "ไม่สวนเทรนด์เมื่อห่าง EMA เกินกำหนด"],
     ["emaDistTF", "sel", 5, "EMA ระยะห่าง TF", TFO],
     ["emaDistPeriod", "int", 200, "EMA ระยะห่าง period", 1, 1000, 1],
-    ["emaDistPts", "int", 7000, "ระยะห่างสูงสุด (points)", 0, 1000000, 1]] },
+    ["emaDistPts", "num", 700, "ราคาห่าง EMA200 ก่อนบล็อกสวนเทรนด์ (points · 100 = $1)", 0, 1000000, 0.1]] },
   { id: "misc", title: "อื่นๆ", fields: [
     ["notifyOn", "bool", false, "แจ้งเตือน Push ไปแอป MT5 บนมือถือ"],
     ["logBlocks", "bool", true, "บันทึก log เหตุผลที่ไม่เข้าไม้"]] }
@@ -1842,7 +1845,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       box.classList.toggle("changed", keys.some(k => ch.includes(k)));
       const sum = box.querySelector(".cfg-sum");
       if (g.toggle) { const on = !!draft[g.toggle]; sum.textContent = on ? "เปิด" : "ปิด"; sum.classList.toggle("on", on); }
-      else if (g.id === "main") sum.textContent = `${draft.gridDist} pts × ${draft.lotMult}`;
+      else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} pts × ${draft.lotMult}`;
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
     });
@@ -1863,7 +1866,8 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
     draft = saved();
     root.querySelectorAll("[data-k]").forEach(el => {
       const v = draft[el.dataset.k];
-      if (el.type === "checkbox") el.checked = !!v; else el.value = v;
+      if (el.type === "checkbox") el.checked = !!v;
+      else el.value = (el.step === "0.1" && v !== "" && v != null && isFinite(v)) ? Number(v).toFixed(1) : v;   // ช่อง points แสดงเป็น 270.0
     });
     status();
   }
