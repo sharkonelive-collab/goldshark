@@ -269,6 +269,7 @@ select.field{appearance:auto}
 .port-seg button{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left}
 .port-seg button b{display:block;font-family:var(--display);font-size:20px}
 .port-seg button span{font-size:13px;color:var(--muted)}
+.port-seg button:disabled{opacity:.4;cursor:not-allowed}
 .port-seg button[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
 .port-seg button[aria-pressed="true"] b{color:var(--gold)}
 .port-warn{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:var(--r);background:var(--deep);border:1px solid var(--line);color:var(--muted)}
@@ -795,13 +796,13 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
   <details class="setup hl" id="setupBox">
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
-      <a class="btn primary dl-btn" href="GoldShark_Flow.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> ดาวน์โหลด EA (.ex5)</a>
+      <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
       <ol class="steps">
         <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
         <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
           <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
         </li>
-        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b>GoldShark_Flow</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
+        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b id="dlEAName">GoldShark_Cent</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
         <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
           <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
         </li>
@@ -1097,7 +1098,7 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
         </div>
       </div>
     </div>
-    <p class="pnote" style="margin:14px 0 0">เปิดแล้วจะได้โค้ดใหม่ทันที ให้ซื้อแพ็กเกจก่อน EA ถึงจะเริ่มเทรด</p>
+    <p class="pnote" style="margin:14px 0 0">เปิดแล้วจะได้โค้ดใหม่ทันที และปุ่มดาวน์โหลดจะให้ EA ตามพอร์ตที่เลือก (Cent → GoldShark_Cent, USD → GoldShark_USD) ซื้อแพ็กเกจก่อน EA ถึงจะเริ่มเทรด</p>
     <div class="dlg-actions">
       <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
       <button type="button" class="btn primary" id="npCreate">เปิดพอร์ตและเลือกแพ็กเกจ</button>
@@ -2056,7 +2057,16 @@ $("npCreate").addEventListener("click", async () => {
 
 function renderPort() {
   const L = dashData.license;
-  document.querySelectorAll(".port-seg button").forEach(b => b.setAttribute("aria-pressed", L.port === b.dataset.port));
+  document.querySelectorAll(".port-seg button[data-port]").forEach(b => {
+    b.setAttribute("aria-pressed", (L.port || (L.plan === "trial" ? "cent" : "")) === b.dataset.port);
+    b.disabled = L.plan === "trial" && b.dataset.port === "usd";
+    b.title = b.disabled ? "ทดลองฟรีใช้พอร์ตเซ็นต์เท่านั้น" : "";
+  });
+  // ปุ่มดาวน์โหลด EA ตามพอร์ต
+  const eaUsd = (L.port || "cent") === "usd", eaName = eaUsd ? "GoldShark_USD" : "GoldShark_Cent";
+  $("dlEA").href = eaName + ".ex5";
+  $("dlEALabel").textContent = "ดาวน์โหลด EA พอร์ต" + (eaUsd ? " USD" : "เซ็นต์") + " (" + eaName + ")";
+  $("dlEAName").textContent = eaName;
   const w = $("portWarn");
   w.className = "port-warn"; w.hidden = false;
   if (!L.port) w.textContent = "ยังไม่ได้เลือก ระบบจะตั้งให้ตามบัญชี MT5 ที่ต่อครั้งแรก";
@@ -2066,8 +2076,9 @@ function renderPort() {
   } else if (L.currency) w.textContent = `ตรงกับบัญชี MT5 ที่ต่ออยู่ (${L.currency})`;
   else w.hidden = true;
 }
-document.querySelectorAll(".port-seg button").forEach(b => b.addEventListener("click", async () => {
+document.querySelectorAll(".port-seg button[data-port]").forEach(b => b.addEventListener("click", async () => {
   const port = b.dataset.port;
+  if (b.disabled) { toast("ทดลองฟรีใช้พอร์ตเซ็นต์เท่านั้น"); return; }
   if (dashData.license.port === port) return;
   const r = await api("user_port", { token: session.token, code: session.port, port });
   if (!r.ok) { toast(r.error); return; }
