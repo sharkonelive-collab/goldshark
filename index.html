@@ -671,6 +671,42 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 .pay-notice{margin:8px 0 4px;padding:12px 16px;border-radius:14px;font-weight:500}
 .pay-notice.ok{background:rgba(47,191,138,.12);border:1px solid rgba(47,191,138,.45);color:#7BE3B8}
 .pay-notice.no{background:rgba(229,40,61,.10);border:1px solid rgba(229,40,61,.45);color:#FF9AA6}
+
+/* ---- รีเฟรชหน้าสมาชิก ---- */
+.ph-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ph-row h1{flex:1;margin:0 0 4px}
+.ph-actions{display:flex;align-items:center;gap:10px}
+.last-sync{font-size:12px;color:var(--muted)}
+.refresh-btn{display:inline-flex;align-items:center;gap:6px}
+.rf-ico,.ph-ico{display:inline-block;font-size:16px;line-height:1}
+.refresh-btn.spin .rf-ico,.pull-hint.go .ph-ico{animation:rfSpin .8s linear infinite}
+@keyframes rfSpin{to{transform:rotate(360deg)}}
+.pull-hint{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;color:#8EC1FF;font-size:13px;transition:height .15s}
+.pull-hint.show{height:44px}
+@media (max-width:900px){.last-sync{display:none}}
+
+.auto-rf{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:0;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 12px;background:rgba(5,8,16,.6)}
+.auto-rf select{background:transparent;border:0;color:var(--text);font:inherit;font-size:12px;padding:3px 6px;border-radius:999px;cursor:pointer}
+.auto-rf select option{background:#0E1628}
+#autoLeft{color:#8EC1FF;margin-left:6px}
+@media (max-width:900px){.auto-rf span{display:none}.ph-actions{gap:6px}}
+
+.pill.ptype{font-size:11px;padding:1px 8px;font-weight:600;letter-spacing:.02em}
+.pill.ptype.cent{background:rgba(242,184,75,.16);color:#F2B84B}
+.pill.ptype.usd{background:rgba(47,191,138,.16);color:#48D6A0}
+.pchip{min-width:260px;max-width:300px}
+
+/* ---- แจ้งเตือนโบรก 3 ทศนิยม ---- */
+.digit-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 4px;padding:10px 14px;border-radius:14px;font-size:14px;
+  background:rgba(242,184,75,.08);border:1px solid rgba(242,184,75,.35);color:#F4D58D}
+.digit-notice .dn-text{flex:1;min-width:220px}
+.digit-notice b{color:#FFE3A3}
+.dn-ico{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;font-weight:700;background:rgba(242,184,75,.2);color:#F2B84B}
+.dn-line{background:#06C755 !important;border-color:transparent !important;color:#fff !important;text-decoration:none}
+.digit-notice.alert{background:rgba(229,40,61,.12);border-color:rgba(229,40,61,.55);color:#FFB3BD}
+.digit-notice.alert b{color:#fff}
+.digit-notice.alert .dn-ico{background:rgba(229,40,61,.25);color:#FF6B7C}
+.dig3{display:inline-block;margin-left:6px;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:rgba(229,40,61,.15);color:#FF8A98}
 </style>
 </head>
 <body>
@@ -778,9 +814,30 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 
 <!-- ================= CUSTOMER DASHBOARD ================= -->
 <main id="dashView" class="wrap app" hidden>
+  <div class="digit-notice" id="digitNotice" role="note">
+    <span class="dn-ico" aria-hidden="true">!</span>
+    <span class="dn-text" id="digitText">ถ้าโบรกเกอร์ของคุณแสดงราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> (เช่น 4161.085) กรุณาแจ้งแอดมินก่อนเริ่มใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก</span>
+    <a class="btn small dn-line" href="https://lin.ee/6dAnbt1d" target="_blank" rel="noopener">แจ้งแอดมินทาง LINE</a>
+  </div>
   <div class="pay-notice" id="payNotice" role="status" hidden></div>
+  <div class="pull-hint" id="pullHint" aria-hidden="true"><span class="ph-ico">↻</span><span id="pullText">ดึงลงเพื่อรีเฟรช</span></div>
   <div class="page-head">
-    <h1>แดชบอร์ด EA</h1>
+    <div class="ph-row">
+      <h1>แดชบอร์ด EA</h1>
+      <div class="ph-actions">
+        <span class="last-sync"><span id="lastSync"></span><span id="autoLeft"></span></span>
+        <label class="auto-rf" title="รีเฟรชอัตโนมัติ">
+          <span>อัตโนมัติ</span>
+          <select id="autoSel" aria-label="รีเฟรชอัตโนมัติ">
+            <option value="0">ปิด</option>
+            <option value="15">15 วิ</option>
+            <option value="30">30 วิ</option>
+            <option value="60">60 วิ</option>
+          </select>
+        </label>
+        <button class="btn small refresh-btn" id="memberRefresh" aria-label="รีเฟรชข้อมูล"><span class="rf-ico">↻</span> รีเฟรช</button>
+      </div>
+    </div>
     <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
   </div>
 
@@ -1446,6 +1503,7 @@ async function loadMe(auto) {
   dashData = r;
   if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
   meCachePut(r);
+  markSynced();
   checkPayResult(r.payments || []);
   renderPorts();
   renderDash();
@@ -1523,12 +1581,14 @@ async function openMember(token) {
   $("whoami").textContent = dashData.user.name;
   show("dashView");
   clearInterval(timer);
-  timer = setInterval(() => loadMe(true), REFRESH_MS);
+  autoLeft = autoSec();
+  timer = setInterval(autoTick, 1000);
   clearInterval(fastTimer);
   fastTimer = setInterval(() => { if ((dashData.payments || []).some(x => x.status === "pending")) loadMe(true); }, 20000);
 }
 
 function renderDash() {
+  renderDigitNotice();
   if (dashData.pay && dashData.pay.qrMode === "image") preloadStaticQr();
   if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
@@ -2007,6 +2067,80 @@ $("renamePort").addEventListener("click", async () => {
   toast(r.ok ? "เปลี่ยนชื่อแล้ว" : r.error); if (r.ok) loadMe();
 });
 
+/* ============ แจ้งเตือนโบรกทศนิยม 3 ตำแหน่ง ============ */
+function renderDigitNotice() {
+  const S = dashData.snapshot, L = dashData.license, el = $("digitNotice"), t = $("digitText");
+  const d3 = S && (+S.digits === 3 || +S.digits === 5);
+  el.className = "digit-notice" + (d3 ? " alert" : "");
+  t.innerHTML = d3
+    ? `ตรวจพบ: บัญชี <b>${esc(S.account || (L && L.account) || "")}</b>${S.broker ? " (" + esc(S.broker) + ")" : ""} ใช้ราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> กรุณาแจ้งแอดมินก่อนใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก`
+    : `ถ้าโบรกเกอร์ของคุณแสดงราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> (เช่น 4161.085) กรุณาแจ้งแอดมินก่อนเริ่มใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก`;
+}
+
+/* ============ รีเฟรชอัตโนมัติ (ตั้งได้ ปิด/15/30/60 วิ) ============ */
+let autoLeft = 30;
+function autoSec() { const v = store.get("gs_auto"); return v === null || v === undefined || v === "" ? 30 : +v; }
+function autoTick() {
+  const sec = autoSec();
+  if (!sec) { $("autoLeft").textContent = ""; return; }
+  if (document.hidden || refreshing || meBusy) return;           // ไม่เปิดดูอยู่ → หยุดนับ
+  autoLeft--;
+  $("autoLeft").textContent = "· รีเฟรชใน " + Math.max(autoLeft, 0) + " วิ";
+  if (autoLeft <= 0) { autoLeft = sec; loadMe(true); }
+}
+$("autoSel").value = String(autoSec());
+$("autoSel").addEventListener("change", () => {
+  store.set("gs_auto", $("autoSel").value);
+  autoLeft = autoSec();
+  $("autoLeft").textContent = autoLeft ? "· รีเฟรชใน " + autoLeft + " วิ" : "";
+  toast(autoLeft ? "รีเฟรชอัตโนมัติทุก " + autoLeft + " วินาที" : "ปิดรีเฟรชอัตโนมัติแล้ว");
+});
+
+/* ============ รีเฟรชหน้าสมาชิก ============ */
+let refreshing = false;
+function markSynced() {
+  const t = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  $("lastSync").textContent = "อัปเดตล่าสุด " + t;
+}
+async function manualRefresh(fromPull) {
+  if (refreshing || session.mode !== "user") return;
+  refreshing = true;
+  $("memberRefresh").classList.add("spin"); $("memberRefresh").disabled = true;
+  $("syncing").hidden = false;
+  const ok = await loadMe();
+  refreshing = false;
+  $("memberRefresh").classList.remove("spin"); $("memberRefresh").disabled = false;
+  $("syncing").hidden = true;
+  if (ok) { markSynced(); autoLeft = autoSec(); if (!fromPull) toast("อัปเดตข้อมูลแล้ว"); }
+}
+$("memberRefresh").addEventListener("click", () => manualRefresh(false));
+
+// มือถือ: ดึงหน้าลงจากด้านบนสุดเพื่อรีเฟรช
+(() => {
+  let y0 = null, dy = 0;
+  const hint = $("pullHint"), txt = $("pullText");
+  window.addEventListener("touchstart", e => {
+    if (document.body.dataset.view !== "dashView" || window.scrollY > 0 || refreshing) { y0 = null; return; }
+    y0 = e.touches[0].clientY; dy = 0;
+  }, { passive: true });
+  window.addEventListener("touchmove", e => {
+    if (y0 === null) return;
+    dy = e.touches[0].clientY - y0;
+    if (dy > 20) { hint.classList.add("show"); txt.textContent = dy > 80 ? "ปล่อยเพื่อรีเฟรช" : "ดึงลงเพื่อรีเฟรช"; }
+    else hint.classList.remove("show");
+  }, { passive: true });
+  window.addEventListener("touchend", async () => {
+    if (y0 === null) return;
+    y0 = null;
+    if (dy > 80) {
+      hint.classList.add("show", "go"); txt.textContent = "กำลังอัปเดต…";
+      await manualRefresh(true);
+      txt.textContent = "อัปเดตแล้ว";
+      setTimeout(() => hint.classList.remove("show", "go"), 600);
+    } else hint.classList.remove("show");
+  });
+})();
+
 /* ============ แถบเลือกพอร์ต ============ */
 function renderPorts() {
   const ports = dashData.ports || [], cur = dashData.license && dashData.license.code;
@@ -2016,9 +2150,11 @@ function renderPorts() {
   $("portList").innerHTML = ports.map(p => {
     const dl = daysLeft(p.expires), none = p.plan === "none";
     const left = p.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : p.plan === "life" ? "ถาวร" : dl > 0 ? `เหลือ ${dl} วัน` : "หมดอายุ";
-    const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : "";
+    const ptype = p.port === "usd" || p.port === "cent" ? p.port : (p.currency ? (isCent(p.currency) ? "cent" : "usd") : (p.plan === "trial" ? "cent" : ""));
+    const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : (ptype === "cent" ? "USC" : ptype === "usd" ? "USD" : "");
+    const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "Cent" : "USD"}</span>` : "";
     return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
-      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span></span>
+      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b>${pbadge}<span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span></span>
       <span class="pc-eq">${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
       <span class="pc-sub">${p.account ? "บัญชี " + esc(p.account) : "ยังไม่เชื่อม EA"} · ${left}</span></button>`;
   }).join("") + (ports.length < (dashData.maxPorts || 10) ? `<button class="pchip add" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>แพ็กเกจแยกต่อพอร์ต</small></button>` : "");
@@ -2314,7 +2450,7 @@ function renderLics() {
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
       <td>${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
-      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</td>
+      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${+l.digits === 3 || +l.digits === 5 ? '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง">3 ทศนิยม</span>' : ""}</td>
       <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td><span class="pill ${st}">${stTxt}</span></td>
