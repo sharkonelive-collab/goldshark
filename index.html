@@ -1241,7 +1241,12 @@ async function api(action, data = {}) {
   if (!API_URL) return demoApi(action, data);
   try {
     const r = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, ...data }) });
-    return await r.json();
+    const j = await r.json();
+    if (!j.ok && (j.busy || /ผิดรูปแบบ|ตอบช้าเกิน|เชื่อมต่อหลังบ้านไม่ได้/.test(j.error || ""))) {
+      console.warn("GoldShark API:", j.error);
+      return { ok: false, busy: true, error: "เซิร์ฟเวอร์ไม่ว่างชั่วคราว กรุณาลองใหม่อีกครั้ง" };
+    }
+    return j;
   } catch (e) {
     return { ok: false, error: "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่" };
   }
@@ -1497,6 +1502,7 @@ async function loadMe(auto) {
   $("dashView").classList.remove("port-loading");
   if (!r.ok) {
     if (/เข้าสู่ระบบ|สมาชิก/.test(r.error || "")) logout(r.error);
+    else if (auto === true && r.busy) { $("lastSync").textContent = "เชื่อมต่อช้า จะลองใหม่อัตโนมัติ"; }
     else toast(r.error);
     return false;
   }
@@ -2420,7 +2426,7 @@ function onPending(n) {
 async function loadLics() {
   const r = await api("admin_list", { pass: session.pass });
   $("syncing").hidden = true;
-  if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else toast(r.error); return false; }
+  if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else if (!r.busy) toast(r.error); return false; }
   admHydrate(r);
   try { store.set("gs_adm_list", JSON.stringify({ licenses: r.licenses, pending: r.pending })); } catch (e) {}
   lics = r.licenses;
@@ -2569,7 +2575,7 @@ async function loadPays(quiet) {
   if (!quiet) $("syncing").hidden = false;
   const r = await api("admin_payments", { pass: session.pass });
   if (!quiet) $("syncing").hidden = true;
-  if (!r.ok) { toast(r.error); return; }
+  if (!r.ok) { if (!(quiet && r.busy)) toast(r.error); return; }
   pays = r.payments; renderPays();
   try { store.set("gs_adm_pays", JSON.stringify(pays.slice(0, 100))); } catch (e) {}
 }
