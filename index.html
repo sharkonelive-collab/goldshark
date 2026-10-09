@@ -874,11 +874,14 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .ov-big > b{align-items:baseline}
 .ov-sub{min-height:19px}
 
-.tile .dd-all{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.08);font-size:12px;color:var(--muted)}
-.tile .dd-all b{color:var(--text);font-weight:600}
-.tile .dd-all b.neg{color:var(--red)}
-.tile .dd-all span{opacity:.8}
-.tile .dd-all:empty{display:none}
+#dDDAll b{color:var(--text);font-weight:600}
+#dDDAll b.neg{color:var(--red)}
+/* แถบวัด DD วางชิดขอบล่างของช่อง ไม่เพิ่มความสูง → สูงเท่าช่องกำไรวันนี้ */
+.tile.dd-today{position:relative;overflow:hidden}
+.tile.dd-today .dd-meter{position:absolute;left:16px;right:16px;bottom:9px;height:3px;margin:0}
+.ov-metrics .tile{padding-bottom:20px}
+.ov-metrics .tile > small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:860px){.ov-metrics .tile > small{font-size:11.5px}.ov-metrics .tile{padding-bottom:18px}}
 </style>
 </head>
 <body>
@@ -1086,7 +1089,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     <div class="tiles t4 ov-metrics">
       <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
       <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
-        <div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div><small id="dDDTodaySub">–</small><small class="dd-all" id="dDDAll"></small></div>
+        <small id="dDDAll">–</small><div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div></div>
       <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
       <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
     </div>
@@ -1859,7 +1862,8 @@ function renderDash() {
     const cur = L.currency ? (isCent(L.currency) ? "USC" : L.currency) : "";
     $("dBalCur").textContent = cur; $("dEqCur").textContent = cur;
     $("dEqSub").textContent = S.balance > 0 ? `${(S.equity / S.balance * 100).toFixed(2)}% ของ Balance` : "\u00a0";
-    $("dFltSub").textContent = (S.buyCount ? `Buy ${signed(S.buyPL)}` : "") + (S.buyCount && S.sellCount ? " · " : "") + (S.sellCount ? `Sell ${signed(S.sellPL)}` : "") || "ไม่มี Order ค้าง";
+    const nB = innerWidth < 600 ? "B" : "Buy", nS = innerWidth < 600 ? "S" : "Sell";
+    $("dFltSub").textContent = (S.buyCount ? `${nB} ${signed(S.buyPL)}` : "") + (S.buyCount && S.sellCount ? " · " : "") + (S.sellCount ? `${nS} ${signed(S.sellPL)}` : "") || "ไม่มี Order ค้าง";
     $("dOpenSub").textContent = (S.buyCount + S.sellCount) ? `Buy ${S.buyCount} · Sell ${S.sellCount} · ${fmt(S.buyLots + S.sellLots)} lot` : "ไม่มี Order ค้าง";
     $("dFlt").textContent = signed(fl); $("dFlt").className = "num " + cls(fl);
     $("dOpen").textContent = ordTxt(S.buyCount + S.sellCount);
@@ -1955,19 +1959,18 @@ function renderDDToday(S) {
   const mx = same ? Math.max(+S.ddMax || 0, cur) : cur;
   const amt = same ? Math.max(+S.ddMaxAmt || 0, S ? Math.max(0, S.balance - S.equity) : 0) : (S ? Math.max(0, S.balance - S.equity) : 0);
   $("dDDToday").textContent = S ? mx.toFixed(2) + "%" : "–";
-  $("dDDTodaySub").textContent = S ? `ลอยสูงสุด -${fmt(amt)} · ตอนนี้ ${cur.toFixed(2)}%` : "–";
+
   if (!S) { $("ddBarMax").style.width = "0"; $("ddBarNow").style.width = "0"; }
   // DD สูงสุดตั้งแต่เริ่มรัน
   const all = S ? Math.max(+S.ddAll || 0, mx) : 0;
-  $("dDDAll").innerHTML = S && S.ddSince
-    ? `ตั้งแต่เริ่มรัน <b class="${all >= 20 ? "neg" : ""}">${all.toFixed(2)}%</b> · -${fmt(Math.max(+S.ddAllAmt || 0, amt))}` + (S.ddAllTime ? ` <span>(${new Date(+S.ddAllTime).toLocaleDateString("th-TH", { day: "numeric", month: "short" })})</span>` : "")
-    : "";
-  $("dDDAll").title = S && S.ddSince ? "นับตั้งแต่ " + new Date(+S.ddSince).toLocaleString("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+  $("dDDAll").innerHTML = S ? `ตั้งแต่เริ่มรัน <b class="${all >= 20 ? "neg" : ""}">${all.toFixed(2)}%</b>` : "–";
+  $("tDD").title = S ? [`วันนี้ลอยสูงสุด -${fmt(amt)}`,
+    `ตั้งแต่เริ่มรัน: ${all.toFixed(2)}% (-${fmt(Math.max(+S.ddAllAmt || 0, amt))})` + (S.ddAllTime ? " เมื่อ " + new Date(+S.ddAllTime).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" }) : ""),
+    S.ddSince ? "เริ่มนับ " + new Date(+S.ddSince).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" }) : ""].filter(Boolean).join("\n") : "";
   $("tDD").className = "tile dd-today" + (mx >= 20 ? " bad" : mx >= 10 ? " warn" : "");
   const C = dashData.settings || {}, lim = C.ddStopOn && +C.ddStopPct > 0 ? +C.ddStopPct : 30;
   $("ddBarMax").style.width = Math.min(100, mx / lim * 100) + "%";
   $("ddBarNow").style.width = Math.min(100, cur / lim * 100) + "%";
-  $("tDD").title = C.ddStopOn ? `แถบเต็ม = หยุดฉุกเฉินที่ DD ${lim}%` : `แถบเต็ม = DD ${lim}%`;
 }
 
 /* ============ กำไรที่ปิดแล้ว ============ */
