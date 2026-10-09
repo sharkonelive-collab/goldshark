@@ -303,6 +303,15 @@ select.field{appearance:auto}
 .badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:12px;text-align:center;margin-left:4px}
 .shop h3{margin:18px 0 10px}
 .shop h3:first-child{margin-top:0}
+.mem-box{border:1px solid var(--line,#26344A);border-radius:12px;padding:12px 14px;margin:6px 0 4px;background:rgba(59,148,255,.04)}
+.mem-h{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;letter-spacing:.02em}
+.mem-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.mem-grid .field{width:100%;min-width:0}
+.mem-ext{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;cursor:pointer}
+.mem-ext input{accent-color:#3B94FF;width:16px;height:16px}
+.mem-left{font-size:12px;margin-top:8px}
+.mem-left b{color:var(--text)}
+@media (max-width:560px){.mem-grid{grid-template-columns:1fr}}
 .pk-help{font-size:13px;margin:-4px 0 12px;line-height:1.55}
 .pk-list{display:flex;flex-direction:column;gap:8px}
 .pk-row{display:grid;grid-template-columns:minmax(0,1.6fr) 110px 130px auto 40px;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line,#26344A);border-radius:12px;background:rgba(255,255,255,.02)}
@@ -1387,8 +1396,20 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 
 <dialog id="setDlg">
   <form method="dialog" id="setForm">
-    <h3>ตั้งค่า EA</h3>
+    <h3>แก้ไขสมาชิก</h3>
     <p class="muted" style="margin:0 0 6px;font-size:14px" id="setFor"></p>
+    <div class="mem-box">
+      <div class="mem-h">ข้อมูลสมาชิก / แพ็กเกจ</div>
+      <div class="mem-grid">
+        <label class="fld"><span>ชื่อลูกค้า</span><input class="field" id="mName" maxlength="60"></label>
+        <label class="fld"><span>แพ็กเกจ</span><select class="field" id="mPlan"></select></label>
+        <label class="fld" id="mExpWrap"><span>วันหมดอายุ</span><input class="field" type="date" id="mExp"></label>
+        <label class="fld"><span>หมายเหตุ</span><input class="field" id="mNote" maxlength="200"></label>
+      </div>
+      <label class="mem-ext" id="mExtWrap" hidden><input type="checkbox" id="mExt" checked> <span id="mExtText"></span></label>
+      <div class="mem-left muted" id="mLeft"></div>
+    </div>
+    <h4 class="mem-h" style="margin:14px 0 4px">ตั้งค่า EA</h4>
     <p class="muted" style="font-size:13px;margin:0 0 8px">EA จะรับค่าใหม่ในรอบ heartbeat ถัดไป (ประมาณ 1 นาที) ลูกค้าแก้ได้เองเฉพาะล็อต ข่าว และเวลาเทรด</p>
     <div class="dig-box" id="digBox" hidden>
       <div><b>บัญชีนี้ใช้โบรกราคาทองทศนิยม 3 ตำแหน่ง</b><div class="muted" id="digBoxText" style="font-size:13px"></div></div>
@@ -1403,7 +1424,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     </div>
     <div class="dlg-actions">
       <button class="btn" value="cancel" formnovalidate>ยกเลิก</button>
-      <button class="btn primary" value="save" id="setSave">บันทึกการตั้งค่า</button>
+      <button class="btn primary" value="save" id="setSave">บันทึก</button>
     </div>
   </form>
 </dialog>
@@ -1633,7 +1654,7 @@ function demoApi(action, d) {
     if (action.startsWith("admin_")) {
       if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
       if (action === "admin_login") return res({ ok: true });
-      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
+      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; else l.purgeAt = 0; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
       if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
       if (action === "admin_slip") { const x = demo.pays.find(p => p.id === d.id); return res({ ok: true, image: (x && x.slip) || "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="45%" font-size="22" text-anchor="middle" fill="#333">ตัวอย่างสลิป</text><text x="50%" y="55%" font-size="30" text-anchor="middle" fill="#0a7">9,900.00 บาท</text></svg>') }); }
       if (action === "admin_pay_decide") {
@@ -1663,6 +1684,11 @@ function demoApi(action, d) {
         if (d.addDays) lic.expires = Math.max(lic.expires, Date.now()) + d.addDays * 86400000;
         if (d.resetAccount) lic.account = "";
         if (d.settings) Object.assign(lic.settings, d.settings);
+        if (d.name !== undefined) lic.name = d.name;
+        if (d.note !== undefined) lic.note = d.note;
+        if (d.plan) lic.plan = d.plan;
+        if (d.expires) lic.expires = d.expires;
+        if (lic.plan === "life") lic.expires = Date.UTC(2099, 11, 31);
         return res({ ok: true });
       }
       if (action === "admin_delete") { L.splice(L.indexOf(lic), 1); return res({ ok: true }); }
@@ -3060,13 +3086,64 @@ function reloadAdmin() {
 let admLic = null;
 const ADMIN_GROUPS = [{ id: "lot", title: "ล็อตเริ่มต้น", fields: [["startLot", "num", 0.01, "ล็อตเริ่มต้น", 0.01, 100, 0.01]] }].concat(CFG_GROUPS.filter(g => !g.member));
 const admForm = makeCfgForm($("admCfg"), ADMIN_GROUPS, () => admLic && admLic.settings,
-  ch => { $("setSave").textContent = ch.length ? `บันทึกการตั้งค่า (${ch.length})` : "บันทึกการตั้งค่า"; }, false);
+  ch => { if (typeof updSaveLabel === "function" && admLic) updSaveLabel(); else $("setSave").textContent = ch.length ? `บันทึก (${ch.length})` : "บันทึก"; }, false);
+/* ---- แก้ไขข้อมูลสมาชิก (ชื่อ / แพ็กเกจ / วันหมดอายุ / หมายเหตุ) ---- */
+const dayStr = t => { const d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const dayEnd = v => { const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d, 23, 59, 0).getTime(); };
+function memFill() {
+  const l = admLic;
+  $("mName").value = l.name || ""; $("mNote").value = l.note || "";
+  const pk = admPackages.length ? admPackages : Object.keys(PLAN_LABEL).filter(k => k !== "none" && k !== "trial").map(k => ({ id: k, label: PLAN_LABEL[k], days: 0 }));
+  const ids = pk.map(k => k.id);
+  $("mPlan").innerHTML = (l.plan === "none" ? `<option value="none">ยังไม่มีแพ็กเกจ</option>` : "") + `<option value="trial">ทดลองฟรี</option>` +
+    pk.map(k => `<option value="${esc(k.id)}">${esc(k.label)}${k.id === "life" || !k.days ? "" : ` (${k.days} วัน)`}</option>`).join("") +
+    (l.plan && !ids.includes(l.plan) && l.plan !== "trial" && l.plan !== "none" ? `<option value="${esc(l.plan)}">${esc(PLAN_LABEL[l.plan] || l.plan)} (ลบแล้ว)</option>` : "");
+  $("mPlan").value = l.plan || "none";
+  $("mExp").value = l.expires ? dayStr(l.expires) : "";
+  $("mExt").checked = true;
+  memSync();
+}
+function memDraft() {
+  const l = admLic, plan = $("mPlan").value, out = {};
+  if ($("mName").value.trim() !== (l.name || "")) out.name = $("mName").value.trim();
+  if ($("mNote").value.trim() !== (l.note || "")) out.note = $("mNote").value.trim();
+  if (plan !== (l.plan || "none")) out.plan = plan;
+  if (plan !== "life" && $("mExp").value && $("mExp").value !== (l.expires ? dayStr(l.expires) : "")) out.expires = dayEnd($("mExp").value);
+  return out;
+}
+function memSync() {
+  const l = admLic, plan = $("mPlan").value, life = plan === "life";
+  const k = admPackages.find(x => x.id === plan) || (plan === "trial" ? { days: 15 } : null);
+  const changed = plan !== (l.plan || "none");
+  $("mExpWrap").style.display = life ? "none" : "";
+  $("mExtWrap").hidden = !(changed && !life && k && k.days);
+  if (!$("mExtWrap").hidden) {
+    $("mExtText").textContent = `ต่ออายุตามแพ็กเกจ +${k.days} วัน`;
+    if ($("mExt").checked && !$("mExp").dataset.manual) $("mExp").value = dayStr(Math.max(l.expires || 0, Date.now()) + k.days * 86400000);
+  }
+  if (!changed || !$("mExt").checked) { if (!$("mExp").dataset.manual) $("mExp").value = l.expires ? dayStr(l.expires) : ""; }
+  const t = life ? 0 : ($("mExp").value ? dayEnd($("mExp").value) : 0);
+  const dl = t ? Math.ceil((t - Date.now()) / 86400000) : 0;
+  $("mLeft").innerHTML = life ? "แพ็กเกจถาวร ไม่มีวันหมดอายุ" : t ? (dl > 0 ? `เหลือ <b>${dl}</b> วัน` : `<b style="color:var(--red)">หมดอายุแล้ว</b> — EA จะหยุดเปิดไม้ใหม่`) : "";
+  updSaveLabel();
+}
+function updSaveLabel() {
+  const n = (admForm ? admForm.changed().length : 0) + Object.keys(admLic ? memDraft() : {}).length;
+  $("setSave").textContent = n ? `บันทึก (${n})` : "บันทึก";
+}
+["mName", "mNote"].forEach(id => $(id).addEventListener("input", updSaveLabel));
+$("mPlan").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
+$("mExt").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
+$("mExp").addEventListener("input", () => { $("mExp").dataset.manual = "1"; memSync(); });
+
 function openSettings(code) {
   admLic = lics.find(x => x.code === code); editCode = code;
+  delete $("mExp").dataset.manual;
   $("setFor").textContent = code + " — " + (admLic.name || "");
   $("dlgReset").hidden = !admLic.account;
   renderDigBox();
   admForm.fill(true);
+  memFill();
   $("setDlg").showModal();
 }
 function renderDigBox() {
@@ -3088,11 +3165,25 @@ $("dlgDigits").addEventListener("click", async () => {
 });
 $("setDlg").addEventListener("close", async () => {
   if ($("setDlg").returnValue !== "save") return;
-  const ch = admForm.changed(); if (!ch.length) return;
-  const settings = {}; ch.forEach(k => settings[k] = admForm.draft[k]);
-  const r = await api("admin_update", { pass: session.pass, code: editCode, settings });
-  toast(r.ok ? "บันทึกการตั้งค่าแล้ว" : r.error);
-  if (r.ok) { if (admLic) admLic.own = Object.assign({}, admLic.own || {}, settings), admLic.settings = Object.assign({}, admLic.settings || {}, settings); reloadAdmin(); }
+  const ch = admForm.changed(), mem = memDraft();
+  if (!ch.length && !Object.keys(mem).length) return;
+  const body = Object.assign({ pass: session.pass, code: editCode }, mem);
+  if (ch.length) { body.settings = {}; ch.forEach(k => body.settings[k] = admForm.draft[k]); }
+  const r = await api("admin_update", body);
+  toast(r.ok ? "บันทึกแล้ว" : r.error);
+  if (r.ok) {
+    const l = lics.find(x => x.code === editCode);
+    if (l) {
+      if (body.settings) l.own = Object.assign({}, l.own || {}, body.settings), l.settings = Object.assign({}, l.settings || {}, body.settings);
+      if (mem.name !== undefined) l.name = mem.name;
+      if (mem.note !== undefined) l.note = mem.note;
+      if (mem.plan) { l.plan = mem.plan; if (mem.plan !== "trial" && mem.plan !== "none") l.purgeAt = 0; }
+      if (mem.expires) l.expires = mem.expires;
+      if (l.plan === "life") l.expires = Date.UTC(2099, 11, 31);
+      renderLics();
+    }
+    reloadAdmin();
+  }
 });
 
 
