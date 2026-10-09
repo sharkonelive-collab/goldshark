@@ -873,6 +873,12 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .ov-big .ov-k{font-weight:500}
 .ov-big > b{align-items:baseline}
 .ov-sub{min-height:19px}
+
+.tile .dd-all{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.08);font-size:12px;color:var(--muted)}
+.tile .dd-all b{color:var(--text);font-weight:600}
+.tile .dd-all b.neg{color:var(--red)}
+.tile .dd-all span{opacity:.8}
+.tile .dd-all:empty{display:none}
 </style>
 </head>
 <body>
@@ -1080,7 +1086,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     <div class="tiles t4 ov-metrics">
       <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
       <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
-        <div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div><small id="dDDTodaySub">–</small></div>
+        <div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div><small id="dDDTodaySub">–</small><small class="dd-all" id="dDDAll"></small></div>
       <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
       <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
     </div>
@@ -1563,7 +1569,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -1951,6 +1957,12 @@ function renderDDToday(S) {
   $("dDDToday").textContent = S ? mx.toFixed(2) + "%" : "–";
   $("dDDTodaySub").textContent = S ? `ลอยสูงสุด -${fmt(amt)} · ตอนนี้ ${cur.toFixed(2)}%` : "–";
   if (!S) { $("ddBarMax").style.width = "0"; $("ddBarNow").style.width = "0"; }
+  // DD สูงสุดตั้งแต่เริ่มรัน
+  const all = S ? Math.max(+S.ddAll || 0, mx) : 0;
+  $("dDDAll").innerHTML = S && S.ddSince
+    ? `ตั้งแต่เริ่มรัน <b class="${all >= 20 ? "neg" : ""}">${all.toFixed(2)}%</b> · -${fmt(Math.max(+S.ddAllAmt || 0, amt))}` + (S.ddAllTime ? ` <span>(${new Date(+S.ddAllTime).toLocaleDateString("th-TH", { day: "numeric", month: "short" })})</span>` : "")
+    : "";
+  $("dDDAll").title = S && S.ddSince ? "นับตั้งแต่ " + new Date(+S.ddSince).toLocaleString("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
   $("tDD").className = "tile dd-today" + (mx >= 20 ? " bad" : mx >= 10 ? " warn" : "");
   const C = dashData.settings || {}, lim = C.ddStopOn && +C.ddStopPct > 0 ? +C.ddStopPct : 30;
   $("ddBarMax").style.width = Math.min(100, mx / lim * 100) + "%";
