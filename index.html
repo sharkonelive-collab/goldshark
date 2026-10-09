@@ -224,6 +224,8 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .cfg-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);display:none}
 .cfg-group.changed .cfg-dot{display:inline-block}
 .adv-tag{white-space:nowrap;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.cfg-warn{margin:2px 2px 14px;padding:10px 12px;border-radius:12px;background:rgba(242,184,75,.08);border:1px solid rgba(242,184,75,.4);color:#F5D48C;font-size:13px;line-height:1.6}
+.cfg-warn p{margin:0}.cfg-warn p+p{margin-top:6px}.cfg-warn b{color:#FFE2A6;font-weight:600}
 .cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px 18px;padding:4px 2px 18px}
 .fld span{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
 .fld .field{padding:8px 10px}
@@ -1497,7 +1499,7 @@ async function api(action, data = {}) {
 const DEMO_PUB = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3c7JsneeC9XNw3Tc3pr\n8tcfNEhYSTEGY2PQDL2amopgTconLwtAECXBOiwcN4Xk5VE2ilLj6LmNfIy5xKUc\nBXOuEdk137KC1WPF8Q5CxeCEmxajMdLLyu3C1bi0ZXaFI1fomgj8oelh4SG5uy4r\nid0H3tYxRMKXdIMtWyjurVzfpVAlhf3nWNHTS3G80VguO3QFCq/xoiwRKT8YGFcY\nGC6uEy4XW6rdBIZgZfVPe9uHQE6eTUY5m5G9Whheef/AO9xDedPn65Z/EuDOtowj\nP3qHt+ONxhW+O+hY6yM7YLX4S65mGgTxo+qUUC/f0qDHVlBrJdxes/AkjOTQUl/b\neQIDAQAB\n-----END PUBLIC KEY-----\n";   // กุญแจตัวอย่าง (โหมดตัวอย่างเท่านั้น)
 const demo = (() => {
   const now = Date.now();
-  const base = () => ({ startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 250 });
+  const base = () => ({ startLot: 0.01, gridDist: 300, lotMult: 1.5, maxOrders: 30, basketTP: 250 });
   const mk = (code, name, acct, days, status, eq, plan, port, login) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: base(), plan, port, login, currency: port === "usd" ? "USD" : port === "cent" ? "USC" : "" });
   const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55, "month", "cent", "0812345678"),
     mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1, "year", "usd", "prae@mail.com"),
@@ -1513,7 +1515,7 @@ const demo = (() => {
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
   const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
-    port: { cent: { basketTP: 250, cutLoss: 10000, cutLossOn: false, ddStopOn: false }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 12, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false } } };
+    port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "12 เดือน", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
@@ -2075,15 +2077,32 @@ $("lotSave").addEventListener("click", async () => {
 });
 
 
+/* ============ คำเตือนตอนเปิดระบบตัดขาดทุน / ปรับจำนวนไม้แก้ (หน้าสมาชิก) ============ */
+function riskWarn(d, s) {
+  const out = [];
+  const turnedOn = [["cutPctOn", "ปิดขาดทุนเป็น %"], ["cutLossOn", "ตัดขาดทุนเป็นจำนวนเงิน"], ["ddStopOn", "หยุดฉุกเฉิน DD"]].filter(([k]) => d[k] && !s[k]).map(([, n]) => n);
+  if (turnedOn.length) out.push(`<b>กำลังเปิด: ${turnedOn.join(", ")}</b> เมื่อถึงเงื่อนไข EA จะ<b>ปิดออเดอร์ทั้งตะกร้าทันทีแบบขาดทุนจริง</b> ย้อนกลับไม่ได้ ถึงราคาจะกลับมาภายหลังก็ตาม ช่วยกันพอร์ตแตก แต่ถ้าตั้งใกล้เกินไปจะโดนตัดบ่อย`
+    + (d.ddStopOn && !s.ddStopOn ? ` · หยุดฉุกเฉินจะ<b>ปิดทุกออเดอร์และพัก EA ${d.ddPauseMin} นาที</b>` : ""));
+  const on = [d.cutPctOn, d.cutLossOn, d.ddStopOn].some(Boolean), wasOn = [s.cutPctOn, s.cutLossOn, s.ddStopOn].some(Boolean);
+  if (!on && wasOn) out.push(`<b>กำลังปิดระบบตัดขาดทุนทั้งหมด</b> ตะกร้าที่ติดลบจะถูกถือไว้จนกว่าราคาจะกลับมา ถ้าราคาวิ่งทางเดียวยาว พอร์ตอาจติดลบหนักจน Margin ไม่พอ`);
+  if (Number(d.maxOrders) !== Number(s.maxOrders)) {
+    out.push(Number(d.maxOrders) > Number(s.maxOrders)
+      ? `<b>เพิ่มไม้แก้เป็น ${d.maxOrders} ไม้</b> ล็อตจะโตขึ้นตามตัวคูณทุกไม้ ใช้ Margin มากขึ้นและติดลบได้ลึกขึ้น ควรมีทุนพอและเปิดระบบตัดขาดทุนไว้`
+      : `<b>ลดไม้แก้เหลือ ${d.maxOrders} ไม้</b> ครบจำนวนแล้ว EA จะหยุดแก้ไม้ ตะกร้าอาจติดลบค้างนานขึ้นและปิดทุนได้ยากขึ้น`);
+  }
+  if (!out.length && !on) out.push(`ตอนนี้ไม่ได้เปิดระบบตัดขาดทุน EA จะแก้ไม้ไปจนครบ ${d.maxOrders} ไม้แล้วถือรอ แนะนำให้เปิดอย่างน้อย 1 ระบบ`);
+  return out.map(t => `<p>⚠️ ${t}</p>`).join("");
+}
+
 /* ============ ตั้งค่า EA ทั้งหมด (ต้องตรงกับ SCHEMA ใน Code.gs) ============ */
 const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
 const CFG_GROUPS = [
   { id: "main", title: "ไม้หลัก / Martingale", fields: [
-    ["gridDist", "num", 270, "ระยะแก้ไม้ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
+    ["gridDist", "num", 300, "ระยะแก้ไม้ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["lotMult", "num", 1.5, "ตัวคูณล็อต", 1, 5, 0.01],
     ["grid2Same", "bool", true, "ไม้แก้ไม้แรกใช้ล็อตเท่าไม้เริ่ม แล้วค่อยคูณ"],
     ["repeatLot", "int", 0, "ใช้ล็อตซ้ำกี่ไม้ก่อนคูณ (0=ปิด)", 0, 100, 1],
-    ["maxOrders", "int", 15, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1],
+    ["maxOrders", "int", 30, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1],
     ["orderGap", "int", 60, "เว้นเวลาระหว่างไม้แก้/ไม้ตามทาง (วินาที, 0=ไม่เว้น)", 0, 86400, 10]] },
   { id: "close", title: "ปิดกำไร / ขาดทุน", fields: [
     ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
@@ -2099,8 +2118,8 @@ const CFG_GROUPS = [
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
     ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที, 1440 = 1 วัน)", 0, 43200, 60],
     ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
-  { id: "risk", title: "ไม้แก้ / ระบบตัดขาดทุน", member: true, fields: [
-    ["maxOrders", "int", 15, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
+  { id: "risk", title: "ไม้แก้ / ระบบตัดขาดทุน", member: true, warn: riskWarn, fields: [
+    ["maxOrders", "int", 30, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
     ["cutPctOn", "bool", false, "ปิดขาดทุนเป็น % : ตะกร้าติดลบเกิน % ของ Balance → ปิดทั้งตะกร้า"],
     ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance · เช่น 20 = พอร์ต $1,000 ติดลบ $200)", 1, 95, 1],
     ["cutLossOn", "bool", false, "ตัดขาดทุนเป็นจำนวนเงิน : ตะกร้าติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
@@ -2197,6 +2216,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   root.innerHTML = groups.map(g => `
     <details class="cfg-group" data-g="${g.id}" ${open ? "open" : ""}>
       <summary>${g.title}${g.adv ? ' <span class="adv-tag">ขั้นสูง</span>' : ""}<span class="cfg-dot" title="มีค่าที่ยังไม่บันทึก"></span><span class="spacer"></span><span class="cfg-sum"></span></summary>
+      ${g.warn ? `<div class="cfg-warn" hidden></div>` : ""}
       <div class="cfg-grid">${g.fields.map(fieldHTML).join("")}</div>
       ${g.days ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days"><tbody>${DAYS.map(([d, name]) => `
         <tr><td class="dname">${name}</td>
@@ -2216,7 +2236,8 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       if (g.toggle) { const on = !!draft[g.toggle]; sum.textContent = on ? "เปิด" : "ปิด"; sum.classList.toggle("on", on); }
       else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} จุด × ${draft.lotMult}`;
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
-      else if (g.id === "risk") {
+      if (g.warn) { const w = box.querySelector(".cfg-warn"), t = g.warn(draft, saved()); w.hidden = !t; w.innerHTML = t || ""; }
+      if (g.id === "risk") {
         const on = [draft.cutPctOn ? "-" + draft.cutPct + "%" : "", draft.cutLossOn ? "-" + draft.cutLoss : "", draft.ddStopOn ? "DD " + draft.ddStopPct + "%" : ""].filter(Boolean);
         sum.textContent = `${draft.maxOrders} ไม้ · ${on.length ? "ตัด " + on.join(" / ") : "ไม่ตัดขาดทุน"}`; sum.classList.toggle("on", on.length > 0);
       }
@@ -2262,6 +2283,10 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
+  if (ch.some(k => ["maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin"].includes(k))) {
+    const msg = riskWarn(userForm.draft, cfgSaved()).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
+    if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / ระบบตัดขาดทุน?\n\n" + msg)) return;
+  }
   $("cfgSave").disabled = true;
   const r = await api("user_settings", { token: session.token, code: session.port, settings });
   if (!r.ok) { toast(r.error); fillCfg(false); return; }
