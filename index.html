@@ -845,6 +845,11 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
 /* แพ็กเกจ / โค้ด */
 .code-copy,#myCode{background:linear-gradient(180deg,#FFF3D1 0%,#F2D27F 50%,#DDAE46 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;letter-spacing:.08em;font-family:var(--display);font-weight:700}
 .code-copy:hover{filter:brightness(1.15)}
+td.code-cell .code-copy{background:rgba(242,210,127,.07)!important;-webkit-background-clip:border-box;background-clip:border-box;color:#F2D27F!important;-webkit-text-fill-color:#F2D27F;border:1px solid rgba(242,210,127,.28)!important;border-radius:8px;padding:5px 10px;font-size:13px;letter-spacing:.06em}
+td.code-cell .code-copy:hover{background:rgba(242,210,127,.16)!important;filter:none}
+.purge-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;color:#FFB4B4;background:rgba(255,77,77,.12);border:1px solid rgba(255,77,77,.3);white-space:nowrap}
+.purge-note{margin:0 0 12px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5;color:#FFD3D3;background:rgba(255,77,77,.10);border:1px solid rgba(255,77,77,.32)}
+.adm-live{font-size:12px;color:var(--muted);margin-left:8px;white-space:nowrap}
 .plan-opt{background:var(--glass);border-color:rgba(255,255,255,.08);transition:border-color .15s,box-shadow .15s}
 .plan-opt[aria-pressed="true"]{border-color:rgba(59,148,255,.75);box-shadow:inset 0 0 0 1px rgba(59,148,255,.5),0 14px 30px -16px rgba(59,148,255,.6)}
 .plan-opt[aria-pressed="true"] b{color:#DCEBFF}
@@ -1062,6 +1067,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
   <details class="setup hl" id="setupBox">
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
+      <div class="purge-note" id="purgeNote" hidden></div>
       <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
       <ol class="steps">
         <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
@@ -1605,7 +1611,7 @@ function demoApi(action, d) {
     if (action.startsWith("admin_")) {
       if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
       if (action === "admin_login") return res({ ok: true });
-      if (action === "admin_list") return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length });
+      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length }); }
       if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
       if (action === "admin_slip") { const x = demo.pays.find(p => p.id === d.id); return res({ ok: true, image: (x && x.slip) || "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="45%" font-size="22" text-anchor="middle" fill="#333">ตัวอย่างสลิป</text><text x="50%" y="55%" font-size="30" text-anchor="middle" fill="#0a7">9,900.00 บาท</text></svg>') }); }
       if (action === "admin_pay_decide") {
@@ -1896,6 +1902,9 @@ function renderDash() {
   syncLot();
   renderNews();
   fillCfg(false);
+  const pLeft = L.purgeAt && !S ? L.purgeAt - Date.now() : 0;
+  $("purgeNote").hidden = !pLeft;
+  if (pLeft) $("purgeNote").innerHTML = `⚠ เชื่อม EA กับบัญชี MT5 ภายใน <b>${purgeLeftText(pLeft)}</b> ถ้ายังไม่เชื่อม โค้ดนี้จะถูกลบอัตโนมัติ`;
   if (!setupTouched) $("setupBox").open = !S;
   drawChart();
 }
@@ -2825,7 +2834,8 @@ async function openAdmin() {
     if (document.hidden) return;
     loadLics();
     if (!$("atab-pays").hidden && !pays.some(x => x._saving)) loadPays(true);
-  }, 20000);
+  }, 15000);
+  if (!window._admFocus) { window._admFocus = 1; window.addEventListener("focus", () => { if (session.mode === "admin" && !document.hidden) loadLics(); }); }
 }
 
 function admHydrate(r) {
@@ -2888,6 +2898,11 @@ async function loadLics() {
   renderLics();
 }
 
+function purgeLeftText(ms) {
+  if (ms <= 3600000) return "1 ชั่วโมง";
+  if (ms < 86400000) return Math.ceil(ms / 3600000) + " ชั่วโมง";
+  return Math.ceil(ms / 86400000) + " วัน";
+}
 function licState(l) {
   if (l.status === "closed") return ["expired", "ปิดโดยสมาชิก"];
   if (l.status !== "active") return ["suspended", "ระงับ"];
@@ -2907,7 +2922,7 @@ function renderLics() {
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
       <td>${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
-      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
+      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
       <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td><span class="pill ${st}">${stTxt}</span></td>
@@ -2942,7 +2957,7 @@ $("createForm").addEventListener("submit", async e => {
   $("issuedCode").textContent = r.code; $("issued").hidden = false;
   $("createForm").reset();
   toast("ออกโค้ดแล้ว");
-  loadLics();
+  reloadAdmin();
 });
 
 $("copyIssued").addEventListener("click", () => copy($("issuedCode").textContent));
@@ -2967,7 +2982,7 @@ $("dlgLink").addEventListener("click", async () => {
   $("setDlg").close();
   const r = await api("admin_link", { pass: session.pass, code: editCode, login: login.trim() });
   toast(r.ok ? (login.trim() ? "ผูกกับ " + login.trim() + " แล้ว" : "ปลดออกจากสมาชิกแล้ว") : r.error);
-  if (r.ok) loadLics();
+  if (r.ok) reloadAdmin();
 });
 $("dlgDelete").addEventListener("click", () => { $("setDlg").close(); runAct("delete", editCode); });
 async function runAct(act, code) {
@@ -2983,7 +2998,24 @@ async function runAct(act, code) {
   if (!r) return;
   if (!r.ok) { toast(r.error); return; }
   toast({ add30: "ต่ออายุ 30 วันแล้ว", suspend: "ระงับแล้ว", activate: "เปิดใช้แล้ว", reset: "ย้ายบัญชีได้แล้ว", delete: "ลบแล้ว" }[act]);
+  // อัปเดตตารางทันที ไม่ต้องรอเซิร์ฟเวอร์ แล้วค่อยดึงของจริงมาทับ
+  const l = lics.find(x => x.code === code);
+  if (act === "delete") lics = lics.filter(x => x.code !== code);
+  else if (l) {
+    if (act === "add30") l.expires = Math.max(l.expires || 0, Date.now()) + 30 * 86400000;
+    if (act === "suspend") l.status = "suspended";
+    if (act === "activate") l.status = "active";
+    if (act === "reset") l.account = "";
+  }
+  renderLics();
+  reloadAdmin();
+}
+// ดึงข้อมูลใหม่หลังแก้ไข (ซ้ำอีกรอบใน 4 วินาที เผื่อชีตยังเขียนไม่เสร็จ)
+let reloadT = null;
+function reloadAdmin() {
   loadLics();
+  if (!$("atab-pays").hidden) loadPays(true);
+  clearTimeout(reloadT); reloadT = setTimeout(() => { loadLics(); if (!$("atab-pays").hidden) loadPays(true); }, 4000);
 }
 
 let admLic = null;
@@ -3021,7 +3053,7 @@ $("setDlg").addEventListener("close", async () => {
   const settings = {}; ch.forEach(k => settings[k] = admForm.draft[k]);
   const r = await api("admin_update", { pass: session.pass, code: editCode, settings });
   toast(r.ok ? "บันทึกการตั้งค่าแล้ว" : r.error);
-  if (r.ok) loadLics();
+  if (r.ok) { if (admLic) admLic.own = Object.assign({}, admLic.own || {}, settings), admLic.settings = Object.assign({}, admLic.settings || {}, settings); reloadAdmin(); }
 });
 
 
@@ -3105,7 +3137,7 @@ $("payBody").addEventListener("click", async e => {
   renderPays();
   if (r.pending != null) { $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || ""; lastPending = r.pending; if (!r.pending) document.title = "GoldShark Admin"; }
   toast(body.approve ? "อนุมัติแล้ว ต่ออายุโค้ดให้แล้ว" : "บันทึกว่าไม่ผ่านแล้ว");
-  loadLics();   // อัปเดตตารางโค้ดเบื้องหลัง ไม่ต้องรอ
+  reloadAdmin();   // อัปเดตตารางโค้ดเบื้องหลัง ไม่ต้องรอ
 });
 
 function shopURisk() {
