@@ -303,6 +303,28 @@ select.field{appearance:auto}
 .badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:12px;text-align:center;margin-left:4px}
 .shop h3{margin:18px 0 10px}
 .shop h3:first-child{margin-top:0}
+.pk-help{font-size:13px;margin:-4px 0 12px;line-height:1.55}
+.pk-list{display:flex;flex-direction:column;gap:8px}
+.pk-row{display:grid;grid-template-columns:minmax(0,1.6fr) 110px 130px auto 40px;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line,#26344A);border-radius:12px;background:rgba(255,255,255,.02)}
+.pk-row.off{opacity:.6}
+.pk-row input[type=checkbox]{accent-color:#3B94FF;width:16px;height:16px}
+.pk-row .field{height:40px;min-width:0}
+.pk-row .pk-unit{position:relative}
+.pk-row .pk-unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
+.pk-row .pk-unit .field{padding-right:44px;width:100%}
+.pk-row .pk-on{display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;cursor:pointer}
+.pk-row .pk-del{width:36px;height:36px;padding:0;border-radius:10px;color:#FF8A8A}
+.pk-row .pk-del:disabled{opacity:.25;cursor:not-allowed}
+.pk-row .pk-perm{font-size:13px;color:var(--muted);text-align:center}
+.pk-head{display:grid;grid-template-columns:minmax(0,1.6fr) 110px 130px auto 40px;gap:10px;padding:0 12px;font-size:12px;color:var(--muted)}
+.pk-add{margin:10px 0 4px}
+@media (max-width:640px){
+  .pk-head{display:none}
+  .pk-row{grid-template-columns:1fr 1fr;gap:8px}
+  .pk-row .pk-name{grid-column:1/-1}
+  .pk-row .pk-on{grid-column:1}
+  .pk-row .pk-del{grid-column:2;justify-self:end}
+}
 .pill.pending{background:rgba(217,174,82,.15);color:var(--gold)}
 .pill.approved{background:rgba(63,182,139,.15);color:var(--green)}
 .pill.rejected{background:rgba(224,49,63,.15);color:var(--red)}
@@ -1294,14 +1316,10 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 
   <div id="atab-shop" hidden>
     <section class="card shop" style="max-width:760px">
-      <h3>ราคาแพ็กเกจ (บาท)</h3>
-      <div class="cfg-grid">
-        <label class="fld"><span>1 เดือน (30 วัน)</span><input class="field num" type="number" min="0" id="shopMonth"></label>
-        <label class="fld"><span>3 เดือน (90 วัน)</span><input class="field num" type="number" min="0" id="shopM3"></label>
-        <label class="fld"><span>6 เดือน (180 วัน)</span><input class="field num" type="number" min="0" id="shopM6"></label>
-        <label class="fld"><span>12 เดือน (365 วัน)</span><input class="field num" type="number" min="0" id="shopYear"></label>
-        <label class="fld"><span>ถาวร (ไม่ขายหน้าเว็บ · ใช้ตอนแอดมินออกโค้ด)</span><input class="field num" type="number" min="0" id="shopLife"></label>
-      </div>
+      <h3>แพ็กเกจ</h3>
+      <p class="muted pk-help">แก้ชื่อ จำนวนวัน ราคา ได้เลย · ติ๊ก <b>ขายหน้าเว็บ</b> = สมาชิกเห็นและซื้อเองได้ · ลบแล้วโค้ดที่ใช้แพ็กเกจนั้นอยู่ยังใช้ต่อได้จนหมดอายุ · กด <b>บันทึกการตั้งค่าร้าน</b> ด้านล่างเพื่อบันทึก</p>
+      <div class="pk-list" id="pkList"></div>
+      <button type="button" class="btn small ghost pk-add" id="pkAdd">+ เพิ่มแพ็กเกจ</button>
       <h3>รับเงินพร้อมเพย์</h3>
       <div class="cfg-grid">
         <label class="fld"><span>เบอร์โทร / เลขบัตรประชาชน / รหัส e-Wallet (15 หลัก) ที่ผูกพร้อมเพย์</span><input class="field num" inputmode="numeric" id="shopPP"></label>
@@ -1520,7 +1538,9 @@ const demo = (() => {
     e = b - Math.max(0, cyc) - Math.random() * 25;
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
-  const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
+  const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 },
+    packages: [{ id: "month", label: "1 เดือน", days: 30, price: 1290, on: true }, { id: "m3", label: "3 เดือน", days: 90, price: 3490, on: true }, { id: "m6", label: "6 เดือน", days: 180, price: 6490, on: true }, { id: "year", label: "12 เดือน", days: 365, price: 9900, on: true }, { id: "life", label: "ถาวร", days: 0, price: 24900, on: false }],
+    promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
     port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
@@ -1528,6 +1548,8 @@ const demo = (() => {
   return { lics, hist, config, users, pays };
 })();
 
+function demoPlans() { return demo.config.packages.filter(k => k.on && k.price > 0).map(k => ({ id: k.id, label: k.label, days: k.days, price: k.price })); }
+function demoLabels() { const o = {}; demo.config.packages.forEach(k => { o[k.id] = k.label; }); return o; }
 function demoApi(action, d) {
   const L = demo.lics;
   const uOf = () => demo.users.find(u => "demo-" + u.id === d.token);
@@ -1564,7 +1586,7 @@ function demoApi(action, d) {
       if (action === "port_close") { u.codes = u.codes.filter(c => c !== lic.code); lic.status = "closed"; d.code = ""; action = "me"; }
       if (action === "me") {
         lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
-        if (!lic) return res({ ok: true, user: { name: u.name, login: u.login }, ports: [], maxPorts: 10, plans: [{ id: "month", label: "1 เดือน", days: 30, price: demo.config.prices.month }, { id: "m3", label: "3 เดือน", days: 90, price: demo.config.prices.m3 }, { id: "m6", label: "6 เดือน", days: 180, price: demo.config.prices.m6 }, { id: "year", label: "12 เดือน", days: 365, price: demo.config.prices.year }], pay: { promptpay: demo.config.promptpay, payName: demo.config.payName }, payments: [] });
+        if (!lic) return res({ ok: true, user: { name: u.name, login: u.login }, ports: [], maxPorts: 10, plans: demoPlans(), planLabels: demoLabels(), pay: { promptpay: demo.config.promptpay, payName: demo.config.payName }, payments: [] });
         const last = demo.hist[demo.hist.length - 1], snapOk = !!lic.equity;
         const nowH = Math.floor(Date.now() / 3600000), hp = [];
         for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
@@ -1572,7 +1594,7 @@ function demoApi(action, d) {
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
         const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance, eaOff: !!l.eaOff }; });
         return res({ ok: true, host: { on: demo.config.hostOn, pubKey: DEMO_PUB, brokers: demo.config.hostBrokers, agentOnline: true }, hosting: lic.hosting || null, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
-          plans: [{ id: "month", label: "1 เดือน", days: 30, price: demo.config.prices.month }, { id: "m3", label: "3 เดือน", days: 90, price: demo.config.prices.m3 }, { id: "m6", label: "6 เดือน", days: 180, price: demo.config.prices.m6 }, { id: "year", label: "12 เดือน", days: 365, price: demo.config.prices.year }],
+          plans: demoPlans(), planLabels: demoLabels(),
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
           payments: demo.pays.filter(x => x.userId === u.id),
           license: { code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk, eaOff: !!lic.eaOff },
@@ -1598,8 +1620,8 @@ function demoApi(action, d) {
         if (!u.codes.includes(t.code)) u.codes.push(t.code); return res({ ok: true, code: t.code });
       }
       if (action === "pay_submit") {
-        const pl = { month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
-        demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: lic.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
+        const pk = demo.config.packages.find(k => k.id === d.plan && k.on); if (!pk) return res({ ok: false, error: "เลือกแพ็กเกจก่อน" });
+        demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: lic.code, plan: d.plan, planLabel: pk.label, amount: pk.price, status: "pending", created: Date.now(), note: "", slip: d.slip });
         return res({ ok: true });
       }
     }
@@ -1611,18 +1633,21 @@ function demoApi(action, d) {
     if (action.startsWith("admin_")) {
       if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
       if (action === "admin_login") return res({ ok: true });
-      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length }); }
+      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
       if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
       if (action === "admin_slip") { const x = demo.pays.find(p => p.id === d.id); return res({ ok: true, image: (x && x.slip) || "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="45%" font-size="22" text-anchor="middle" fill="#333">ตัวอย่างสลิป</text><text x="50%" y="55%" font-size="30" text-anchor="middle" fill="#0a7">9,900.00 บาท</text></svg>') }); }
       if (action === "admin_pay_decide") {
         const x = demo.pays.find(p => p.id === d.id); if (!x) return res({ ok: false, error: "ไม่พบรายการ" });
         x.status = d.approve ? "approved" : "rejected"; x.note = d.note || "";
-        if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + ({ month: 30, m3: 90, m6: 180, year: 365 }[x.plan] || 30) * 86400000; } }
+        if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + (((demo.config.packages.find(k => k.id === x.plan) || {}).days) || 30) * 86400000; } }
         return res({ ok: true, payments: demo.pays.map(p => Object.assign({}, p)), pending: demo.pays.filter(p => p.status === "pending").length });
       }
       if (action === "admin_config") return res({ ok: true, config: demo.config });
       if (action === "admin_host") { if (d.newKey) demo.agentKey = "demo" + Math.random().toString(36).slice(2, 14); return res({ ok: true, agentKey: demo.agentKey || "demo7f3k29xq1m0z", hasPub: true, agent: { name: "VPS-1" }, lastSeen: Date.now() - 40000, running: 1, wantRun: 1, rows: [] }); }
-      if (action === "admin_config_set") { demo.config = Object.assign({}, demo.config, d.config); return res({ ok: true, config: demo.config }); }
+      if (action === "admin_config_set") {
+        if (d.config.packages) d.config.packages = d.config.packages.map(k => Object.assign({}, k, { id: k.id || "p" + Math.random().toString(36).slice(2, 7) }));
+        demo.config = Object.assign({}, demo.config, d.config); return res({ ok: true, config: demo.config });
+      }
       if (action === "admin_qr_upload") { demo.qrImg = d.image; Object.assign(demo.config, { qrFile: "demo", qrVer: Date.now(), qrMode: "image" }); return res({ ok: true, config: demo.config }); }
       if (action === "admin_qr_delete") { demo.qrImg = ""; Object.assign(demo.config, { qrFile: "", qrVer: Date.now(), qrMode: "auto" }); return res({ ok: true, config: demo.config }); }
       if (action === "admin_create") {
@@ -1767,6 +1792,7 @@ async function loadMe(auto) {
     return false;
   }
   dashData = r;
+  if (r.planLabels) Object.assign(PLAN_LABEL, r.planLabels);
   if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
   meCachePut(r);
   markSynced();
@@ -2349,7 +2375,7 @@ function renderNews() {
 })();
 
 /* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
-const PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
+let PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
 const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
 
 function renderNoLicense() {
@@ -2388,7 +2414,7 @@ $("planCode").addEventListener("click", () => copy($("planCode").textContent));
 $("closePort").addEventListener("click", async () => {
   const L = dashData.license; if (!L) return;
   const P = (dashData.ports || []).find(x => x.code === L.code) || {};
-  const dl = daysLeft(L.expires), paid = ["month", "m3", "m6", "year", "life"].includes(L.plan) && (L.plan === "life" || dl > 0);
+  const dl = daysLeft(L.expires), paid = L.plan && L.plan !== "none" && L.plan !== "trial" && (L.plan === "life" || dl > 0);
   let msg = `ปิดพอร์ต "${L.label || L.code}" (${L.code})?\n\n• พอร์ตจะหายจากหน้าสมาชิก และ EA ที่ใช้โค้ดนี้จะหยุดเปิดไม้ใหม่`;
   if (P.online) msg += "\n• EA ของพอร์ตนี้ยังออนไลน์อยู่ ควรปิดไม้และถอด EA ออกจากกราฟก่อน";
   if (paid) msg += `\n• แพ็กเกจ${PLAN_LABEL[L.plan]}ที่เหลือ${L.plan === "life" ? " (ถาวร)" : " " + dl + " วัน"} จะใช้ไม่ได้อีก และไม่คืนเงิน`;
@@ -2889,6 +2915,8 @@ async function loadLics() {
   $("syncing").hidden = true;
   if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else if (!r.busy) toast(r.error); return false; }
   admHydrate(r);
+  if (r.planLabels) Object.assign(PLAN_LABEL, r.planLabels);
+  if (r.packages) fillPlanSelect(r.packages);
   try { store.set("gs_adm_list", JSON.stringify({ licenses: r.licenses, pending: r.pending })); } catch (e) {}
   lics = r.licenses;
   $("payBadge").hidden = !r.pending; $("payBadge").textContent = r.pending || "";
@@ -2937,9 +2965,20 @@ function renderLics() {
 }
 
 $("search").addEventListener("input", renderLics);
+let admPackages = [];
+function fillPlanSelect(pk) {
+  admPackages = pk || [];
+  const cur = $("cPlan").value;
+  const opts = admPackages.map(k => `<option value="${esc(k.id)}">${esc(k.label)}${k.id === "life" ? "" : ` (${k.days} วัน)`}${k.on ? "" : " · ไม่ขายหน้าเว็บ"}</option>`).join("") + `<option value="trial">ทดลองฟรี</option>`;
+  if ($("cPlan").innerHTML !== opts) { $("cPlan").innerHTML = opts; if ([...$("cPlan").options].some(o => o.value === cur)) $("cPlan").value = cur; }
+}
 $("cPlan").addEventListener("change", () => {
-  const d = { month: 30, m3: 90, m6: 180, year: 365 }[$("cPlan").value];
-  const c = d && document.querySelector(`#dayChips .chip[data-days="${d}"]`); if (c) c.click();
+  const k = admPackages.find(x => x.id === $("cPlan").value);
+  const d = k ? k.days : { month: 30, m3: 90, m6: 180, year: 365 }[$("cPlan").value];
+  if (!d) return;
+  const c = document.querySelector(`#dayChips .chip[data-days="${d}"]`);
+  if (c) c.click();
+  else { pickDays = d; document.querySelectorAll("#dayChips .chip").forEach(x => x.setAttribute("aria-pressed", "false")); }
 });
 $("refreshBtn").addEventListener("click", async () => { await loadLics(); toast("รีเฟรชแล้ว"); });
 
@@ -3152,11 +3191,43 @@ function shopURisk() {
 }
 ["shopU_gridDist", "shopU_lotMult", "shopU_maxOrders", "shopCLu", "shopU_cutLossOn"].forEach(id => $(id).addEventListener("input", shopURisk));
 
+/* ---- แพ็กเกจ: เพิ่ม / แก้ / ซ่อน / ลบ ---- */
+let pkDraft = [];
+function renderPk() {
+  $("pkList").innerHTML = `<div class="pk-head"><span>ชื่อแพ็กเกจ</span><span>จำนวนวัน</span><span>ราคา</span><span>ขายหน้าเว็บ</span><span></span></div>` +
+    pkDraft.map((k, i) => `<div class="pk-row ${k.on ? "" : "off"}" data-i="${i}">
+      <input class="field pk-name" data-k="label" maxlength="30" placeholder="เช่น 2 สัปดาห์" value="${esc(k.label || "")}" aria-label="ชื่อแพ็กเกจ">
+      ${k.id === "life" ? `<div class="pk-perm">ถาวร</div>` : `<label class="pk-unit"><input class="field num" data-k="days" type="number" min="1" max="3650" step="1" value="${esc(k.days)}" aria-label="จำนวนวัน"><span>วัน</span></label>`}
+      <label class="pk-unit"><input class="field num" data-k="price" type="number" min="0" step="1" value="${esc(k.price)}" aria-label="ราคา"><span>บาท</span></label>
+      <label class="pk-on"><input type="checkbox" data-k="on" ${k.on ? "checked" : ""}> ขาย</label>
+      <button type="button" class="btn small ghost pk-del" data-del="${i}" ${k.id === "life" ? 'disabled title="แพ็กเกจถาวรลบไม่ได้ (ใช้ตอนออกโค้ดถาวร) เอาติ๊กขายออกแทนได้"' : 'title="ลบแพ็กเกจ"'} aria-label="ลบ">✕</button>
+    </div>`).join("");
+  $("pkAdd").disabled = pkDraft.length >= 12;
+}
+$("pkList").addEventListener("input", e => {
+  const row = e.target.closest(".pk-row"), k = e.target.dataset.k; if (!row || !k) return;
+  const p = pkDraft[+row.dataset.i];
+  p[k] = k === "on" ? e.target.checked : e.target.value;
+  if (k === "on") row.classList.toggle("off", !p.on);
+});
+$("pkList").addEventListener("click", e => {
+  const b = e.target.closest("[data-del]"); if (!b || b.disabled) return;
+  const p = pkDraft[+b.dataset.del];
+  if (p.id && !confirm(`ลบแพ็กเกจ "${p.label}"?\nโค้ดที่ใช้แพ็กเกจนี้อยู่ยังใช้ได้จนหมดอายุ แต่สมาชิกจะซื้อแพ็กเกจนี้ไม่ได้อีก\n(ลบจริงเมื่อกด บันทึกการตั้งค่าร้าน)`)) return;
+  pkDraft.splice(+b.dataset.del, 1); renderPk();
+});
+$("pkAdd").addEventListener("click", () => {
+  pkDraft.splice(Math.max(0, pkDraft.findIndex(k => k.id === "life")) || pkDraft.length, 0, { id: "", label: "", days: 30, price: 0, on: true });
+  renderPk();
+  const rows = $("pkList").querySelectorAll(".pk-row"); const n = [...rows].find(r => !r.querySelector(".pk-name").value);
+  if (n) n.querySelector(".pk-name").focus();
+});
+
 async function loadShop() {
   const r = await api("admin_config", { pass: session.pass });
   if (!r.ok) { toast(r.error); return; }
   const c = r.config;
-  $("shopMonth").value = c.prices.month; $("shopM3").value = c.prices.m3 || ""; $("shopM6").value = c.prices.m6 || ""; $("shopYear").value = c.prices.year; $("shopLife").value = c.prices.life;
+  pkDraft = (c.packages || []).filter(k => !k.del).map(k => Object.assign({}, k)); renderPk();
   $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
   $("shopTrialReal").checked = c.trialRealOnly !== false;
   $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
@@ -3208,8 +3279,11 @@ $("agentKeyNew").addEventListener("click", async () => {
 });
 $("agentKeyCopy").addEventListener("click", () => copy($("agentKey").textContent));
 $("shopSave").addEventListener("click", async () => {
+  const bad = pkDraft.find(k => !String(k.label || "").trim() || (k.id !== "life" && !(+k.days >= 1 && +k.days <= 3650)) || !(+k.price >= 0));
+  if (bad) { toast("แพ็กเกจ \"" + (bad.label || "ไม่มีชื่อ") + "\": ใส่ชื่อ จำนวนวัน (1–3650) และราคาให้ครบ"); return; }
+  if (!pkDraft.some(k => k.on && +k.price > 0)) { toast("ต้องเปิดขายหน้าเว็บอย่างน้อย 1 แพ็กเกจ"); return; }
   const config = {
-    prices: { month: +$("shopMonth").value, m3: +$("shopM3").value, m6: +$("shopM6").value, year: +$("shopYear").value, life: +$("shopLife").value },
+    packages: pkDraft.map(k => ({ id: k.id || "", label: k.label, days: +k.days, price: +k.price, on: !!k.on })),
     promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
     trialRealOnly: $("shopTrialReal").checked,
     hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
