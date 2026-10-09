@@ -1190,7 +1190,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 
   <section class="card cfg" id="cfgCard">
     <div class="cfg-head">
-      <div class="card-label" style="flex:1">ตั้งค่าข่าวและเวลาเทรด</div>
+      <div class="card-label" style="flex:1">ตั้งค่าแก้ไม้ ปิดขาดทุน ข่าว และเวลาเทรด</div>
       <button class="btn small ghost" id="cfgUndo" hidden>ยกเลิกที่แก้</button>
       <button class="btn primary" id="cfgSave" disabled>บันทึกการตั้งค่า</button>
     </div>
@@ -1513,7 +1513,7 @@ const demo = (() => {
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
   const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
-    port: { cent: { basketTP: 250, cutLoss: 10000 }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 8, grid2Same: true, firstTP: 150, beOffset: 150, basketTP: 15, cutLossOn: true, cutLoss: 300, followOn: false } } };
+    port: { cent: { basketTP: 250, cutLoss: 10000 }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 12, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "12 เดือน", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
@@ -2091,12 +2091,18 @@ const CFG_GROUPS = [
     ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
     ["cutLossOn", "bool", true, "ตัดขาดทุนทั้งตะกร้า"],
     ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01],
+    ["cutPctOn", "bool", false, "ปิดขาดทุนเมื่อตะกร้าติดลบเกิน % ของ Balance"],
+    ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance)", 1, 95, 1],
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
     ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["ddStopOn", "bool", true, "หยุดฉุกเฉิน: Equity ลดเกินกำหนด → ปิดทุกไม้แล้วพัก"],
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
     ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที, 1440 = 1 วัน)", 0, 43200, 60],
     ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
+  { id: "risk", title: "จำนวนไม้แก้ / ปิดขาดทุน %", member: true, fields: [
+    ["maxOrders", "int", 15, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
+    ["cutPctOn", "bool", false, "ปิดขาดทุนอัตโนมัติ เมื่อตะกร้าติดลบเกิน % ของ Balance"],
+    ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance · เช่น 20 = พอร์ต $1,000 ติดลบ $200 ปิดทั้งตะกร้า)", 1, 95, 1]] },
   { id: "news", title: "กรองข่าว", toggle: "newsOn", fields: [
     ["newsOn", "bool", false, "หยุดเข้าไม้ช่วงข่าว"],
     ["newsLevel", "sel", 2, "ข่าวที่หลบ", [[1, "ทุกข่าว USD"], [2, "เฉพาะข่าวแดง (High)"]]],
@@ -2205,6 +2211,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       if (g.toggle) { const on = !!draft[g.toggle]; sum.textContent = on ? "เปิด" : "ปิด"; sum.classList.toggle("on", on); }
       else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} จุด × ${draft.lotMult}`;
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
+      else if (g.id === "risk") { sum.textContent = `${draft.maxOrders} ไม้ · ${draft.cutPctOn ? "ปิดที่ -" + draft.cutPct + "%" : "ไม่ปิด %"}`; sum.classList.toggle("on", !!draft.cutPctOn); }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
     });
     onChange(ch);
@@ -2234,7 +2241,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -2948,7 +2955,7 @@ async function runAct(act, code) {
 }
 
 let admLic = null;
-const ADMIN_GROUPS = [{ id: "lot", title: "ล็อตเริ่มต้น", fields: [["startLot", "num", 0.01, "ล็อตเริ่มต้น", 0.01, 100, 0.01]] }].concat(CFG_GROUPS);
+const ADMIN_GROUPS = [{ id: "lot", title: "ล็อตเริ่มต้น", fields: [["startLot", "num", 0.01, "ล็อตเริ่มต้น", 0.01, 100, 0.01]] }].concat(CFG_GROUPS.filter(g => !g.member));
 const admForm = makeCfgForm($("admCfg"), ADMIN_GROUPS, () => admLic && admLic.settings,
   ch => { $("setSave").textContent = ch.length ? `บันทึกการตั้งค่า (${ch.length})` : "บันทึกการตั้งค่า"; }, false);
 function openSettings(code) {
