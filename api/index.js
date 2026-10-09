@@ -4,8 +4,9 @@
 const DEFAULT_GAS_URL =
   "https://script.google.com/macros/s/AKfycbzT4n08-GGUTKdEA6ZjUZUAbpREaKiGyCVnvIirNzk_PGGvJLgfTBHC1dfSACnnsEyEfw/exec";
 
-// คำสั่งที่ลองซ้ำได้ปลอดภัย (อ่านข้อมูล / EA ส่งสถานะ) — คำสั่งที่บันทึกข้อมูลจะไม่ลองซ้ำ กันข้อมูลซ้ำ
-const SAFE_RETRY = new Set(["hb", "me", "admin_login", "admin_list", "admin_payments", "admin_slip",
+// คำสั่งที่ลองซ้ำได้ปลอดภัย (อ่านข้อมูล) — คำสั่งที่บันทึกข้อมูลจะไม่ลองซ้ำ กันข้อมูลซ้ำ
+// EA (hb) ไม่ลองซ้ำที่นี่ เพราะ EA ส่งใหม่เองทุกนาที และรอคำตอบได้จำกัด
+const SAFE_RETRY = new Set(["me", "admin_login", "admin_list", "admin_payments", "admin_slip",
   "admin_config", "admin_breaking", "pay_qr"]);
 
 // ดึงข้อความสาเหตุจากหน้าแจ้งข้อผิดพลาดของ Google (ถ้าได้หน้าเว็บแทนข้อมูล)
@@ -22,7 +23,13 @@ module.exports = async (req, res) => {
 
   const qs = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
   const isPost = req.method === "POST";
-  const body = isPost ? (typeof req.body === "string" ? req.body : Buffer.isBuffer(req.body) ? req.body.toString("utf8") : JSON.stringify(req.body || {})) : null;
+  let body = null;
+  if (isPost) {
+    const raw = typeof req.body === "string" ? req.body : Buffer.isBuffer(req.body) ? req.body.toString("utf8") : null;
+    const isForm = /x-www-form-urlencoded/i.test(req.headers && req.headers["content-type"] || "") || (raw && /^action=/.test(raw));
+    if (raw !== null && isForm) body = JSON.stringify(Object.fromEntries(new URLSearchParams(raw)));   // EA ส่งแบบฟอร์ม → แปลงเป็น JSON
+    else body = raw !== null ? raw : JSON.stringify(req.body || {});
+  }
   let action = "";
   try { action = isPost ? (JSON.parse(body || "{}").action || "") : (new URLSearchParams(qs.slice(1)).get("action") || ""); } catch (e) {}
   const tries = SAFE_RETRY.has(action) ? 3 : 1;
@@ -39,7 +46,9 @@ module.exports = async (req, res) => {
         : await fetch(target + qs, { redirect: "follow", signal: ctrl.signal });
       const text = await upstream.text();
       try {
-        JSON.parse(text);
+        const j = JSON.parse(text);
+        // EA: หลังบ้านขัดข้องชั่วคราว → ตอบ 503 ให้ EA ใช้ช่วงผ่อนผัน (ไม่หยุดเทรด) แทนการถือว่าโค้ดใช้ไม่ได้
+        if (action === "hb" && j && j.ok === false && j.busy) return res.status(503).send(text);
         return res.status(200).send(text);                  // สำเร็จ
       } catch (e) {
         lastErr = "หลังบ้านตอบกลับผิดรูปแบบ (HTTP " + upstream.status + "): " + (reasonFromHtml(text) || "ไม่มีข้อความ");
