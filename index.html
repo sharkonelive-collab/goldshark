@@ -279,7 +279,8 @@ select.field{appearance:auto}
 .login form{display:grid;gap:12px}
 .login form label{margin:0}
 /* pay dialog */
-.plan-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.plan-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.plan-opt .save{font-style:normal;color:var(--green);font-weight:500}
 .plan-opt{background:var(--deep);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left}
 .plan-opt b{display:block;font-family:var(--display);font-size:22px;margin:2px 0}
 .plan-opt span{font-size:13px;color:var(--muted)}
@@ -367,7 +368,7 @@ body.admin-mode .auth-brand{display:none}
   .auth-panel{padding:26px 20px 40px;justify-content:flex-start}
   .auth-card h2{font-size:24px}
 }
-@media (max-width:860px){.member-top{grid-template-columns:1fr}.plan-opts{grid-template-columns:1fr}.pay-box{grid-template-columns:1fr;justify-items:center;text-align:center}}
+@media (max-width:860px){.member-top{grid-template-columns:1fr}.plan-opts{grid-template-columns:1fr 1fr}.pay-box{grid-template-columns:1fr;justify-items:center;text-align:center}}
 @media (max-width:860px){.lotcard{grid-template-columns:1fr}.lot-ladder{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:860px){.setup-body{grid-template-columns:1fr}}
 @media (max-width:860px){
@@ -479,6 +480,10 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 .conn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
 .conn b{font-weight:500}
 .conn .muted{font-size:13px}
+.ea-sw{margin-left:auto;min-height:32px;font-size:14px;font-weight:500}
+.ea-sw input:not(:checked) ~ #eaOnText{color:var(--red)}
+.ea-off-note{margin:-6px 0 14px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.55;background:rgba(229,40,61,.10);border:1px solid rgba(229,40,61,.35);color:#FFB3BD}
+.pchip .ea-x{font-size:11px;padding:1px 7px;border-radius:999px;background:rgba(229,40,61,.15);color:#FF8A98}
 .code-copy{background:none;border:0;padding:0;cursor:pointer;color:var(--text);font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:.04em;text-align:left}
 .code-copy:hover{color:#8EC1FF}
 .plan-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}
@@ -715,6 +720,32 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 .dig-box>div{flex:1;min-width:200px}
 .dig-box.done{background:rgba(47,191,138,.08);border-color:rgba(47,191,138,.4)}
 .dig-box[hidden]{display:none}
+
+/* ---- รันบนเซิร์ฟเวอร์ ---- */
+.host-card[hidden]{display:none}
+.host-lead{margin:0 0 14px;font-size:14px}
+.host-state{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:16px}
+.host-state .muted{font-size:13px}
+.host-info{display:flex;flex-wrap:wrap;gap:8px 18px;margin:10px 0 4px;font-size:13px;color:var(--muted)}
+.host-info b{color:var(--text);font-weight:500}
+.host-note{margin:8px 0 0;padding:10px 12px;border-radius:12px;font-size:13px;background:rgba(229,40,61,.1);border:1px solid rgba(229,40,61,.4);color:#FFB3BD}
+.host-note[hidden]{display:none}
+.host-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.host-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--muted);line-height:1.55}
+.consent input{margin-top:3px;flex:none}
+.pill.host-pill.run{background:rgba(47,191,138,.15);color:#48D6A0}
+.pill.host-pill.wait{background:rgba(242,184,75,.15);color:#F2B84B}
+.pill.host-pill.bad{background:rgba(229,40,61,.15);color:#FF8A98}
+.host-tag{display:inline-block;margin-left:6px;font-size:11px;padding:1px 7px;border-radius:999px;background:rgba(59,148,255,.15);color:#8EC1FF}
+.host-tag.bad{background:rgba(229,40,61,.15);color:#FF8A98}
+@media (max-width:700px){.host-grid{grid-template-columns:1fr}}
+
+.host-admin{display:grid;gap:6px}
+.host-agent{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(5,8,16,.5);font-size:14px}
+.host-agent b{font-weight:500}
+.host-agent .dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:4px}
+textarea.field{min-height:90px;resize:vertical;padding-top:10px}
 </style>
 </head>
 <body>
@@ -858,6 +889,38 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
   </section>
 
 
+  <section class="card host-card" id="secHost" hidden>
+    <div class="card-head"><div class="card-label">รัน EA บนเซิร์ฟเวอร์ GoldShark</div><span class="pill host-pill" id="hostPill">–</span></div>
+    <p class="muted host-lead">ไม่ต้องมี VPS ไม่ต้องเปิดคอมทิ้งไว้ ใส่บัญชี MT5 ของคุณ ระบบจะเปิด MT5 และ EA ให้บนเซิร์ฟเวอร์ของเรา</p>
+
+    <div id="hostView" hidden>
+      <div class="host-state"><span class="dot" id="hostDot"></span><b id="hostStateText">–</b><span class="muted" id="hostStateTime"></span></div>
+      <div class="host-info" id="hostInfo"></div>
+      <div class="host-note" id="hostNote" hidden></div>
+      <div class="host-actions">
+        <button class="btn small" id="hostEdit">แก้ข้อมูลบัญชี</button>
+        <button class="btn small" id="hostToggle">หยุดรัน</button>
+      </div>
+    </div>
+
+    <form id="hostForm" autocomplete="off" hidden>
+      <div class="cfg-grid host-grid">
+        <label class="fld"><span>โบรกเกอร์</span><select class="field" id="hostBroker"></select></label>
+        <label class="fld"><span>เลขบัญชี MT5</span><input class="field" id="hostLogin" inputmode="numeric" placeholder="เช่น 183981853"></label>
+        <label class="fld"><span>รหัสผ่านเทรด MT5 <small class="muted" id="hostPassHint"></small></span><input class="field" id="hostPass" type="password" autocomplete="new-password"></label>
+        <label class="fld"><span>ชื่อเซิร์ฟเวอร์ (ดูในอีเมลเปิดบัญชี)</span><input class="field" id="hostServer" placeholder="เช่น Exness-MT5Real8"></label>
+        <label class="fld"><span>ชื่อสัญลักษณ์ทองในบัญชีนี้</span><input class="field" id="hostSymbol" placeholder="เช่น XAUUSDc"></label>
+      </div>
+      <label class="consent"><input type="checkbox" id="hostConsent"> <span>ฉันยินยอมให้ GoldShark ใช้รหัสผ่านเทรดนี้เพื่อเปิด EA ในบัญชีของฉัน และเข้าใจว่าการเทรดมีความเสี่ยง รหัสผ่านถูกเข้ารหัสตั้งแต่ในเครื่องนี้ ไม่มีใครในทีมเห็นได้ (เปลี่ยนรหัสผ่านใน MT5 ได้ทุกเมื่อเพื่อยกเลิก)</span></label>
+      <div class="err" id="hostErr" role="alert"></div>
+      <div class="host-actions">
+        <button class="btn primary" type="submit" id="hostSubmit">เริ่มรันบนเซิร์ฟเวอร์</button>
+        <button class="btn" type="button" id="hostCancel" hidden>ยกเลิก</button>
+      </div>
+      <p class="pnote" style="margin:10px 0 0">อย่าเปิด EA ตัวนี้บนคอมหรือ VPS ของคุณเองพร้อมกัน เพราะจะเปิดไม้ซ้ำในบัญชีเดียวกัน</p>
+    </form>
+  </section>
+
   <details class="setup hl" id="setupBox">
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
@@ -878,7 +941,9 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 
   <section class="card" id="secOverview">
     <div class="card-label">สถานะการเชื่อมต่อ MT5</div>
-    <div class="conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span></div>
+    <div class="conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span>
+      <label class="sw ea-sw" title="ปิด = EA ไม่เปิดตะกร้าใหม่ ไม้ที่เปิดอยู่ยังดูแลจนปิด"><input type="checkbox" id="eaOn"><span class="track"></span><span id="eaOnText">EA เปิดทำงาน</span></label></div>
+    <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ ไม้ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
     <div class="tiles t5">
       <div class="tile"><span>Balance</span><b class="num" id="dBal">–</b></div>
       <div class="tile"><span>Equity</span><b class="num" id="dEq">–</b></div>
@@ -1018,13 +1083,14 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
       <h3>ออกโค้ดใหม่</h3>
       <form id="createForm" class="form-grid">
         <div><label for="cName">ชื่อลูกค้า</label><input id="cName" class="field" required></div>
-        <div><label for="cPlan">แพ็กเกจ</label><select id="cPlan" class="field"><option value="month">รายเดือน</option><option value="year">รายปี</option><option value="life">ถาวร</option><option value="trial">ทดลองฟรี</option></select></div>
+        <div><label for="cPlan">แพ็กเกจ</label><select id="cPlan" class="field"><option value="month">1 เดือน</option><option value="m3">3 เดือน</option><option value="m6">6 เดือน</option><option value="year">12 เดือน</option><option value="life">ถาวร</option><option value="trial">ทดลองฟรี</option></select></div>
         <div>
           <label>อายุโค้ด</label>
           <div class="chips" id="dayChips">
             <button type="button" class="chip" data-days="7" aria-pressed="false">7 วัน</button>
             <button type="button" class="chip" data-days="30" aria-pressed="true">30 วัน</button>
             <button type="button" class="chip" data-days="90" aria-pressed="false">90 วัน</button>
+            <button type="button" class="chip" data-days="180" aria-pressed="false">180 วัน</button>
             <button type="button" class="chip" data-days="365" aria-pressed="false">1 ปี</button>
           </div>
         </div>
@@ -1089,9 +1155,11 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
     <section class="card shop" style="max-width:760px">
       <h3>ราคาแพ็กเกจ (บาท)</h3>
       <div class="cfg-grid">
-        <label class="fld"><span>รายเดือน (30 วัน)</span><input class="field num" type="number" min="0" id="shopMonth"></label>
-        <label class="fld"><span>รายปี (365 วัน)</span><input class="field num" type="number" min="0" id="shopYear"></label>
-        <label class="fld"><span>ถาวร</span><input class="field num" type="number" min="0" id="shopLife"></label>
+        <label class="fld"><span>1 เดือน (30 วัน)</span><input class="field num" type="number" min="0" id="shopMonth"></label>
+        <label class="fld"><span>3 เดือน (90 วัน)</span><input class="field num" type="number" min="0" id="shopM3"></label>
+        <label class="fld"><span>6 เดือน (180 วัน)</span><input class="field num" type="number" min="0" id="shopM6"></label>
+        <label class="fld"><span>12 เดือน (365 วัน)</span><input class="field num" type="number" min="0" id="shopYear"></label>
+        <label class="fld"><span>ถาวร (ไม่ขายหน้าเว็บ · ใช้ตอนแอดมินออกโค้ด)</span><input class="field num" type="number" min="0" id="shopLife"></label>
       </div>
       <h3>รับเงินพร้อมเพย์</h3>
       <div class="cfg-grid">
@@ -1113,6 +1181,20 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
         </div>
       </div>
 
+      <h3>รัน EA บนเซิร์ฟเวอร์ (สมาชิกไม่ต้องมี VPS)</h3>
+      <div class="host-admin">
+        <div class="host-agent" id="hostAgent">กำลังโหลดสถานะเครื่องรัน…</div>
+        <label class="sw"><input type="checkbox" id="shopHostOn"><span class="track"></span><span>เปิดให้สมาชิกใช้บริการรันบนเซิร์ฟเวอร์</span></label>
+        <div class="grid2" style="gap:12px;margin-top:10px">
+          <label class="fld"><span>รันพร้อมกันได้สูงสุด (พอร์ต)</span><input class="field num" type="number" min="1" max="500" id="shopHostMax"></label>
+          <div class="fld"><span>รหัสเครื่องรัน (ใส่ในไฟล์ config.json บน VPS)</span>
+            <div class="copyrow"><code id="agentKey">–</code><button type="button" class="btn small" id="agentKeyCopy">คัดลอก</button><button type="button" class="btn small" id="agentKeyNew">สร้างใหม่</button></div>
+          </div>
+        </div>
+        <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
+          <textarea class="field" id="shopHostBrokers" rows="4" spellcheck="false" style="font-family:var(--mono,monospace);font-size:13px"></textarea></label>
+      </div>
+
       <h3>ทดลองฟรี</h3>
       <label class="sw"><input type="checkbox" id="shopTrialReal"><span class="track"></span><span>ทดลองฟรีใช้ได้เฉพาะบัญชี MT5 จริง (Real) · ปิดไว้ = ให้ใช้กับบัญชี Demo ได้ด้วย</span></label>
       <p class="pnote" style="margin:6px 0 0">ไม่ว่าเปิดหรือปิด ระบบจะให้ทดลองฟรีได้ 1 ครั้งต่อเจ้าของบัญชี MT5 และต่อเลขบัญชีเสมอ แต่บัญชี Demo ตั้งชื่อเจ้าของได้เอง จึงกันซ้ำได้ไม่เต็มที่</p>
@@ -1125,6 +1207,20 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
         <label class="fld"><span>TP ตะกร้า — USD</span><input class="field num" type="number" step="0.01" id="shopTPu"></label>
         <label class="fld"><span>ตัดขาดทุน — USD</span><input class="field num" type="number" step="0.01" id="shopCLu"></label>
       </div>
+
+      <h3>ชุดค่าพอร์ต USD (ทุนประมาณ $1,000)</h3>
+      <p class="pnote" style="margin:0 0 10px">พอร์ต USD ล็อต 0.01 ทองขยับ $1 = $1 (แรงกว่าเซ็นต์ 100 เท่า) จึงใช้ค่าคนละชุดกับเซ็นต์ ใช้กับสมาชิกพอร์ต USD ที่แอดมินยังไม่ได้ตั้งค่าเฉพาะคน</p>
+      <div class="cfg-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <label class="fld"><span>ระยะแก้ไม้ (จุด · 100 จุด = ราคาทองขยับ 1.00)</span><input class="field num" type="number" step="0.1" id="shopU_gridDist"></label>
+        <label class="fld"><span>ตัวคูณล็อต</span><input class="field num" type="number" step="0.01" id="shopU_lotMult"></label>
+        <label class="fld"><span>ไม้สูงสุดต่อตะกร้า</span><input class="field num" type="number" step="1" id="shopU_maxOrders"></label>
+        <label class="fld"><span>ไม้เดียวไปถูกทาง: TP (จุด)</span><input class="field num" type="number" step="0.1" id="shopU_firstTP"></label>
+        <label class="fld"><span>มีไม้แก้แล้ว ปิดที่ทุน + (จุด)</span><input class="field num" type="number" step="0.1" id="shopU_beOffset"></label>
+        <div></div>
+        <label class="sw"><input type="checkbox" id="shopU_cutLossOn"><span class="track"></span><span>ตัดขาดทุนทั้งตะกร้า (ใช้ยอด "ตัดขาดทุน — USD")</span></label>
+        <label class="sw"><input type="checkbox" id="shopU_followOn"><span class="track"></span><span>ไม้ตามทาง</span></label>
+      </div>
+      <div class="pnote" id="shopURisk" style="margin-top:10px"></div>
       <button class="btn primary" id="shopSave" style="margin-top:18px">บันทึกการตั้งค่าร้าน</button>
     </section>
   </div>
@@ -1265,6 +1361,7 @@ async function api(action, data = {}) {
 }
 
 /* ============ demo data (โหมดตัวอย่าง เมื่อเปิดไฟล์ในเครื่อง) ============ */
+const DEMO_PUB = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3c7JsneeC9XNw3Tc3pr\n8tcfNEhYSTEGY2PQDL2amopgTconLwtAECXBOiwcN4Xk5VE2ilLj6LmNfIy5xKUc\nBXOuEdk137KC1WPF8Q5CxeCEmxajMdLLyu3C1bi0ZXaFI1fomgj8oelh4SG5uy4r\nid0H3tYxRMKXdIMtWyjurVzfpVAlhf3nWNHTS3G80VguO3QFCq/xoiwRKT8YGFcY\nGC6uEy4XW6rdBIZgZfVPe9uHQE6eTUY5m5G9Whheef/AO9xDedPn65Z/EuDOtowj\nP3qHt+ONxhW+O+hY6yM7YLX4S65mGgTxo+qUUC/f0qDHVlBrJdxes/AkjOTQUl/b\neQIDAQAB\n-----END PUBLIC KEY-----\n";   // กุญแจตัวอย่าง (โหมดตัวอย่างเท่านั้น)
 const demo = (() => {
   const now = Date.now();
   const base = () => ({ startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 100 });
@@ -1282,11 +1379,11 @@ const demo = (() => {
     e = b - Math.max(0, cyc) - Math.random() * 25;
     hist.push({ t, b: +b.toFixed(2), e: +e.toFixed(2) });
   }
-  const config = { prices: { month: 1290, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
-    port: { cent: { basketTP: 5, cutLoss: 3000 }, usd: { basketTP: 0.05, cutLoss: 30 } } };
+  const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 }, promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
+    port: { cent: { basketTP: 250, cutLoss: 10000 }, usd: { startLot: 0.01, gridDist: 500, lotMult: 1.3, maxOrders: 8, grid2Same: true, firstTP: 150, beOffset: 150, basketTP: 15, cutLossOn: true, cutLoss: 300, followOn: false } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
-  const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "รายปี", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
+  const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "12 เดือน", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
   return { lics, hist, config, users, pays };
 })();
 
@@ -1304,7 +1401,7 @@ function demoApi(action, d) {
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
-    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit", "port_add", "port_rename", "port_close"].includes(action)) {
+    if (["me", "user_port", "user_lot", "user_settings", "claim_code", "pay_submit", "port_add", "port_rename", "port_close", "host_set", "host_stop", "ea_toggle"].includes(action)) {
       const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
       u.codes = u.codes || [u.code];
       if (action === "port_add") {
@@ -1315,21 +1412,29 @@ function demoApi(action, d) {
       }
       let lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
       if (action === "port_rename") { lic.label = d.label; return res({ ok: true }); }
+      if (action === "ea_toggle") { lic.eaOff = !d.on; return res({ ok: true, eaOff: lic.eaOff }); }
+      if (action === "host_set") {
+        if (!lic.hosting && !d.encPass) return res({ ok: false, error: "ใส่รหัสผ่าน MT5" });
+        lic.hosting = Object.assign(lic.hosting || {}, { broker: d.broker, login: d.login, server: d.server, symbol: d.symbol, wanted: "run", state: "pending", stateText: "รอเครื่องรันติดตั้ง", stateTime: Date.now() });
+        setTimeout(() => { Object.assign(lic.hosting, { state: "running", stateText: "กำลังรัน", stateTime: Date.now() }); }, 4000);
+        return res({ ok: true, hosting: lic.hosting });
+      }
+      if (action === "host_stop") { if (!lic.hosting) return res({ ok: false, error: "ยังไม่ได้รัน" }); Object.assign(lic.hosting, { wanted: "stop", state: "stopped", stateText: "หยุดแล้ว", stateTime: Date.now() }); return res({ ok: true, hosting: lic.hosting }); }
       if (action === "port_close") { u.codes = u.codes.filter(c => c !== lic.code); lic.status = "closed"; d.code = ""; action = "me"; }
       if (action === "me") {
         lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
-        if (!lic) return res({ ok: true, user: { name: u.name, login: u.login }, ports: [], maxPorts: 10, plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }], pay: { promptpay: demo.config.promptpay, payName: demo.config.payName }, payments: [] });
+        if (!lic) return res({ ok: true, user: { name: u.name, login: u.login }, ports: [], maxPorts: 10, plans: [{ id: "month", label: "1 เดือน", days: 30, price: demo.config.prices.month }, { id: "m3", label: "3 เดือน", days: 90, price: demo.config.prices.m3 }, { id: "m6", label: "6 เดือน", days: 180, price: demo.config.prices.m6 }, { id: "year", label: "12 เดือน", days: 365, price: demo.config.prices.year }], pay: { promptpay: demo.config.promptpay, payName: demo.config.payName }, payments: [] });
         const last = demo.hist[demo.hist.length - 1], snapOk = !!lic.equity;
         const nowH = Math.floor(Date.now() / 3600000), hp = [];
         for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
         const nb = Date.now();
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
-        const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance }; });
-        return res({ ok: true, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
-          plans: [{ id: "month", label: "รายเดือน", days: 30, price: demo.config.prices.month }, { id: "year", label: "รายปี", days: 365, price: demo.config.prices.year }, { id: "life", label: "ถาวร", days: 36500, price: demo.config.prices.life }],
+        const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance, eaOff: !!l.eaOff }; });
+        return res({ ok: true, host: { on: demo.config.hostOn, pubKey: DEMO_PUB, brokers: demo.config.hostBrokers, agentOnline: true }, hosting: lic.hosting || null, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
+          plans: [{ id: "month", label: "1 เดือน", days: 30, price: demo.config.prices.month }, { id: "m3", label: "3 เดือน", days: 90, price: demo.config.prices.m3 }, { id: "m6", label: "6 เดือน", days: 180, price: demo.config.prices.m6 }, { id: "year", label: "12 เดือน", days: 365, price: demo.config.prices.year }],
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
           payments: demo.pays.filter(x => x.userId === u.id),
-          license: { code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk },
+          license: { code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: lic.expires, status: lic.status, plan: lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk, eaOff: !!lic.eaOff },
           settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
@@ -1352,7 +1457,7 @@ function demoApi(action, d) {
         if (!u.codes.includes(t.code)) u.codes.push(t.code); return res({ ok: true, code: t.code });
       }
       if (action === "pay_submit") {
-        const pl = { month: "รายเดือน", year: "รายปี", life: "ถาวร" };
+        const pl = { month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
         demo.pays.unshift({ id: "P" + Date.now(), userId: u.id, login: u.login, code: lic.code, plan: d.plan, planLabel: pl[d.plan], amount: demo.config.prices[d.plan], status: "pending", created: Date.now(), note: "", slip: d.slip });
         return res({ ok: true });
       }
@@ -1371,10 +1476,11 @@ function demoApi(action, d) {
       if (action === "admin_pay_decide") {
         const x = demo.pays.find(p => p.id === d.id); if (!x) return res({ ok: false, error: "ไม่พบรายการ" });
         x.status = d.approve ? "approved" : "rejected"; x.note = d.note || "";
-        if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + (x.plan === "year" ? 365 : 30) * 86400000; } }
+        if (d.approve) { const lic = L.find(l => l.code === x.code); if (lic) { lic.plan = x.plan; lic.expires = x.plan === "life" ? Date.UTC(2099, 11, 31) : Math.max(lic.expires, Date.now()) + ({ month: 30, m3: 90, m6: 180, year: 365 }[x.plan] || 30) * 86400000; } }
         return res({ ok: true, payments: demo.pays.map(p => Object.assign({}, p)), pending: demo.pays.filter(p => p.status === "pending").length });
       }
       if (action === "admin_config") return res({ ok: true, config: demo.config });
+      if (action === "admin_host") { if (d.newKey) demo.agentKey = "demo" + Math.random().toString(36).slice(2, 14); return res({ ok: true, agentKey: demo.agentKey || "demo7f3k29xq1m0z", hasPub: true, agent: { name: "VPS-1" }, lastSeen: Date.now() - 40000, running: 1, wantRun: 1, rows: [] }); }
       if (action === "admin_config_set") { demo.config = Object.assign({}, demo.config, d.config); return res({ ok: true, config: demo.config }); }
       if (action === "admin_qr_upload") { demo.qrImg = d.image; Object.assign(demo.config, { qrFile: "demo", qrVer: Date.now(), qrMode: "image" }); return res({ ok: true, config: demo.config }); }
       if (action === "admin_qr_delete") { demo.qrImg = ""; Object.assign(demo.config, { qrFile: "", qrVer: Date.now(), qrMode: "auto" }); return res({ ok: true, config: demo.config }); }
@@ -1573,6 +1679,7 @@ async function prefetchPort(code) {
 /* ---- สลับพอร์ตทันที ---- */
 function switchPort(code) {
   if (!code || code === session.port) return;
+  hostEditing = false; delete $("hostForm").dataset.filled;
   session.port = code; store.set("gs_port", code);
   document.querySelectorAll(".pchip[data-pcode]").forEach(x => x.classList.toggle("active", x.dataset.pcode === code));
   fillCfg(true); lotDirty = false;
@@ -1608,10 +1715,11 @@ async function openMember(token) {
 
 function renderDash() {
   renderDigitNotice();
+  renderHost();
   if (dashData.pay && dashData.pay.qrMode === "image") preloadStaticQr();
   if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
-  renderPlan(); renderPort();
+  renderPlan(); renderPort(); renderEaSwitch();
   $("lCur").textContent = L.currency || "–";
   if (S) {
     const fl = S.equity - S.balance;
@@ -1807,19 +1915,24 @@ $("lotSave").addEventListener("click", async () => {
 const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
 const CFG_GROUPS = [
   { id: "main", title: "ไม้หลัก / Martingale", fields: [
-    ["gridDist", "num", 270, "ระยะแก้ไม้ (points · 100 = $1 ทุกโบรก)", 0.1, 200000, 0.1],
+    ["gridDist", "num", 270, "ระยะแก้ไม้ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["lotMult", "num", 1.5, "ตัวคูณล็อต", 1, 5, 0.01],
     ["grid2Same", "bool", true, "ไม้แก้ไม้แรกใช้ล็อตเท่าไม้เริ่ม แล้วค่อยคูณ"],
     ["repeatLot", "int", 0, "ใช้ล็อตซ้ำกี่ไม้ก่อนคูณ (0=ปิด)", 0, 100, 1],
-    ["maxOrders", "int", 200, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1]] },
+    ["maxOrders", "int", 15, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1],
+    ["orderGap", "int", 60, "เว้นเวลาระหว่างไม้แก้/ไม้ตามทาง (วินาที, 0=ไม่เว้น)", 0, 86400, 10]] },
   { id: "close", title: "ปิดกำไร / ขาดทุน", fields: [
     ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
-    ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (points · 100 = $1, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
-    ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (points · 100 = $1, 0=ปิด)", 0, 200000, 0.1],
-    ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า"],
+    ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
+    ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
+    ["cutLossOn", "bool", true, "ตัดขาดทุนทั้งตะกร้า"],
     ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01],
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
-    ["slPoints", "num", 500, "ระยะ SL (points · 100 = $1)", 0.1, 200000, 0.1]] },
+    ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
+    ["ddStopOn", "bool", true, "หยุดฉุกเฉิน: Equity ลดเกินกำหนด → ปิดทุกไม้แล้วพัก"],
+    ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
+    ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที, 1440 = 1 วัน)", 0, 43200, 60],
+    ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
   { id: "news", title: "กรองข่าว", toggle: "newsOn", fields: [
     ["newsOn", "bool", false, "หยุดเข้าไม้ช่วงข่าว"],
     ["newsLevel", "sel", 2, "ข่าวที่หลบ", [[1, "ทุกข่าว USD"], [2, "เฉพาะข่าวแดง (High)"]]],
@@ -1828,14 +1941,15 @@ const CFG_GROUPS = [
   { id: "time", title: "เวลาเทรด", toggle: "timeOn", days: true, fields: [
     ["timeOn", "bool", true, "จำกัดเวลาเทรด"]] },
   { id: "follow", title: "ไม้ตามทาง / บอลลูน", fields: [
-    ["followOn", "bool", true, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
+    ["followOn", "bool", false, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
+    ["followMax", "int", 3, "ไม้ตามทางสูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 100, 1],
     ["balloonOn", "bool", false, "บอลลูน (กริดชุดที่สอง)"],
     ["balloonLot", "num", 0.1, "ล็อตบอลลูนเริ่มต้น", 0.01, 100, 0.01],
-    ["balloonDist", "num", 111, "ระยะบอลลูน (points · 100 = $1)", 0.1, 200000, 0.1],
+    ["balloonDist", "num", 111, "ระยะบอลลูน (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["balloonMult", "num", 1.03, "ตัวคูณบอลลูน", 1, 5, 0.01]] },
   { id: "entry", title: "สัญญาณเข้าออเดอร์", adv: true, fields: [
     ["entryMode", "sel", 2, "วิธีเข้าไม้", [[2, "Breakout Stop (ดักราคาทะลุ)"], [0, "Pending Limit (รอราคาย่อ)"], [1, "เปิดทันที"]]],
-    ["stopBuf", "num", 5, "Breakout Stop: ห่างจากจุดสูง/ต่ำ (points · 100 = $1)", 0, 100000, 0.1],
+    ["stopBuf", "num", 5, "Breakout Stop: ห่างจากจุดสูง/ต่ำ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0, 100000, 0.1],
     ["oneSide", "bool", true, "ตะกร้าเดียวทีละฝั่ง (มีไม้เปิดอยู่ ไม่เข้าอีกฝั่ง)"],
     ["signalTF", "sel", 1, "TF สัญญาณ", TFO],
     ["emaFast", "int", 20, "EMA เร็ว", 1, 1000, 1],
@@ -1849,7 +1963,7 @@ const CFG_GROUPS = [
     ["htfSlow", "int", 200, "EMA ช้า (TF ใหญ่)", 1, 1000, 1],
     ["emaCloseStop", "bool", false, "หยุดเข้าเมื่อ EMA ใกล้กัน"],
     ["emaMinATR", "num", 0.15, "EMA ห่างขั้นต่ำ (x ATR)", 0, 10, 0.01],
-    ["emaMinPts", "num", 50, "EMA ต้องห่างกันอย่างน้อย (points · 100 = $1, 0=ปิด)", 0, 200000, 0.1],
+    ["emaMinPts", "num", 50, "EMA ต้องห่างกันอย่างน้อย (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
     ["atrPeriod", "int", 14, "ATR period", 1, 500, 1],
     ["midOn", "bool", false, "ยืนยัน TF กลาง"],
     ["midTF", "sel", 5, "TF กลาง", TFO],
@@ -1877,7 +1991,7 @@ const CFG_GROUPS = [
     ["emaDistOn", "bool", true, "ไม่สวนเทรนด์เมื่อห่าง EMA เกินกำหนด"],
     ["emaDistTF", "sel", 5, "EMA ระยะห่าง TF", TFO],
     ["emaDistPeriod", "int", 200, "EMA ระยะห่าง period", 1, 1000, 1],
-    ["emaDistPts", "num", 700, "ราคาห่าง EMA200 ก่อนบล็อกสวนเทรนด์ (points · 100 = $1)", 0, 1000000, 0.1]] },
+    ["emaDistPts", "num", 700, "ราคาห่าง EMA200 ก่อนบล็อกสวนเทรนด์ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0, 1000000, 0.1]] },
   { id: "misc", title: "อื่นๆ", fields: [
     ["notifyOn", "bool", false, "แจ้งเตือน Push ไปแอป MT5 บนมือถือ"],
     ["logBlocks", "bool", true, "บันทึก log เหตุผลที่ไม่เข้าไม้"]] }
@@ -1925,7 +2039,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       box.classList.toggle("changed", keys.some(k => ch.includes(k)));
       const sum = box.querySelector(".cfg-sum");
       if (g.toggle) { const on = !!draft[g.toggle]; sum.textContent = on ? "เปิด" : "ปิด"; sum.classList.toggle("on", on); }
-      else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} pts × ${draft.lotMult}`;
+      else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} จุด × ${draft.lotMult}`;
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
     });
@@ -2023,7 +2137,7 @@ function renderNews() {
 })();
 
 /* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
-const PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "รายเดือน", year: "รายปี", life: "ถาวร" };
+const PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
 const isCent = c => /^USC$|CENT/i.test(String(c || "").trim());
 
 function renderNoLicense() {
@@ -2062,7 +2176,7 @@ $("planCode").addEventListener("click", () => copy($("planCode").textContent));
 $("closePort").addEventListener("click", async () => {
   const L = dashData.license; if (!L) return;
   const P = (dashData.ports || []).find(x => x.code === L.code) || {};
-  const dl = daysLeft(L.expires), paid = ["month", "year", "life"].includes(L.plan) && (L.plan === "life" || dl > 0);
+  const dl = daysLeft(L.expires), paid = ["month", "m3", "m6", "year", "life"].includes(L.plan) && (L.plan === "life" || dl > 0);
   let msg = `ปิดพอร์ต "${L.label || L.code}" (${L.code})?\n\n• พอร์ตจะหายจากหน้าสมาชิก และ EA ที่ใช้โค้ดนี้จะหยุดเปิดไม้ใหม่`;
   if (P.online) msg += "\n• EA ของพอร์ตนี้ยังออนไลน์อยู่ ควรปิดไม้และถอด EA ออกจากกราฟก่อน";
   if (paid) msg += `\n• แพ็กเกจ${PLAN_LABEL[L.plan]}ที่เหลือ${L.plan === "life" ? " (ถาวร)" : " " + dl + " วัน"} จะใช้ไม่ได้อีก และไม่คืนเงิน`;
@@ -2084,6 +2198,99 @@ $("renamePort").addEventListener("click", async () => {
   if (v === null) return;
   const r = await api("port_rename", { token: session.token, code: L.code, label: v.trim() });
   toast(r.ok ? "เปลี่ยนชื่อแล้ว" : r.error); if (r.ok) loadMe();
+});
+
+/* ============ รัน EA บนเซิร์ฟเวอร์ GoldShark ============ */
+let hostEditing = false;
+const HOST_CLS = { running: "run", starting: "wait", pending: "wait", draining: "wait", capacity: "wait", login_failed: "bad", error: "bad", stopped: "" };
+function hostSymbolFor(brokerKey) {
+  const b = ((dashData.host || {}).brokers || []).find(x => x.key === brokerKey);
+  const L = dashData.license || {};
+  return b ? ((L.port || "cent") === "usd" ? b.usd : b.cent) || "" : "";
+}
+function renderHost() {
+  const H = dashData.host || {}, L = dashData.license, h = dashData.hosting;
+  const show = !!(H.on && L && L.plan !== "none") || !!h;
+  $("secHost").hidden = !show;
+  if (!show) return;
+  const editing = !h || hostEditing;
+  $("hostView").hidden = editing;
+  $("hostForm").hidden = !editing;
+  const pill = $("hostPill");
+  if (h) {
+    const running = h.wanted === "run";
+    pill.textContent = h.stateText; pill.className = "pill host-pill " + (HOST_CLS[h.state] || "");
+    $("hostDot").className = "dot " + (h.state === "running" ? "on" : h.state === "login_failed" || h.state === "error" ? "off" : "");
+    $("hostStateText").textContent = h.stateText + (h.wanted === "stop" && h.state !== "stopped" ? " (สั่งหยุดแล้ว)" : "");
+    $("hostStateTime").textContent = h.stateTime ? "· อัปเดต " + ago(h.stateTime) : "";
+    const bn = ((H.brokers || []).find(b => b.key === h.broker) || {}).name || h.broker;
+    $("hostInfo").innerHTML = `<span>โบรก <b>${esc(bn)}</b></span><span>บัญชี <b>${esc(h.login)}</b></span><span>เซิร์ฟเวอร์ <b>${esc(h.server)}</b></span><span>สัญลักษณ์ <b>${esc(h.symbol)}</b></span>`;
+    const note = h.state === "login_failed" ? "ล็อกอิน MT5 ไม่ผ่าน ตรวจเลขบัญชี รหัสผ่าน และชื่อเซิร์ฟเวอร์ แล้วกด แก้ข้อมูลบัญชี" + (h.note ? " (" + h.note + ")" : "")
+               : h.state === "error" ? "เครื่องรันแจ้งปัญหา: " + (h.note || "ไม่ทราบสาเหตุ") + " · ทัก LINE แอดมินได้เลย"
+               : h.state === "draining" || (h.wanted === "stop" && h.state === "running") ? "หยุดเปิดไม้ใหม่แล้ว ระบบจะดูแลไม้ที่เปิดอยู่จนปิดหมด แล้วค่อยปิด MT5 ให้เอง" : "";
+    $("hostNote").hidden = !note; $("hostNote").textContent = note;
+    $("hostToggle").textContent = running ? "หยุดรัน" : "เริ่มรันอีกครั้ง";
+    if (!H.on && !running) $("hostToggle").hidden = true; else $("hostToggle").hidden = false;
+  } else { pill.textContent = H.agentOnline === false ? "เซิร์ฟเวอร์ออฟไลน์ชั่วคราว" : "ยังไม่ได้ใช้"; pill.className = "pill host-pill"; }
+  if (editing && !$("hostForm").dataset.filled) fillHostForm();
+}
+function fillHostForm() {
+  const H = dashData.host || {}, h = dashData.hosting;
+  $("hostBroker").innerHTML = (H.brokers || []).map(b => `<option value="${esc(b.key)}">${esc(b.name)}</option>`).join("");
+  if (h) $("hostBroker").value = h.broker;
+  $("hostLogin").value = h ? h.login : (dashData.license && dashData.license.account) || "";
+  $("hostServer").value = h ? h.server : ((dashData.snapshot || {}).server || "");
+  $("hostSymbol").value = h ? h.symbol : hostSymbolFor($("hostBroker").value);
+  $("hostPass").value = "";
+  $("hostPassHint").textContent = h ? "(เว้นว่างถ้าไม่เปลี่ยน)" : "";
+  $("hostConsent").checked = !!h;
+  $("hostCancel").hidden = !h;
+  $("hostErr").textContent = "";
+  $("hostForm").dataset.filled = "1";
+}
+$("hostBroker").addEventListener("change", () => { $("hostSymbol").value = hostSymbolFor($("hostBroker").value); });
+// เข้ารหัสรหัสผ่านในเบราว์เซอร์ด้วยกุญแจสาธารณะของเครื่องรัน (RSA-OAEP SHA-256)
+async function encryptForHost(text, pem) {
+  const b64 = pem.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
+  const der = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey("spki", der, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]);
+  const ct = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, key, new TextEncoder().encode(text));
+  let bin = ""; new Uint8Array(ct).forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+$("hostForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("hostErr"), H = dashData.host || {}, L = dashData.license;
+  err.textContent = "";
+  if (!$("hostConsent").checked) { err.textContent = "กรุณาติ๊กยินยอมก่อน"; return; }
+  const pass = $("hostPass").value;
+  if (!dashData.hosting && !pass) { err.textContent = "ใส่รหัสผ่านเทรด MT5"; return; }
+  let encPass = "";
+  try { if (pass) encPass = await encryptForHost(pass, H.pubKey || ""); }
+  catch (x) { err.textContent = "เบราว์เซอร์นี้เข้ารหัสไม่ได้ ลองเปิดด้วย Chrome รุ่นล่าสุด"; return; }
+  $("hostSubmit").disabled = true; $("hostSubmit").textContent = "กำลังส่ง…";
+  const r = await api("host_set", { token: session.token, code: L.code, broker: $("hostBroker").value, login: $("hostLogin").value.trim(),
+                                    server: $("hostServer").value.trim(), symbol: $("hostSymbol").value.trim(), encPass });
+  $("hostSubmit").disabled = false; $("hostSubmit").textContent = "เริ่มรันบนเซิร์ฟเวอร์";
+  $("hostPass").value = "";
+  if (!r.ok) { err.textContent = r.error; return; }
+  dashData.hosting = r.hosting; hostEditing = false; delete $("hostForm").dataset.filled;
+  renderHost(); toast("ส่งข้อมูลแล้ว เซิร์ฟเวอร์จะเปิด MT5 ให้ภายใน 1–2 นาที");
+});
+$("hostEdit").addEventListener("click", () => { hostEditing = true; delete $("hostForm").dataset.filled; renderHost(); });
+$("hostCancel").addEventListener("click", () => { hostEditing = false; renderHost(); });
+$("hostToggle").addEventListener("click", async () => {
+  const h = dashData.hosting, L = dashData.license; if (!h) return;
+  if (h.wanted === "run") {
+    if (!confirm("หยุดรันบนเซิร์ฟเวอร์?\n\nEA จะหยุดเปิดตะกร้าใหม่ทันที แต่จะดูแลไม้ที่เปิดอยู่จนปิดหมด แล้วค่อยปิด MT5 ให้เอง")) return;
+    const r = await api("host_stop", { token: session.token, code: L.code });
+    if (!r.ok) { toast(r.error); return; }
+    dashData.hosting = r.hosting; renderHost(); toast("สั่งหยุดแล้ว");
+  } else {
+    const r = await api("host_set", { token: session.token, code: L.code, broker: h.broker, login: h.login, server: h.server, symbol: h.symbol, encPass: "" });
+    if (!r.ok) { toast(r.error); if (/รหัสผ่าน/.test(r.error || "")) { hostEditing = true; delete $("hostForm").dataset.filled; renderHost(); } return; }
+    dashData.hosting = r.hosting; renderHost(); toast("เริ่มรันอีกครั้ง");
+  }
 });
 
 /* ============ แจ้งเตือนโบรกทศนิยม 3 ตำแหน่ง ============ */
@@ -2176,11 +2383,30 @@ function renderPorts() {
     const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : (ptype === "cent" ? "USC" : ptype === "usd" ? "USD" : "");
     const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "Cent" : "USD"}</span>` : "";
     return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
-      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b>${pbadge}<span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span></span>
+      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b>${pbadge}<span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span>${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
       <span class="pc-eq">${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
       <span class="pc-sub">${p.account ? "บัญชี " + esc(p.account) : "ยังไม่เชื่อม EA"} · ${left}</span></button>`;
   }).join("") + (ports.length < (dashData.maxPorts || 10) ? `<button class="pchip add" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>แพ็กเกจแยกต่อพอร์ต</small></button>` : "");
 }
+function renderEaSwitch() {
+  const L = dashData.license, off = !!(L && L.eaOff);
+  $("eaOn").checked = !off; $("eaOn").disabled = false;
+  $("eaOnText").textContent = off ? "EA ปิดอยู่" : "EA เปิดทำงาน";
+  $("eaOffNote").hidden = !off;
+}
+$("eaOn").addEventListener("change", async () => {
+  const L = dashData.license; if (!L) return;
+  const on = $("eaOn").checked;
+  if (!on && !confirm("ปิด EA พอร์ตนี้?\n\n• EA จะไม่เปิดตะกร้าใหม่\n• ไม้ที่เปิดอยู่ EA ยังดูแล (แก้ไม้/ปิดกำไร) จนปิดหมด\n• มีผลภายใน 1 นาที")) { $("eaOn").checked = true; return; }
+  $("eaOn").disabled = true;
+  const r = await api("ea_toggle", { token: session.token, code: L.code, on });
+  if (!r.ok) { toast(r.error || "บันทึกไม่ได้"); $("eaOn").checked = !on; $("eaOn").disabled = false; return; }
+  L.eaOff = r.eaOff;
+  const p = (dashData.ports || []).find(x => x.code === L.code); if (p) p.eaOff = r.eaOff;
+  meCachePut(dashData);
+  renderEaSwitch(); renderPorts();
+  toast(r.eaOff ? "ปิด EA แล้ว (มีผลภายใน 1 นาที)" : "เปิด EA แล้ว (มีผลภายใน 1 นาที)");
+});
 // ชี้เมาส์/แตะการ์ด → เริ่มโหลดพอร์ตนั้นรอไว้
 $("portList").addEventListener("pointerenter", e => {
   const b = e.target.closest && e.target.closest("[data-pcode]"); if (!b || b.dataset.pcode === session.port) return;
@@ -2293,9 +2519,10 @@ function openPay() {
   const plans = dashData.plans || [];
   $("payFor").textContent = dashData.license ? `${dashData.license.label || ""} (${dashData.license.code})` : "";
   const cur = dashData.license && dashData.license.plan;
-  payPlan = plans.find(x => x.id === (cur === "year" ? "year" : cur === "month" ? "month" : "year")) || plans[0];
+  payPlan = plans.find(x => x.id === cur) || plans.find(x => x.id === "m3") || plans[0];
   $("planOpts").innerHTML = plans.map(x => {
-    const sub = x.id === "month" ? "30 วัน" : x.id === "year" ? `365 วัน (เดือนละ ${fmt(x.price / 12, 0)})` : "จ่ายครั้งเดียว ใช้ได้ตลอด";
+    const mo = Math.round(x.days / 30), base = (plans.find(p => p.id === "month") || {}).price || 0, save = mo > 1 && base ? Math.round((1 - x.price / (base * mo)) * 100) : 0;
+    const sub = mo > 1 ? `${x.days} วัน · เดือนละ ${fmt(x.price / mo, 0)}${save > 0 ? ` <em class="save">ประหยัด ${save}%</em>` : ""}` : `${x.days} วัน`;
     return `<button type="button" class="plan-opt" data-plan="${x.id}"><span>${esc(x.label)}</span><b>${fmt(x.price, 0)} ฿</b><span>${sub}</span></button>`;
   }).join("");
   slipData = null; $("slipIn").value = ""; $("slipPrev").hidden = true; $("slipText").textContent = "แนบรูปสลิปการโอน";
@@ -2472,8 +2699,8 @@ function renderLics() {
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
       <td>${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
-      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
-      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}</td>
+      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
+      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td><span class="pill ${st}">${stTxt}</span></td>
       <td><span class="dot ${l.online ? "on" : ""}" style="display:inline-block" title="${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
@@ -2487,6 +2714,10 @@ function renderLics() {
 }
 
 $("search").addEventListener("input", renderLics);
+$("cPlan").addEventListener("change", () => {
+  const d = { month: 30, m3: 90, m6: 180, year: 365 }[$("cPlan").value];
+  const c = d && document.querySelector(`#dayChips .chip[data-days="${d}"]`); if (c) c.click();
+});
 $("refreshBtn").addEventListener("click", async () => { await loadLics(); toast("รีเฟรชแล้ว"); });
 
 document.querySelectorAll("#dayChips .chip").forEach(c => c.addEventListener("click", () => {
@@ -2669,15 +2900,34 @@ $("payBody").addEventListener("click", async e => {
   loadLics();   // อัปเดตตารางโค้ดเบื้องหลัง ไม่ต้องรอ
 });
 
+function shopURisk() {
+  const g = +$("shopU_gridDist").value / 100, m = +$("shopU_lotMult").value || 1, n = Math.max(1, +$("shopU_maxOrders").value || 1);
+  const L = [0.01];
+  while (L.length < n) L.push(Math.max(0.01, Math.round(0.01 * Math.pow(m, L.length - 1) * 100) / 100));
+  const loss = d => L.reduce((a, l, i) => a + l * 100 * Math.max(0, d - g * i), 0);
+  const cut = +$("shopCLu").value;
+  let hit = ""; for (let d = 1; d <= 300; d++) if ($("shopU_cutLossOn").checked && loss(d) >= cut) { hit = d; break; }
+  $("shopURisk").innerHTML = g > 0 ? `ล็อตแต่ละไม้: ${L.map(x => x.toFixed(2)).join(" → ")} (รวม ${L.reduce((a, b) => a + b, 0).toFixed(2)} lot) · ครบไม้เมื่อทองสวน $${(g * (n - 1)).toFixed(0)}
+    · ทองสวน $30 ติดลบ ≈ $${loss(30).toFixed(0)} · $50 ≈ $${loss(50).toFixed(0)}${hit ? ` · ตัดขาดทุนเมื่อทองสวนประมาณ $${hit}` : ""}` : "";
+}
+["shopU_gridDist", "shopU_lotMult", "shopU_maxOrders", "shopCLu", "shopU_cutLossOn"].forEach(id => $(id).addEventListener("input", shopURisk));
+
 async function loadShop() {
   const r = await api("admin_config", { pass: session.pass });
   if (!r.ok) { toast(r.error); return; }
   const c = r.config;
-  $("shopMonth").value = c.prices.month; $("shopYear").value = c.prices.year; $("shopLife").value = c.prices.life;
+  $("shopMonth").value = c.prices.month; $("shopM3").value = c.prices.m3 || ""; $("shopM6").value = c.prices.m6 || ""; $("shopYear").value = c.prices.year; $("shopLife").value = c.prices.life;
   $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
   $("shopTrialReal").checked = c.trialRealOnly !== false;
+  $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
+  $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, b.usd].join(" | ")).join("\n");
+  loadHostAdmin();
   $("shopTPc").value = c.port.cent.basketTP; $("shopTPu").value = c.port.usd.basketTP;
   $("shopCLc").value = c.port.cent.cutLoss; $("shopCLu").value = c.port.usd.cutLoss;
+  const U = c.port.usd || {};
+  ["gridDist", "lotMult", "maxOrders", "firstTP", "beOffset"].forEach(k => { $("shopU_" + k).value = U[k] != null ? U[k] : ""; });
+  $("shopU_cutLossOn").checked = !!U.cutLossOn; $("shopU_followOn").checked = !!U.followOn;
+  shopURisk();
   document.querySelectorAll('input[name="qrMode"]').forEach(r => r.checked = r.value === c.qrMode);
   $("shopQrDel").hidden = !c.qrFile;
   const gh = new Image(); gh.onload = () => { $("shopQrGh").textContent = "· พบไฟล์บน GitHub แล้ว ✓"; }; gh.onerror = () => { $("shopQrGh").textContent = ""; }; gh.src = STATIC_QR + "?t=" + Date.now();
@@ -2703,14 +2953,34 @@ $("shopQrDel").addEventListener("click", async () => {
   toast(r.ok ? "ลบรูป QR แล้ว" : r.error);
   loadShop();
 });
+async function loadHostAdmin(opt) {
+  const r = await api("admin_host", Object.assign({ pass: session.pass }, opt || {}));
+  if (!r.ok) { $("hostAgent").textContent = r.error; return; }
+  $("agentKey").textContent = r.agentKey || "ยังไม่มี กด สร้างใหม่";
+  const on = r.lastSeen && Date.now() - r.lastSeen < 5 * 60000;
+  $("hostAgent").innerHTML = !r.agentKey ? "ยังไม่ได้ตั้งเครื่องรัน: กด <b>สร้างใหม่</b> เพื่อสร้างรหัสเครื่องรัน แล้วใส่ใน config.json บน VPS"
+    : !r.hasPub ? "รอเครื่องรันเชื่อมต่อครั้งแรก (ยังไม่ได้รับกุญแจเข้ารหัสจาก VPS)"
+    : `<span class="dot ${on ? "on" : "off"}"></span> เครื่องรัน <b>${esc((r.agent || {}).name || "VPS")}</b> ${on ? "ออนไลน์" : "ออฟไลน์"} · ติดต่อล่าสุด ${r.lastSeen ? ago(r.lastSeen) : "–"} · กำลังรัน <b>${r.running}</b> / ต้องการรัน <b>${r.wantRun}</b> พอร์ต`;
+}
+$("agentKeyNew").addEventListener("click", async () => {
+  if ($("agentKey").textContent.length > 20 && !confirm("สร้างรหัสเครื่องรันใหม่? เครื่องรันเดิมจะเชื่อมไม่ได้จนกว่าจะใส่รหัสใหม่ใน config.json")) return;
+  await loadHostAdmin({ newKey: true }); toast("สร้างรหัสใหม่แล้ว");
+});
+$("agentKeyCopy").addEventListener("click", () => copy($("agentKey").textContent));
 $("shopSave").addEventListener("click", async () => {
   const config = {
-    prices: { month: +$("shopMonth").value, year: +$("shopYear").value, life: +$("shopLife").value },
+    prices: { month: +$("shopMonth").value, m3: +$("shopM3").value, m6: +$("shopM6").value, year: +$("shopYear").value, life: +$("shopLife").value },
     promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
     trialRealOnly: $("shopTrialReal").checked,
+    hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
+    hostBrokers: $("shopHostBrokers").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
+                   .map(a => ({ key: a[0], name: a[1] || a[0], cent: a[2] || "", usd: a[3] || a[2] || "" })),
     qrMode: (document.querySelector('input[name="qrMode"]:checked') || {}).value || "auto",
     port: { cent: { basketTP: +$("shopTPc").value, cutLoss: +$("shopCLc").value },
-            usd:  { basketTP: +$("shopTPu").value, cutLoss: +$("shopCLu").value } }
+            usd:  { basketTP: +$("shopTPu").value, cutLoss: +$("shopCLu").value,
+                    gridDist: +$("shopU_gridDist").value, lotMult: +$("shopU_lotMult").value, maxOrders: +$("shopU_maxOrders").value,
+                    firstTP: +$("shopU_firstTP").value, beOffset: +$("shopU_beOffset").value,
+                    cutLossOn: $("shopU_cutLossOn").checked, followOn: $("shopU_followOn").checked, grid2Same: true } }
   };
   const r = await api("admin_config_set", { pass: session.pass, config });
   toast(r.ok ? "บันทึกการตั้งค่าร้านแล้ว" : r.error);
