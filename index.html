@@ -480,8 +480,66 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 .conn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
 .conn b{font-weight:500}
 .conn .muted{font-size:13px}
-.ea-sw{margin-left:auto;min-height:32px;font-size:14px;font-weight:500}
-.ea-sw input:not(:checked) ~ #eaOnText{color:var(--red)}
+#secOverview{position:relative;overflow:hidden;isolation:isolate;
+  background:radial-gradient(120% 90% at 0% 0%,rgba(224,49,63,.10),transparent 55%),radial-gradient(90% 80% at 100% 0%,rgba(59,148,255,.10),transparent 60%),linear-gradient(180deg,#121C31,#0A111F);
+  border-color:rgba(59,148,255,.22);box-shadow:0 30px 60px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05)}
+#secOverview::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(224,49,63,.85),rgba(59,148,255,.85),transparent);z-index:-1}
+#secOverview .card-label{letter-spacing:.06em;color:#93ACD6}
+#secOverview .card-label::before{background:linear-gradient(90deg,var(--red),var(--blue))}
+.ov-conn{margin:0 0 16px}
+.ov-conn #dOnline{font-size:15px}
+#dDot.on{position:relative}
+#dDot.on::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--green);opacity:0;animation:gsPulse 2.2s ease-out infinite}
+@keyframes gsPulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(1.8);opacity:0}}
+@media (prefers-reduced-motion:reduce){#dDot.on::after{animation:none}}
+.ov-hero{display:grid;grid-template-columns:1fr 1fr;gap:1px;border-radius:16px;overflow:hidden;margin-bottom:12px;
+  background:linear-gradient(90deg,rgba(224,49,63,.45),rgba(59,148,255,.45));border:1px solid rgba(59,148,255,.18)}
+.ov-big{background:linear-gradient(180deg,rgba(14,22,40,.96),rgba(7,11,21,.96));padding:16px 20px 14px;min-width:0}
+.ov-k{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#93ACD6;margin-bottom:2px}
+.ov-big > b{display:flex;align-items:baseline;gap:8px;font-family:var(--display);font-size:clamp(26px,3.4vw,36px);font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.ov-big.eq > b{background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ov-cur{font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.ov-sub{display:block;font-size:12px;font-weight:300;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.ov-metrics .tile{position:relative;padding:14px 16px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),rgba(5,9,18,.7);
+  border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.ov-metrics .tile > span{letter-spacing:.04em}
+.ov-metrics .tile > b{font-size:24px;font-variant-numeric:tabular-nums}
+.ov-metrics .tile > small{font-variant-numeric:tabular-nums}
+.dd-meter{position:relative;height:5px;border-radius:999px;background:rgba(255,255,255,.07);margin:8px 0 6px;overflow:hidden}
+.dd-meter i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;transition:width .5s ease}
+#ddBarMax{background:linear-gradient(90deg,rgba(59,148,255,.3),rgba(224,49,63,.6))}
+#ddBarNow{background:linear-gradient(90deg,#7FB8FF,#3B94FF)}
+.tile.dd-today.bad #ddBarNow{background:var(--red)}
+#secOverview .card-foot{margin-top:14px}
+.ov-status{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:rgba(59,148,255,.08);border:1px solid rgba(59,148,255,.22);font-size:13px;color:var(--muted)}
+.ov-status::before{content:"";width:6px;height:6px;border-radius:50%;background:#8EC1FF}
+.ov-status b{color:#CFE3FF;font-weight:500}
+.ea-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ea-right .pill.ptype{font-size:13px;padding:6px 12px;border-radius:999px}
+#portWarn{margin:-6px 0 14px}
+#portWarn .btn{margin-left:8px}
+.ea-sw{min-height:32px;font-size:14px;font-weight:600;padding:4px 12px 4px 6px;border-radius:999px;border:1px solid}
+.ea-sw .track::after{background:#fff}
+.ea-sw input:checked ~ #eaOnText{color:#48D6A0}
+.ea-sw input:not(:checked) ~ #eaOnText{color:#FF6B78}
+.ea-sw:has(input:checked){background:rgba(63,182,139,.12);border-color:rgba(63,182,139,.45)}
+.ea-sw:has(input:not(:checked)){background:rgba(224,49,63,.12);border-color:rgba(224,49,63,.5)}
+.sw.ea-sw input:checked + .track{background:var(--green)}
+.sw.ea-sw input:not(:checked) + .track{background:var(--red)}
+@media (max-width:860px){
+  .ov-big{padding:12px 13px}
+  .ov-big > b{font-size:21px;gap:4px}
+  .ov-cur{font-size:10px;letter-spacing:.04em}
+  .ov-k{font-size:11px;letter-spacing:.1em}
+  .ov-metrics .tile{padding:12px 13px}
+  .ov-metrics .tile > b{font-size:20px}
+  .ea-right{position:absolute;top:12px;right:12px;margin:0;gap:6px}
+  .ea-right .pill.ptype{font-size:12px;padding:5px 9px}
+  .ea-sw{min-height:30px;font-size:13px;padding:3px 10px 3px 5px}
+  #secOverview .card-label{min-height:32px;margin-bottom:10px;visibility:hidden}
+  .ea-right{left:14px;justify-content:space-between}
+}
 .ea-off-note{margin:-6px 0 14px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.55;background:rgba(229,40,61,.10);border:1px solid rgba(229,40,61,.35);color:#FFB3BD}
 .pchip .ea-x{font-size:11px;padding:1px 7px;border-radius:999px;background:rgba(229,40,61,.15);color:#FF8A98}
 .code-copy{background:none;border:0;padding:0;cursor:pointer;color:var(--text);font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:.04em;text-align:left}
@@ -650,12 +708,15 @@ th{background:#0B1328;color:#9FB0CC}
 #dashView.port-loading > section:not(#secPorts),#dashView.port-loading > details{opacity:.45;transition:opacity .15s;pointer-events:none}
 
 .t5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.t6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.tile.dd-today.warn b{color:var(--gold)} .tile.dd-today.bad b{color:var(--red)}
+.tile.dd-today small{color:var(--muted)}
 .tile.today small{font-weight:500}
 .tile.today small.pos{color:var(--green)} .tile.today small.neg{color:var(--red)}
 .tile.today.up{box-shadow:inset 3px 0 0 var(--green);background:linear-gradient(180deg,rgba(47,191,138,.10),rgba(4,7,14,.6))}
 .tile.today.down{box-shadow:inset 3px 0 0 var(--red);background:linear-gradient(180deg,rgba(229,40,61,.10),rgba(4,7,14,.6))}
-@media (max-width:1100px){.t5{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:900px){.t5{grid-template-columns:repeat(2,minmax(0,1fr))}.t5 .tile.today{grid-column:1/-1}}
+@media (max-width:1100px){.t5,.t6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:900px){.t5,.t6{grid-template-columns:repeat(2,minmax(0,1fr))}.t5 .tile.today{grid-column:1/-1}}
 
 /* ---- ปุ่มติดต่อแอดมิน (LINE) ---- */
 .fab-line{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:8px;
@@ -697,8 +758,8 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 @media (max-width:900px){.auto-rf span{display:none}.ph-actions{gap:6px}}
 
 .pill.ptype{font-size:11px;padding:1px 8px;font-weight:600;letter-spacing:.02em}
-.pill.ptype.cent{background:rgba(242,184,75,.16);color:#F2B84B}
-.pill.ptype.usd{background:rgba(47,191,138,.16);color:#48D6A0}
+.pill.ptype.cent{background:rgba(59,148,255,.16);color:#8EC1FF;box-shadow:inset 0 0 0 1px rgba(59,148,255,.35)}
+.pill.ptype.usd{background:rgba(224,49,63,.16);color:#FF8A98;box-shadow:inset 0 0 0 1px rgba(224,49,63,.35)}
 .pchip{min-width:260px;max-width:300px}
 
 /* ---- แจ้งเตือนโบรก 3 ทศนิยม ---- */
@@ -746,6 +807,62 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 .host-agent b{font-weight:500}
 .host-agent .dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:4px}
 textarea.field{min-height:90px;resize:vertical;padding-top:10px}
+
+/* ===================== ชั้นพรีเมียม (แดง + น้ำเงิน) ใช้กับทุกการ์ด/ช่อง ===================== */
+:root{--gold-hi:#DCEBFF;--gold-soft:rgba(59,148,255,.22);--gold-line:rgba(59,148,255,.28);--glass:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),rgba(5,9,18,.7)}
+.card{position:relative;isolation:isolate;
+  background:radial-gradient(110% 80% at 0% 0%,rgba(224,49,63,.07),transparent 55%),radial-gradient(90% 70% at 100% 0%,rgba(59,148,255,.07),transparent 60%),linear-gradient(180deg,#121C31,#0A111F);
+  border-color:rgba(59,148,255,.16);box-shadow:0 30px 60px -42px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:18px;right:18px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(224,49,63,.75),rgba(59,148,255,.75),transparent);z-index:-1;pointer-events:none}
+.card-label{letter-spacing:.06em;color:#93ACD6}
+.card-label::before{background:linear-gradient(90deg,var(--red),var(--blue))}
+/* ช่องตัวเลข */
+.tile{background:var(--glass);border:1px solid rgba(255,255,255,.06);border-radius:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);padding:14px 16px}
+.tile > span{letter-spacing:.04em}
+.tile > b{font-variant-numeric:tabular-nums}
+.tile.buy{box-shadow:inset 3px 0 0 var(--green),inset 0 1px 0 rgba(255,255,255,.04);background:linear-gradient(180deg,rgba(63,182,139,.08),transparent 70%),rgba(5,9,18,.7)}
+.tile.sell{box-shadow:inset 3px 0 0 var(--red),inset 0 1px 0 rgba(255,255,255,.04);background:linear-gradient(180deg,rgba(224,49,63,.08),transparent 70%),rgba(5,9,18,.7)}
+.tile.today.up{background:linear-gradient(180deg,rgba(63,182,139,.14),rgba(5,9,18,.7))}
+.tile.today.down{background:linear-gradient(180deg,rgba(224,49,63,.14),rgba(5,9,18,.7))}
+/* การ์ดพอร์ต */
+.pchip{background:radial-gradient(100% 90% at 0% 0%,rgba(224,49,63,.07),transparent 60%),linear-gradient(180deg,#121C31,#0A111F);border-color:rgba(255,255,255,.08);transition:border-color .15s,box-shadow .15s,transform .15s}
+.pchip:hover{border-color:rgba(59,148,255,.4);transform:translateY(-1px)}
+.pchip.active{border-color:rgba(59,148,255,.7);box-shadow:inset 0 0 0 1px rgba(59,148,255,.5),0 14px 34px -18px rgba(59,148,255,.55)}
+.pchip.active .pc-eq{background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pchip.active .pc-eq small{-webkit-text-fill-color:var(--muted)}
+.pchip.add{color:var(--blue);border-color:rgba(59,148,255,.4)}
+/* ปุ่ม / ช่องกรอก / แท็บ */
+.btn:not(.primary){background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border-color:rgba(255,255,255,.1)}
+.btn:not(.primary):hover{border-color:rgba(59,148,255,.4)}
+.btn.primary{background:linear-gradient(180deg,#F04452,#C81F2E);border-color:#E0313F;box-shadow:0 10px 26px -12px rgba(224,49,63,.8),inset 0 1px 0 rgba(255,255,255,.18)}
+.field{background:rgba(4,7,14,.75);border-color:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.4);transition:border-color .15s,box-shadow .15s}
+.field:focus{outline:none;border-color:rgba(59,148,255,.6);box-shadow:0 0 0 3px rgba(59,148,255,.15),inset 0 1px 2px rgba(0,0,0,.4)}
+.seg{background:rgba(4,7,14,.7);border-color:rgba(255,255,255,.08)}
+.seg button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(59,148,255,.32),rgba(59,148,255,.12));color:#DCEBFF;box-shadow:inset 0 0 0 1px rgba(59,148,255,.55)}
+.pill.plan{background:rgba(59,148,255,.12);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(59,148,255,.3)}
+/* แพ็กเกจ / โค้ด */
+.code-copy{background:linear-gradient(180deg,#DCEBFF,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.08em}
+.plan-opt{background:var(--glass);border-color:rgba(255,255,255,.08);transition:border-color .15s,box-shadow .15s}
+.plan-opt[aria-pressed="true"]{border-color:rgba(59,148,255,.75);box-shadow:inset 0 0 0 1px rgba(59,148,255,.5),0 14px 30px -16px rgba(59,148,255,.6)}
+.plan-opt[aria-pressed="true"] b{color:#DCEBFF}
+.plan-note,.port-warn:not(.bad){background:rgba(4,7,14,.6);border-color:rgba(255,255,255,.07)}
+/* ตารางล็อต / ข่าว */
+.lot-ladder{background:rgba(59,148,255,.14);border-color:rgba(59,148,255,.2)}
+.lot-ladder div{background:linear-gradient(180deg,rgba(14,22,40,.96),rgba(7,11,21,.96))}
+.nrow{border-top-color:rgba(255,255,255,.06)}
+.chips .chip[aria-pressed="true"],.chip[aria-pressed="true"]{border-color:rgba(59,148,255,.6);color:#DCEBFF;background:rgba(59,148,255,.12)}
+/* สวิตช์ทั่วไป (ไม่รวมปุ่ม EA ที่เป็นเขียว/แดง) */
+.sw:not(.ea-sw) input:checked + .track{background:linear-gradient(90deg,#2F74E6,#3B94FF)}
+.sw:not(.ea-sw) .track::after{box-shadow:0 1px 3px rgba(0,0,0,.4)}
+dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(59,148,255,.25)}
+
+/* ป้ายพอร์ต: CENT = ทอง, USD = แดง (ตัวพิมพ์ใหญ่) */
+.pill.ptype{font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.pill.ptype.cent{color:#1A1206;background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);box-shadow:0 0 0 1px rgba(233,196,106,.55),0 6px 16px -8px rgba(233,196,106,.7),inset 0 1px 0 rgba(255,255,255,.55)}
+.pill.ptype.usd{color:#fff;background:linear-gradient(180deg,#F25563 0%,#E0313F 50%,#A81B28 100%);box-shadow:0 0 0 1px rgba(240,68,82,.6),0 6px 16px -8px rgba(224,49,63,.8),inset 0 1px 0 rgba(255,255,255,.3)}
+.ov-k.eqk,.ov-big.eq .ov-k{color:#E9C46A}
+.ea-right .pill.ptype{font-size:13px;padding:6px 14px}
+.pc-top .pill.ptype{font-size:10.5px;padding:2px 8px}
 </style>
 </head>
 <body>
@@ -788,7 +905,7 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
     <div class="auth-copy">
       <span class="eyebrow">EA เทรดทอง XAUUSD สำหรับ MetaTrader 5</span>
       <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
-      <p>ติดตั้งครั้งเดียว ตั้งค่าผ่านเว็บ แล้วดูพอร์ต ไม้ที่เปิดอยู่ และกำไรรายชั่วโมงได้จากมือถือ</p>
+      <p>ติดตั้งครั้งเดียว ตั้งค่าผ่านเว็บ แล้วดูพอร์ต Order ที่เปิดอยู่ และกำไรรายชั่วโมงได้จากมือถือ</p>
       <ul class="feat">
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>แดชบอร์ดพอร์ตแบบสด<span>Equity ไม้ที่เปิดอยู่ และกำไรรายชั่วโมง อัปเดตอัตโนมัติ</span></li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>หลบข่าวแรงอัตโนมัติ<span>ดึงปฏิทินข่าว USD และหยุดเปิดไม้ใหม่ช่วงข่าวแดง</span></li>
@@ -877,7 +994,7 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
         <button class="btn small refresh-btn" id="memberRefresh" aria-label="รีเฟรชข้อมูล"><span class="rf-ico">↻</span> รีเฟรช</button>
       </div>
     </div>
-    <p>ดูพอร์ต ไม้ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
+    <p>ดูพอร์ต Order ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
   </div>
 
   <section class="ports" id="secPorts">
@@ -940,16 +1057,22 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
   </details>
 
   <section class="card" id="secOverview">
-    <div class="card-label">สถานะการเชื่อมต่อ MT5</div>
-    <div class="conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span>
-      <label class="sw ea-sw" title="ปิด = EA ไม่เปิดตะกร้าใหม่ ไม้ที่เปิดอยู่ยังดูแลจนปิด"><input type="checkbox" id="eaOn"><span class="track"></span><span id="eaOnText">EA เปิดทำงาน</span></label></div>
-    <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ ไม้ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
-    <div class="tiles t5">
-      <div class="tile"><span>Balance</span><b class="num" id="dBal">–</b></div>
-      <div class="tile"><span>Equity</span><b class="num" id="dEq">–</b></div>
+    <div class="card-label">สถานะ MT5</div>
+    <div class="conn ov-conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span>
+      <span class="ea-right"><span class="pill ptype" id="portBadge" hidden></span>
+      <label class="sw ea-sw" title="ปิด = EA ไม่เปิดตะกร้าใหม่ Order ที่เปิดอยู่ยังดูแลจนปิด"><input type="checkbox" id="eaOn"><span class="track"></span><span id="eaOnText">EA เปิดทำงาน</span></label></span></div>
+    <div class="port-warn bad" id="portWarn" hidden></div>
+    <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ Order ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
+    <div class="ov-hero">
+      <div class="ov-big"><span class="ov-k">Balance</span><b class="num"><span id="dBal">–</span><small class="ov-cur" id="dBalCur"></small></b><small class="ov-sub" id="dBalSub">&nbsp;</small></div>
+      <div class="ov-big eq"><span class="ov-k">Equity</span><b class="num"><span id="dEq">–</span><small class="ov-cur" id="dEqCur"></small></b><small class="ov-sub" id="dEqSub">&nbsp;</small></div>
+    </div>
+    <div class="tiles t4 ov-metrics">
       <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
-      <div class="tile"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b></div>
-      <div class="tile"><span>ไม้ที่เปิดอยู่</span><b class="num" id="dOpen">–</b></div>
+      <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
+        <div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div><small id="dDDTodaySub">–</small></div>
+      <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
+      <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
     </div>
     <p class="card-foot" id="dFloat"></p>
   </section>
@@ -970,24 +1093,15 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
     </div>
   </section>
 
-  <section class="grid2">
+  <section>
     <div class="card">
       <div class="card-label">ตะกร้าที่เปิดอยู่</div>
-      <div class="tiles t2">
+      <div class="tiles t4">
         <div class="tile buy"><span>Buy · <i id="bCount">–</i></span><b class="num" id="bPL">–</b><small>ล็อตรวม <i id="bLots">–</i></small></div>
         <div class="tile sell"><span>Sell · <i id="sCount">–</i></span><b class="num" id="sPL">–</b><small>ล็อตรวม <i id="sLots">–</i></small></div>
         <div class="tile"><span>Drawdown</span><b class="num" id="lDD">–</b><small>Spread <i id="lSpread">–</i></small></div>
         <div class="tile"><span>สถานะ EA</span><b id="lTrade" class="txt">–</b><small>สกุลเงิน <i id="lCur">–</i></small></div>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-label">ประเภทพอร์ต</div>
-      <p class="pnote" style="margin:0 0 12px">เลือกให้ตรงกับบัญชี MT5 ค่า TP และตัดขาดทุนที่เป็นเงินจะปรับตามพอร์ตให้อัตโนมัติ</p>
-      <div class="port-seg" role="group" aria-label="ประเภทพอร์ต">
-        <button data-port="cent" aria-pressed="false"><b>Cent</b><span>บัญชี USC</span></button>
-        <button data-port="usd" aria-pressed="false"><b>USD</b><span>บัญชีดอลลาร์ปกติ</span></button>
-      </div>
-      <div class="port-warn" id="portWarn" hidden></div>
     </div>
   </section>
 
@@ -1020,7 +1134,7 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
       <div class="tile"><span>7 วัน</span><b id="pWeek">–</b></div>
     </div>
     <div id="pChart"></div>
-    <p class="pnote">นับเฉพาะไม้ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย เวลาตามเครื่องที่เปิดดู</p>
+    <p class="pnote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย เวลาตามเครื่องที่เปิดดู</p>
   </section>
 
   <section class="card lotcard">
@@ -1364,7 +1478,7 @@ async function api(action, data = {}) {
 const DEMO_PUB = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3c7JsneeC9XNw3Tc3pr\n8tcfNEhYSTEGY2PQDL2amopgTconLwtAECXBOiwcN4Xk5VE2ilLj6LmNfIy5xKUc\nBXOuEdk137KC1WPF8Q5CxeCEmxajMdLLyu3C1bi0ZXaFI1fomgj8oelh4SG5uy4r\nid0H3tYxRMKXdIMtWyjurVzfpVAlhf3nWNHTS3G80VguO3QFCq/xoiwRKT8YGFcY\nGC6uEy4XW6rdBIZgZfVPe9uHQE6eTUY5m5G9Whheef/AO9xDedPn65Z/EuDOtowj\nP3qHt+ONxhW+O+hY6yM7YLX4S65mGgTxo+qUUC/f0qDHVlBrJdxes/AkjOTQUl/b\neQIDAQAB\n-----END PUBLIC KEY-----\n";   // กุญแจตัวอย่าง (โหมดตัวอย่างเท่านั้น)
 const demo = (() => {
   const now = Date.now();
-  const base = () => ({ startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 100 });
+  const base = () => ({ startLot: 0.01, gridDist: 270, lotMult: 1.6, maxOrders: 8, basketTP: 250 });
   const mk = (code, name, acct, days, status, eq, plan, port, login) => ({ code, name, account: acct, expires: now + days * 86400000, status, note: "", created: now - (40 - days) * 86400000, lastSeen: now - 30000, equity: eq, balance: eq ? eq + 120 : null, online: !!eq && status === "active", settings: base(), plan, port, login, currency: port === "usd" ? "USD" : port === "cent" ? "USC" : "" });
   const lics = [mk("GS-7KQ2-M9XA", "คุณต้น", "52841177", 23, "active", 10234.55, "month", "cent", "0812345678"),
     mk("GS-P4RW-2HNE", "คุณแพร", "40117392", 4, "active", 5321.1, "year", "usd", "prae@mail.com"),
@@ -1439,7 +1553,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -1713,6 +1827,7 @@ async function openMember(token) {
   fastTimer = setInterval(() => { if ((dashData.payments || []).some(x => x.status === "pending")) loadMe(true); }, 20000);
 }
 
+const ordTxt = n => n + (n === 1 ? " Order" : " Orders");
 function renderDash() {
   renderDigitNotice();
   renderHost();
@@ -1725,21 +1840,27 @@ function renderDash() {
     const fl = S.equity - S.balance;
     $("dBal").textContent = fmt(S.balance);
     $("dEq").textContent = fmt(S.equity);
+    const cur = L.currency ? (isCent(L.currency) ? "USC" : L.currency) : "";
+    $("dBalCur").textContent = cur; $("dEqCur").textContent = cur;
+    $("dEqSub").textContent = S.balance > 0 ? `${(S.equity / S.balance * 100).toFixed(2)}% ของ Balance` : "\u00a0";
+    $("dFltSub").textContent = (S.buyCount ? `Buy ${signed(S.buyPL)}` : "") + (S.buyCount && S.sellCount ? " · " : "") + (S.sellCount ? `Sell ${signed(S.sellPL)}` : "") || "ไม่มี Order ค้าง";
+    $("dOpenSub").textContent = (S.buyCount + S.sellCount) ? `Buy ${S.buyCount} · Sell ${S.sellCount} · ${fmt(S.buyLots + S.sellLots)} lot` : "ไม่มี Order ค้าง";
     $("dFlt").textContent = signed(fl); $("dFlt").className = "num " + cls(fl);
-    $("dOpen").textContent = (S.buyCount + S.sellCount) + " ไม้";
+    $("dOpen").textContent = ordTxt(S.buyCount + S.sellCount);
     renderToday(S);
-    $("dFloat").innerHTML = `EA: <b>${esc(S.tradeStatus || "–")}</b>`;
+    $("dFloat").innerHTML = `<span class="ov-status">EA <b>${esc(S.tradeStatus || "–")}</b></span>`;
     $("dDot").className = "dot " + (S.online ? "on" : "off");
     $("dOnline").textContent = (S.online ? "EA ออนไลน์" : "EA ออฟไลน์") + " อัปเดต " + ago(S.time);
     $("dAcct").textContent = [S.broker, L.account ? "บัญชี " + L.account : ""].filter(Boolean).join(" / ");
     $("bPL").textContent = signed(S.buyPL); $("bPL").className = "num " + cls(S.buyPL);
     $("sPL").textContent = signed(S.sellPL); $("sPL").className = "num " + cls(S.sellPL);
-    $("bCount").textContent = S.buyCount + " ไม้"; $("sCount").textContent = S.sellCount + " ไม้";
+    $("bCount").textContent = ordTxt(S.buyCount); $("sCount").textContent = ordTxt(S.sellCount);
     $("bLots").textContent = fmt(S.buyLots); $("sLots").textContent = fmt(S.sellLots);
     $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
     $("lTrade").textContent = S.tradeStatus || "–";
   } else {
-    $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today";
+    $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today"; renderDDToday(null);
+    ["dBalCur", "dEqCur"].forEach(id => $(id).textContent = ""); ["dBalSub", "dEqSub", "dFltSub", "dOpenSub"].forEach(id => $(id).textContent = "\u00a0");
     ["dBal", "dEq", "dFlt", "dOpen", "bPL", "sPL", "bCount", "sCount", "bLots", "sLots", "lDD", "lSpread", "lTrade"].forEach(id => $(id).textContent = "–");
     $("dFlt").className = "num"; $("bPL").className = "num"; $("sPL").className = "num";
     $("dAcct").textContent = L.account ? "บัญชี " + L.account : "";
@@ -1800,6 +1921,7 @@ function renderToday(S) {
   let today = 0;
   m.forEach((v, h) => { if (h >= midH && h <= nowH) today += v; });
   const start = S.balance - today;                         // ยอดเงินตอนเริ่มวัน
+  $("dBalSub").textContent = `ต้นวัน ${fmt(start)}`;
   const pct = start > 0 ? today / start * 100 : 0;
   const c = cls(today), arrow = today > 0 ? "▲" : today < 0 ? "▼" : "•";
   $("dToday").textContent = signed(today);
@@ -1807,6 +1929,23 @@ function renderToday(S) {
   $("dTodayPct").textContent = `${arrow} ${pct > 0 ? "+" : ""}${pct.toFixed(2)}% วันนี้`;
   $("dTodayPct").className = c;
   $("tToday").className = "tile today" + (today > 0 ? " up" : today < 0 ? " down" : "");
+  renderDDToday(S);
+}
+// DD สูงสุดของวันนี้ (หลังบ้านเก็บค่าสูงสุดตั้งแต่เที่ยงคืนเวลาไทย)
+function renderDDToday(S) {
+  const dayIdx = Math.floor((Date.now() + 7 * 3600000) / 86400000);
+  const same = S && +S.ddDay === dayIdx;
+  const cur = S ? Math.max(0, +S.dd || 0) : 0;
+  const mx = same ? Math.max(+S.ddMax || 0, cur) : cur;
+  const amt = same ? Math.max(+S.ddMaxAmt || 0, S ? Math.max(0, S.balance - S.equity) : 0) : (S ? Math.max(0, S.balance - S.equity) : 0);
+  $("dDDToday").textContent = S ? mx.toFixed(2) + "%" : "–";
+  $("dDDTodaySub").textContent = S ? `ลอยสูงสุด -${fmt(amt)} · ตอนนี้ ${cur.toFixed(2)}%` : "–";
+  if (!S) { $("ddBarMax").style.width = "0"; $("ddBarNow").style.width = "0"; }
+  $("tDD").className = "tile dd-today" + (mx >= 20 ? " bad" : mx >= 10 ? " warn" : "");
+  const C = dashData.settings || {}, lim = C.ddStopOn && +C.ddStopPct > 0 ? +C.ddStopPct : 30;
+  $("ddBarMax").style.width = Math.min(100, mx / lim * 100) + "%";
+  $("ddBarNow").style.width = Math.min(100, cur / lim * 100) + "%";
+  $("tDD").title = C.ddStopOn ? `แถบเต็ม = หยุดฉุกเฉินที่ DD ${lim}%` : `แถบเต็ม = DD ${lim}%`;
 }
 
 /* ============ กำไรที่ปิดแล้ว ============ */
@@ -1839,7 +1978,7 @@ function renderProfit() {
   put("pHour", m.get(nowH) || 0); put("pToday", today); put("pWeek", week);
 
   const box = $("pChart");
-  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มีไม้ที่ปิดใน 7 วันล่าสุด</div>`; return; }
+  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มี Order ที่ปิดใน 7 วันล่าสุด</div>`; return; }
 
   const bars = [];
   if (pMode === 24) {
@@ -2381,7 +2520,7 @@ function renderPorts() {
     const left = p.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : p.plan === "life" ? "ถาวร" : dl > 0 ? `เหลือ ${dl} วัน` : "หมดอายุ";
     const ptype = p.port === "usd" || p.port === "cent" ? p.port : (p.currency ? (isCent(p.currency) ? "cent" : "usd") : (p.plan === "trial" ? "cent" : ""));
     const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : (ptype === "cent" ? "USC" : ptype === "usd" ? "USD" : "");
-    const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "Cent" : "USD"}</span>` : "";
+    const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : "";
     return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
       <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b>${pbadge}<span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span>${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
       <span class="pc-eq">${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
@@ -2397,7 +2536,7 @@ function renderEaSwitch() {
 $("eaOn").addEventListener("change", async () => {
   const L = dashData.license; if (!L) return;
   const on = $("eaOn").checked;
-  if (!on && !confirm("ปิด EA พอร์ตนี้?\n\n• EA จะไม่เปิดตะกร้าใหม่\n• ไม้ที่เปิดอยู่ EA ยังดูแล (แก้ไม้/ปิดกำไร) จนปิดหมด\n• มีผลภายใน 1 นาที")) { $("eaOn").checked = true; return; }
+  if (!on && !confirm("ปิด EA พอร์ตนี้?\n\n• EA จะไม่เปิดตะกร้าใหม่\n• Order ที่เปิดอยู่ EA ยังดูแล (แก้ไม้/ปิดกำไร) จนปิดหมด\n• มีผลภายใน 1 นาที")) { $("eaOn").checked = true; return; }
   $("eaOn").disabled = true;
   const r = await api("ea_toggle", { token: session.token, code: L.code, on });
   if (!r.ok) { toast(r.error || "บันทึกไม่ได้"); $("eaOn").checked = !on; $("eaOn").disabled = false; return; }
@@ -2441,35 +2580,40 @@ $("npCreate").addEventListener("click", async () => {
 
 function renderPort() {
   const L = dashData.license;
-  document.querySelectorAll(".port-seg button[data-port]").forEach(b => {
-    b.setAttribute("aria-pressed", (L.port || (L.plan === "trial" ? "cent" : "")) === b.dataset.port);
-    b.disabled = L.plan === "trial" && b.dataset.port === "usd";
-    b.title = b.disabled ? "ทดลองฟรีใช้พอร์ตเซ็นต์เท่านั้น" : "";
-  });
+  const port = L.port || (L.plan === "trial" ? "cent" : (L.currency ? (isCent(L.currency) ? "cent" : "usd") : ""));
+  // ป้ายประเภทพอร์ต (ข้างปุ่มเปิด-ปิด EA)
+  const pb = $("portBadge");
+  pb.hidden = !port;
+  pb.className = "pill ptype " + port;
+  pb.textContent = port === "usd" ? "USD" : "CENT";
   // ปุ่มดาวน์โหลด EA ตามพอร์ต
-  const eaUsd = (L.port || "cent") === "usd", eaName = eaUsd ? "GoldShark_USD" : "GoldShark_Cent";
+  const eaUsd = port === "usd", eaName = eaUsd ? "GoldShark_USD" : "GoldShark_Cent";
   $("dlEA").href = eaName + ".ex5";
   $("dlEALabel").textContent = "ดาวน์โหลด EA พอร์ต" + (eaUsd ? " USD" : "เซ็นต์") + " (" + eaName + ")";
   $("dlEAName").textContent = eaName;
+  // แจ้งเฉพาะตอนพอร์ตไม่ตรงกับบัญชี MT5 พร้อมปุ่มแก้
   const w = $("portWarn");
-  w.className = "port-warn"; w.hidden = false;
-  if (!L.port) w.textContent = "ยังไม่ได้เลือก ระบบจะตั้งให้ตามบัญชี MT5 ที่ต่อครั้งแรก";
-  else if (L.currency && isCent(L.currency) !== (L.port === "cent")) {
-    w.className = "port-warn bad";
-    w.textContent = `บัญชี MT5 ที่ต่ออยู่เป็น ${L.currency} แต่เลือกพอร์ต ${L.port === "cent" ? "Cent" : "USD"} อยู่ EA จะหยุดเปิดไม้ใหม่จนกว่าจะเลือกให้ตรงกัน`;
-  } else if (L.currency) w.textContent = `ตรงกับบัญชี MT5 ที่ต่ออยู่ (${L.currency})`;
-  else w.hidden = true;
+  const bad = L.port && L.currency && isCent(L.currency) !== (L.port === "cent");
+  w.hidden = !bad;
+  if (bad) {
+    const want = isCent(L.currency) ? "cent" : "usd";
+    const canFix = !(L.plan === "trial" && want === "usd");
+    w.innerHTML = `บัญชี MT5 ที่ต่ออยู่เป็น ${esc(L.currency)} แต่โค้ดนี้เป็นพอร์ต ${L.port === "cent" ? "Cent" : "USD"} EA จะไม่เทรดจนกว่าจะตรงกัน`
+      + (canFix ? `<button class="btn small" id="portFix" data-port="${want}">เปลี่ยนเป็นพอร์ต ${want === "cent" ? "Cent" : "USD"}</button>` : " (ทดลองฟรีใช้ได้เฉพาะพอร์ตเซ็นต์)");
+  }
 }
-document.querySelectorAll(".port-seg button[data-port]").forEach(b => b.addEventListener("click", async () => {
+$("portWarn").addEventListener("click", async e => {
+  const b = e.target.closest("#portFix"); if (!b) return;
+  b.disabled = true;
   const port = b.dataset.port;
-  if (b.disabled) { toast("ทดลองฟรีใช้พอร์ตเซ็นต์เท่านั้น"); return; }
-  if (dashData.license.port === port) return;
   const r = await api("user_port", { token: session.token, code: session.port, port });
-  if (!r.ok) { toast(r.error); return; }
+  if (!r.ok) { toast(r.error); b.disabled = false; return; }
   dashData.license.port = r.port; dashData.settings = r.settings;
-  toast("เปลี่ยนเป็นพอร์ต " + (port === "cent" ? "Cent" : "USD") + " แล้ว EA จะใช้ภายใน 1 นาที");
+  const p = (dashData.ports || []).find(x => x.code === dashData.license.code); if (p) p.port = r.port;
+  meCachePut(dashData);
+  toast("เปลี่ยนเป็นพอร์ต " + (port === "cent" ? "Cent" : "USD") + " แล้ว อย่าลืมเปลี่ยน EA ให้ตรงด้วย");
   renderDash();
-}));
+});
 
 $("claimIn").addEventListener("input", e => {
   let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
