@@ -495,9 +495,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 .ov-hero{display:grid;grid-template-columns:1fr 1fr;gap:1px;border-radius:16px;overflow:hidden;margin-bottom:12px;
   background:linear-gradient(90deg,rgba(224,49,63,.45),rgba(59,148,255,.45));border:1px solid rgba(59,148,255,.18)}
 .ov-big{background:linear-gradient(180deg,rgba(14,22,40,.96),rgba(7,11,21,.96));padding:16px 20px 14px;min-width:0}
-.ov-k{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#93ACD6;margin-bottom:2px}
+.ov-k{display:block;font-size:12px;font-weight:500;line-height:1.6;letter-spacing:.14em;text-transform:uppercase;color:#93ACD6;margin-bottom:2px}
 .ov-big > b{display:flex;align-items:baseline;gap:8px;font-family:var(--display);font-size:clamp(26px,3.4vw,36px);font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
-.ov-big.eq > b{background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ov-big.ov-eq > b{background:linear-gradient(180deg,#FFF3D1 0%,#F2D27F 50%,#DDAE46 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .ov-cur{font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--muted);-webkit-text-fill-color:var(--muted)}
 .ov-sub{display:block;font-size:12px;font-weight:300;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
 .ov-metrics .tile{position:relative;padding:14px 16px;border-radius:14px;
@@ -828,7 +828,7 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
 .pchip{background:radial-gradient(100% 90% at 0% 0%,rgba(224,49,63,.07),transparent 60%),linear-gradient(180deg,#121C31,#0A111F);border-color:rgba(255,255,255,.08);transition:border-color .15s,box-shadow .15s,transform .15s}
 .pchip:hover{border-color:rgba(59,148,255,.4);transform:translateY(-1px)}
 .pchip.active{border-color:rgba(59,148,255,.7);box-shadow:inset 0 0 0 1px rgba(59,148,255,.5),0 14px 34px -18px rgba(59,148,255,.55)}
-.pchip.active .pc-eq{background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pchip.active .pc-eq{background:linear-gradient(180deg,#FFF3D1 0%,#F2D27F 50%,#DDAE46 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .pchip.active .pc-eq small{-webkit-text-fill-color:var(--muted)}
 .pchip.add{color:var(--blue);border-color:rgba(59,148,255,.4)}
 /* ปุ่ม / ช่องกรอก / แท็บ */
@@ -841,7 +841,8 @@ textarea.field{min-height:90px;resize:vertical;padding-top:10px}
 .seg button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(59,148,255,.32),rgba(59,148,255,.12));color:#DCEBFF;box-shadow:inset 0 0 0 1px rgba(59,148,255,.55)}
 .pill.plan{background:rgba(59,148,255,.12);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(59,148,255,.3)}
 /* แพ็กเกจ / โค้ด */
-.code-copy{background:linear-gradient(180deg,#DCEBFF,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.08em}
+.code-copy,#myCode{background:linear-gradient(180deg,#FFF3D1 0%,#F2D27F 50%,#DDAE46 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;letter-spacing:.08em;font-family:var(--display);font-weight:700}
+.code-copy:hover{filter:brightness(1.15)}
 .plan-opt{background:var(--glass);border-color:rgba(255,255,255,.08);transition:border-color .15s,box-shadow .15s}
 .plan-opt[aria-pressed="true"]{border-color:rgba(59,148,255,.75);box-shadow:inset 0 0 0 1px rgba(59,148,255,.5),0 14px 30px -16px rgba(59,148,255,.6)}
 .plan-opt[aria-pressed="true"] b{color:#DCEBFF}
@@ -860,9 +861,18 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .pill.ptype{font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .pill.ptype.cent{color:#1A1206;background:linear-gradient(180deg,#FBEFC8 0%,#E9C46A 45%,#B8862B 100%);box-shadow:0 0 0 1px rgba(233,196,106,.55),0 6px 16px -8px rgba(233,196,106,.7),inset 0 1px 0 rgba(255,255,255,.55)}
 .pill.ptype.usd{color:#fff;background:linear-gradient(180deg,#F25563 0%,#E0313F 50%,#A81B28 100%);box-shadow:0 0 0 1px rgba(240,68,82,.6),0 6px 16px -8px rgba(224,49,63,.8),inset 0 1px 0 rgba(255,255,255,.3)}
-.ov-k.eqk,.ov-big.eq .ov-k{color:#E9C46A}
+.ov-k.eqk,.ov-big.ov-eq .ov-k{color:#F2D27F}
 .ea-right .pill.ptype{font-size:13px;padding:6px 14px}
 .pc-top .pill.ptype{font-size:10.5px;padding:2px 8px}
+
+/* จัดแนวให้เท่ากัน: ป้ายพอร์ต + ปุ่ม EA สูงเท่ากัน, Balance/Equity ฐานเดียวกัน */
+.ea-right{align-items:stretch}
+.ea-right .pill.ptype,.ea-right .ea-sw{height:34px;min-height:34px;display:inline-flex;align-items:center;box-sizing:border-box}
+.ea-right .pill.ptype{padding:0 16px;line-height:1}
+.ov-big{display:flex;flex-direction:column;justify-content:flex-start}
+.ov-big .ov-k{font-weight:500}
+.ov-big > b{align-items:baseline}
+.ov-sub{min-height:19px}
 </style>
 </head>
 <body>
@@ -1065,7 +1075,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ Order ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
     <div class="ov-hero">
       <div class="ov-big"><span class="ov-k">Balance</span><b class="num"><span id="dBal">–</span><small class="ov-cur" id="dBalCur"></small></b><small class="ov-sub" id="dBalSub">&nbsp;</small></div>
-      <div class="ov-big eq"><span class="ov-k">Equity</span><b class="num"><span id="dEq">–</span><small class="ov-cur" id="dEqCur"></small></b><small class="ov-sub" id="dEqSub">&nbsp;</small></div>
+      <div class="ov-big ov-eq"><span class="ov-k">Equity</span><b class="num"><span id="dEq">–</span><small class="ov-cur" id="dEqCur"></small></b><small class="ov-sub" id="dEqSub">&nbsp;</small></div>
     </div>
     <div class="tiles t4 ov-metrics">
       <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
