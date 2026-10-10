@@ -925,6 +925,10 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .hedge-bar .hb-tag{font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:13px;color:#1A1205;background:linear-gradient(180deg,#FFD27A,#FFA928);padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
 .hedge-bar .hb-tag i{width:7px;height:7px;border-radius:50%;background:#1A1205;animation:hbPulse 1.4s ease-in-out infinite}
 @keyframes hbPulse{50%{opacity:.25}}
+.hedge-bar.idle{padding:9px 12px;border-color:rgba(255,176,32,.25);background:rgba(255,176,32,.05)}
+.hedge-bar.idle .hb-tag{background:transparent;color:#FFC768;border:1px solid rgba(255,176,32,.45);padding:3px 9px}
+.hedge-bar.idle .hb-tag i{background:#3DDC97;animation:none}
+.hedge-bar.idle .hb-msg{color:var(--muted)}
 .hedge-bar .hb-msg{font-size:13px;color:#FFE2B0}
 .hedge-bar .hb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .hedge-bar .hb-grid div{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 10px;min-width:0}
@@ -1635,7 +1639,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|") } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|") } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -1921,9 +1925,16 @@ async function openMember(token) {
 /* ---- แถบ HEDGING ที่หน้าสถานะ (EA 2.25+) ---- */
 function renderHedge(S, fl) {
   let h = null; try { h = S.hedge ? (typeof S.hedge === "string" ? JSON.parse(S.hedge) : S.hedge) : null; } catch (e) {}
-  const on = !!(h && (h.n > 0 || h.recN > 0)) && S.online !== false;
-  $("hedgeBar").hidden = !on;
-  if (!on) return;
+  const C = dashData.settings || {};
+  const active = !!(h && (h.n > 0 || h.recN > 0)) && S.online !== false;
+  // ปิดระบบ Hedging และไม่มีไม้ค้าง → ไม่แสดง · เปิดอยู่แต่ยังไม่ล็อก → แถบเล็ก "พร้อม"
+  $("hedgeBar").hidden = !active && !C.hedgeOn;
+  $("hedgeBar").classList.toggle("idle", !active);
+  if (!active) {
+    if (C.hedgeOn) $("hedgeBar").innerHTML = `<div class="hb-top"><span class="hb-tag"><i></i>HEDGING</span>
+      <span class="hb-msg">พร้อมทำงาน · เริ่ม Hedge เมื่อตะกร้าติดลบถึง ${C.hedgePct}% ของ Balance หรือไม้แก้ครบ ${C.maxOrders} ไม้${C.recOn ? " · ตะกร้ากู้เปิด" : ""}</span></div>`;
+    return;
+  }
   const locked = h.n > 0;
   const side = h.side > 0 ? "BUY" : "SELL", main = h.side > 0 ? "SELL" : "BUY";
   $("hedgeBar").innerHTML = `<div class="hb-top"><span class="hb-tag"><i></i>HEDGING</span>
