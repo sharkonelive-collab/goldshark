@@ -920,6 +920,17 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .ov-metrics .tile{padding-bottom:20px}
 .ov-metrics .tile > small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:860px){.ov-metrics .tile > small{font-size:11.5px}.ov-metrics .tile{padding-bottom:18px}}
+.hedge-bar{margin:14px 0 2px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,176,32,.45);background:linear-gradient(135deg,rgba(255,176,32,.14),rgba(255,77,77,.10));display:grid;gap:8px}
+.hedge-bar .hb-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hedge-bar .hb-tag{font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:13px;color:#1A1205;background:linear-gradient(180deg,#FFD27A,#FFA928);padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+.hedge-bar .hb-tag i{width:7px;height:7px;border-radius:50%;background:#1A1205;animation:hbPulse 1.4s ease-in-out infinite}
+@keyframes hbPulse{50%{opacity:.25}}
+.hedge-bar .hb-msg{font-size:13px;color:#FFE2B0}
+.hedge-bar .hb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hedge-bar .hb-grid div{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 10px;min-width:0}
+.hedge-bar .hb-grid span{display:block;font-size:11px;color:var(--muted)}
+.hedge-bar .hb-grid b{font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+@media (max-width:600px){.hedge-bar .hb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -1132,6 +1143,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
       <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
       <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
     </div>
+    <div class="hedge-bar" id="hedgeBar" hidden></div>
     <p class="card-foot" id="dFloat"></p>
   </section>
 
@@ -1562,7 +1574,7 @@ const demo = (() => {
   const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 },
     packages: [{ id: "month", label: "1 เดือน", days: 30, price: 1290, on: true }, { id: "m3", label: "3 เดือน", days: 90, price: 3490, on: true }, { id: "m6", label: "6 เดือน", days: 180, price: 6490, on: true }, { id: "year", label: "12 เดือน", days: 365, price: 9900, on: true }, { id: "life", label: "ถาวร", days: 0, price: 24900, on: false }],
     promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
-    port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false } } };
+    port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "12 เดือน", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
@@ -1623,7 +1635,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: "พร้อมเทรด", hourly: hp.join("|") } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|") } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -1906,6 +1918,23 @@ async function openMember(token) {
   fastTimer = setInterval(() => { if ((dashData.payments || []).some(x => x.status === "pending")) loadMe(true); }, 20000);
 }
 
+/* ---- แถบ HEDGING ที่หน้าสถานะ (EA 2.25+) ---- */
+function renderHedge(S, fl) {
+  let h = null; try { h = S.hedge ? (typeof S.hedge === "string" ? JSON.parse(S.hedge) : S.hedge) : null; } catch (e) {}
+  const on = !!(h && (h.n > 0 || h.recN > 0)) && S.online !== false;
+  $("hedgeBar").hidden = !on;
+  if (!on) return;
+  const locked = h.n > 0;
+  const side = h.side > 0 ? "BUY" : "SELL", main = h.side > 0 ? "SELL" : "BUY";
+  $("hedgeBar").innerHTML = `<div class="hb-top"><span class="hb-tag"><i></i>HEDGING</span>
+      <span class="hb-msg">${locked ? `ตะกร้า ${main} ไปผิดทาง EA ล็อกขาดทุนไว้ด้วย ${side} · รอปลดล็อกอัตโนมัติ` : "ปลดล็อกแล้ว · กำลังปิดตะกร้ากู้ที่เหลือ"}</span></div>
+    <div class="hb-grid">
+      <div><span>ไม้ Hedge</span><b>${locked ? `${side} ${fmt(h.lots)} lot` : "–"}</b></div>
+      <div><span>P/L ไม้ Hedge</span><b class="${cls(h.pl)}">${locked ? signed(h.pl) : "–"}</b></div>
+      <div><span>ตะกร้ากู้</span><b class="${h.recN ? cls(h.recPL) : ""}">${h.recN ? `${ordTxt(h.recN)} · ${signed(h.recPL)}` : "รอสัญญาณ"}</b></div>
+      <div><span>รวมทุก Order</span><b class="${cls(fl)}">${signed(fl)}</b></div>
+    </div>${h.bank > 0 ? `<div class="hb-msg">กำไรตะกร้ากู้สะสม ${fmt(h.bank)} รอนำไปปิด Order ที่ติดลบหนักสุด</div>` : ""}`;
+}
 const ordTxt = n => n + (n === 1 ? " Order" : " Orders");
 function renderDash() {
   renderDigitNotice();
@@ -1938,7 +1967,9 @@ function renderDash() {
     $("bLots").textContent = fmt(S.buyLots); $("sLots").textContent = fmt(S.sellLots);
     $("lDD").textContent = fmt(S.dd) + "%"; $("lSpread").textContent = S.spread;
     $("lTrade").textContent = S.tradeStatus || "–";
+    renderHedge(S, fl);
   } else {
+    $("hedgeBar").hidden = true;
     $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today"; renderDDToday(null);
     ["dBalCur", "dEqCur"].forEach(id => $(id).textContent = ""); ["dBalSub", "dEqSub", "dFltSub", "dOpenSub"].forEach(id => $(id).textContent = "\u00a0");
     ["dBal", "dEq", "dFlt", "dOpen", "bPL", "sPL", "bCount", "sCount", "bLots", "sLots", "lDD", "lSpread", "lTrade"].forEach(id => $(id).textContent = "–");
@@ -2154,6 +2185,16 @@ function riskWarn(d, s) {
   return out.map(t => `<p>⚠️ ${t}</p>`).join("");
 }
 
+/* ============ คำเตือน Hedging ============ */
+function hedgeWarn(d, s) {
+  const out = [];
+  if (d.hedgeOn && !s.hedgeOn) out.push(`<b>กำลังเปิด Hedging</b> เมื่อไม้แก้ครบหรือติดลบถึง ${d.hedgePct}% EA จะเปิดไม้ฝั่งตรงข้าม 70% ของล็อตรวม <b>ขาดทุนไม่ได้หายไป แค่ถูกล็อกไว้</b> ระหว่างล็อก EA จะไม่แก้ไม้และไม่เข้าตะกร้าใหม่ จนกว่ารวมทุกไม้กลับมา${Number(d.hedgeExitPct) > 0 ? "ติดลบไม่เกิน " + d.hedgeExitPct + "%" : "เท่าทุน"} ถ้าล็อกนานจะเสียค่า swap ข้ามคืนทั้งสองฝั่ง และต้องใช้บัญชีแบบ Hedging (Exness เป็นแบบนี้อยู่แล้ว) · ต้องใช้ EA เวอร์ชัน 2.24 ขึ้นไป`);
+  if (d.hedgeOn && d.recOn && (!s.hedgeOn || !s.recOn)) out.push(`<b>ตะกร้ากู้เปิดอยู่</b> ระหว่างล็อก EA จะเปิดตะกร้าใหม่ตามสัญญาณและแก้ไม้ได้เท่าตะกร้าปกติ ทำให้ใช้ Margin เพิ่ม ถ้าตะกร้ากู้ไปผิดทางอีก ความเสี่ยงจะซ้อนขึ้น (EA ไม่เปิดตะกร้ากู้ถ้า Margin Level ต่ำกว่าที่ตั้ง) · ต้องใช้ EA เวอร์ชัน 2.25 ขึ้นไป`);
+  if (!d.hedgeOn && s.hedgeOn) out.push(`<b>กำลังปิด Hedging</b> ถ้ามีไม้ Hedge ค้างอยู่ EA จะยังดูแลจนปลดล็อกตามเดิม แต่จะไม่เปิด Hedge ใหม่`);
+  if (d.hedgeOn && d.cutPctOn && Number(d.cutPct) <= Number(d.hedgePct)) out.push(`<b>ปิดขาดทุน ${d.cutPct}% ต่ำกว่าหรือเท่าจุดเริ่ม Hedge ${d.hedgePct}%</b> ตะกร้าจะถูกตัดขาดทุนก่อนได้ Hedge ถ้าต้องการให้ Hedge ก่อน ตั้งปิดขาดทุนให้มากกว่า (ระหว่างล็อกจะใช้ % นี้กับยอดรวมทุกไม้)`);
+  return out.map(t => `<p>⚠️ ${t}</p>`).join("");
+}
+
 /* ============ ตั้งค่า EA ทั้งหมด (ต้องตรงกับ SCHEMA ใน Code.gs) ============ */
 const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
 const CFG_GROUPS = [
@@ -2187,6 +2228,11 @@ const CFG_GROUPS = [
     ["ddStopOn", "bool", false, "หยุดฉุกเฉิน : Equity ลดเกิน % → ปิดทุกออเดอร์แล้วพัก EA"],
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
     ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที · 1440 = 1 วัน)", 0, 43200, 60]] },
+  { id: "hedge", title: "Hedging", toggle: "hedgeOn", warn: hedgeWarn, fields: [
+    ["hedgeOn", "bool", false, "เปิด Hedging : ไม้แก้ครบ หรือติดลบถึง % ที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 70% ล็อกขาดทุนไว้แทนการตัด"],
+    ["hedgePct", "num", 15, "เริ่ม Hedge เมื่อตะกร้าติดลบถึง (% ของ Balance)", 1, 90, 1],
+    ["hedgeExitPct", "num", 0, "ปลดล็อก: ปิดทุกไม้เมื่อรวมกันติดลบไม่เกิน (% ของ Balance · 0 = รอจนเท่าทุน)", 0, 20, 0.5],
+    ["recOn", "bool", true, "ตะกร้ากู้ระหว่างล็อก : เปิดตะกร้าใหม่ตามสัญญาณ (แก้ไม้ได้เท่าตะกร้าปกติ) กำไรที่ได้เอาไปทยอยปิดไม้ที่ติดลบหนักสุด"]] },
   { id: "news", title: "กรองข่าว", toggle: "newsOn", fields: [
     ["newsOn", "bool", false, "หยุดเข้าไม้ช่วงข่าว"],
     ["newsLevel", "sel", 2, "ข่าวที่หลบ", [[1, "ทุกข่าว USD"], [2, "เฉพาะข่าวแดง (High)"]]],
@@ -2330,7 +2376,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "hedge" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -2343,9 +2389,9 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin"].includes(k))) {
-    const msg = riskWarn(userForm.draft, cfgSaved()).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
-    if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / ระบบตัดขาดทุน?\n\n" + msg)) return;
+  if (ch.some(k => ["maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn"].includes(k))) {
+    const msg = (riskWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
+    if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / Hedging / ระบบตัดขาดทุน?\n\n" + msg)) return;
   }
   $("cfgSave").disabled = true;
   const r = await api("user_settings", { token: session.token, code: session.port, settings });
