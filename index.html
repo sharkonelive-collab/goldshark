@@ -2223,7 +2223,7 @@ function riskWarn(d, s) {
   return out.map(t => `<p>⚠️ ${t}</p>`).join("");
 }
 
-/* ============ ตัวคำนวณความเสี่ยง (ทองสวนกี่ $ ถึงติดลบ 30% / 50% / พอร์ตหมด) ============ */
+/* ============ ตัวคำนวณความเสี่ยง (ทองสวนกี่ $ ถึงติดลบ 30% / 50% / ล้างพอร์ต) ============ */
 // ทองขยับ $1 ต่อ 1.00 lot = 100 หน่วยเงินในพอร์ต (USD หรือ USC) · ตรงกับวิธีคิดล็อตของ EA (GridLot)
 function riskCtx() {
   let adm = null; try { adm = $("setDlg") && $("setDlg").open && admLic; } catch (e) {}
@@ -2265,7 +2265,7 @@ function riskCalc(d) {
     <div class="rk-grid">
       <div><span>ติดลบ 30%</span><b>ทองสวน $${r.d30}</b><small>ไม้ที่ ${r.ordersAt(r.d30)}</small></div>
       <div><span>ติดลบ 50%</span><b>ทองสวน $${r.d50}</b><small>ไม้ที่ ${r.ordersAt(r.d50)}</small></div>
-      <div><span>พอร์ตหมด</span><b>ทองสวน $${r.d100}</b><small>ไม้ที่ ${r.ordersAt(r.d100)}</small></div>
+      <div><span>ล้างพอร์ต</span><b>ทองสวน $${r.d100}</b><small>ไม้ที่ ${r.ordersAt(r.d100)}</small></div>
     </div>${cut}<div class="rk-note">${lvl[2]} · คิดจากทองวิ่งทางเดียวไม่ย้อนกลับ ไม่รวมสเปรด/swap</div></div>`;
 }
 /* ---- ค่าสมดุล: เทียบกับค่าปัจจุบัน แล้วให้สมาชิกกดยืนยันเอง ---- */
@@ -2283,7 +2283,7 @@ function balancedBox(d) {
   const low = bal.real && bal.bal < B.lotPerBal;
   return `<div class="balbox ${on ? "on" : ""}">
     <div class="rk-h"><b>${on ? "✓ ใช้ค่าสมดุลอยู่" : "ค่าสมดุลที่ระบบคำนวณให้"}</b>${on ? "" : `<span class="rk-tag">แนะนำ</span>`}</div>
-    <div class="rk-sub">พอร์ตหมดเมื่อทองสวน <b>$${now.d100}</b>${on ? "" : ` → <b>$${bal.d100}</b>`} · ติดลบ 30% ที่ทองสวน <b>$${on ? now.d30 : bal.d30}</b>
+    <div class="rk-sub">ล้างพอร์ตเมื่อทองสวน <b>$${now.d100}</b>${on ? "" : ` → <b>$${bal.d100}</b>`} · ติดลบ 30% ที่ทองสวน <b>$${on ? now.d30 : bal.d30}</b>
       · กำไรต่อรอบจะน้อยลงและเข้าไม้แก้ห่างขึ้น แลกกับพอร์ตที่ทนได้ไกลขึ้น${low ? `<br>⚠ ทุนตอนนี้ต่ำกว่า ${fmt(B.lotPerBal, 0)} ${bal.cur} ที่แนะนำต่อ 0.01 lot จึงยังเสี่ยงกว่าตัวเลขข้างบน` : ""}</div>
     ${on ? "" : `<ul class="baldiff">${diff}</ul>`}
     <button type="button" class="btn small ${on ? "ghost" : "primary"}" data-bal="${on ? "off" : "on"}">${on ? "กลับไปใช้ค่าเริ่มต้นของร้าน" : "ใช้ค่าสมดุลนี้"}</button>
