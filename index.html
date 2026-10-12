@@ -2183,16 +2183,26 @@ $("lotSave").addEventListener("click", async () => {
 /* ============ คำเตือนตอนเปิดระบบตัดขาดทุน / ปรับจำนวนไม้แก้ (หน้าสมาชิก) ============ */
 function riskWarn(d, s) {
   const out = [];
-  const turnedOn = [["cutPctOn", "ปิดขาดทุนเป็น %"], ["cutLossOn", "ตัดขาดทุนเป็นจำนวนเงิน"], ["ddStopOn", "หยุดฉุกเฉิน DD"]].filter(([k]) => d[k] && !s[k]).map(([, n]) => n);
+  const turnedOn = [["cutPctOn", "ปิดขาดทุนเป็น %"], ["cutLossOn", "ตัดขาดทุนเป็นจำนวนเงิน"]].filter(([k]) => d[k] && !s[k]).map(([, n]) => n);
   if (turnedOn.length) out.push(`<b>กำลังเปิด: ${turnedOn.join(", ")}</b> เมื่อถึงเงื่อนไข EA จะ<b>ปิดออเดอร์ทั้งตะกร้าทันทีแบบขาดทุนจริง</b> ย้อนกลับไม่ได้ ถึงราคาจะกลับมาภายหลังก็ตาม ช่วยกันพอร์ตแตก แต่ถ้าตั้งใกล้เกินไปจะโดนตัดบ่อย`
-    + (d.ddStopOn && !s.ddStopOn ? ` · หยุดฉุกเฉินจะ<b>ปิดทุกออเดอร์และพัก EA ${d.ddPauseMin} นาที</b>` : ""));
-  const on = [d.cutPctOn, d.cutLossOn, d.ddStopOn].some(Boolean), wasOn = [s.cutPctOn, s.cutLossOn, s.ddStopOn].some(Boolean);
+    );
+  const on = [d.cutPctOn, d.cutLossOn].some(Boolean), wasOn = [s.cutPctOn, s.cutLossOn].some(Boolean);
   if (!on && wasOn) out.push(`<b>กำลังปิดระบบตัดขาดทุนทั้งหมด</b> ตะกร้าที่ติดลบจะถูกถือไว้จนกว่าราคาจะกลับมา ถ้าราคาวิ่งทางเดียวยาว พอร์ตอาจติดลบหนักจน Margin ไม่พอ`);
   if (Number(d.maxOrders) !== Number(s.maxOrders)) {
     out.push(Number(d.maxOrders) > Number(s.maxOrders)
       ? `<b>เพิ่มไม้แก้เป็น ${d.maxOrders} ไม้</b> ล็อตจะโตขึ้นตามตัวคูณทุกไม้ ใช้ Margin มากขึ้นและติดลบได้ลึกขึ้น`
       : `<b>ลดไม้แก้เหลือ ${d.maxOrders} ไม้</b> ครบจำนวนแล้ว EA จะหยุดแก้ไม้ ตะกร้าอาจติดลบค้างนานขึ้นและปิดทุนได้ยากขึ้น`);
   }
+  return out.map(t => `<p>⚠️ ${t}</p>`).join("");
+}
+
+/* ============ คำเตือน กันพอร์ตแตก ============ */
+function guardWarn(d, s) {
+  const out = [];
+  if (d.ddStopOn && !s.ddStopOn) out.push(`<b>กำลังเปิดกันพอร์ตแตก</b> เมื่อ Equity ต่ำกว่า Balance เกิน ${d.ddStopPct}% EA จะ<b>ปิดทุกออเดอร์ทันทีแบบขาดทุนจริง</b> (รวมไม้ Hedge และตะกร้ากู้) แล้ว<b>พัก EA ${d.ddPauseMin} นาที</b> ย้อนกลับไม่ได้ ถ้าตั้ง % น้อยเกินไปจะโดนปิดบ่อย`);
+  if (!d.ddStopOn && s.ddStopOn) out.push(`<b>กำลังปิดกันพอร์ตแตก</b> ถ้าราคาวิ่งทางเดียวยาว และไม่มีระบบตัดขาดทุนอื่นเปิดไว้ พอร์ตอาจติดลบจน Margin ไม่พอ (Stop Out)`);
+  if (d.ddStopOn && s.ddStopOn && Number(d.ddStopPct) !== Number(s.ddStopPct)) out.push(`<b>เปลี่ยนจุดหยุดฉุกเฉินเป็น ${d.ddStopPct}%</b> ${Number(d.ddStopPct) < Number(s.ddStopPct) ? "ตั้งใกล้ขึ้น ปิดเร็วขึ้น เสียน้อยลงต่อครั้งแต่โดนบ่อยขึ้น" : "ตั้งไกลขึ้น ทนได้มากขึ้น แต่ถ้าโดนจะเสียมากขึ้น"}`);
+  if (d.ddStopOn && d.hedgeOn && Number(d.ddStopPct) <= Number(d.hedgePct)) out.push(`<b>หยุดฉุกเฉิน ${d.ddStopPct}% ต่ำกว่าหรือเท่าจุดเริ่ม Hedge ${d.hedgePct}%</b> พอร์ตอาจถูกปิดทั้งหมดก่อนได้ Hedge`);
   return out.map(t => `<p>⚠️ ${t}</p>`).join("");
 }
 
@@ -2226,17 +2236,15 @@ const CFG_GROUPS = [
     ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance)", 1, 95, 1],
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
     ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
-    ["ddStopOn", "bool", false, "หยุดฉุกเฉิน: Equity ลดเกินกำหนด → ปิดทุกไม้แล้วพัก"],
-    ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
-    ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที, 1440 = 1 วัน)", 0, 43200, 60],
     ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
-  { id: "risk", title: "ไม้แก้ / ระบบตัดขาดทุน", member: true, warn: riskWarn, fields: [
+  { id: "risk", title: "ไม้แก้ / ตัดขาดทุน", member: true, warn: riskWarn, fields: [
     ["maxOrders", "int", 30, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
     ["cutPctOn", "bool", false, "ปิดขาดทุนเป็น % : ตะกร้าติดลบเกิน % ของ Balance → ปิดทั้งตะกร้า"],
     ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance · เช่น 20 = พอร์ต $1,000 ติดลบ $200)", 1, 95, 1],
     ["cutLossOn", "bool", false, "ตัดขาดทุนเป็นจำนวนเงิน : ตะกร้าติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
-    ["cutLoss", "num", 300, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ต USD = $ · พอร์ต Cent = USC)", 1, 1e8, 1],
-    ["ddStopOn", "bool", false, "หยุดฉุกเฉิน : Equity ลดเกิน % → ปิดทุกออเดอร์แล้วพัก EA"],
+    ["cutLoss", "num", 300, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ต USD = $ · พอร์ต Cent = USC)", 1, 1e8, 1]] },
+  { id: "guard", title: "กันพอร์ตแตก", toggle: "ddStopOn", warn: guardWarn, fields: [
+    ["ddStopOn", "bool", false, "หยุดฉุกเฉิน : Equity ลดลงเกิน % ที่ตั้ง → ปิดทุกออเดอร์ (รวมไม้ Hedge) แล้วพัก EA"],
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
     ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที · 1440 = 1 วัน)", 0, 43200, 60]] },
   { id: "hedge", title: "Hedging", toggle: "hedgeOn", warn: hedgeWarn, fields: [
@@ -2340,7 +2348,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
           <td><label class="sw"><input type="checkbox" data-k="${d}On" aria-label="เทรดวัน${name}"><span class="track"></span></label></td>
           <td><input class="field num" type="time" data-k="${d}Start" aria-label="${name} เริ่ม"></td><td class="muted">ถึง</td>
           <td><input class="field num" type="time" data-k="${d}End" aria-label="${name} หยุด"></td></tr>`).join("")}</tbody></table>
-        <p class="pnote">ใช้เวลาเซิร์ฟเวอร์ของโบรก (ดูได้จากนาฬิกาในหน้าต่างตลาดของ MT5) ถ้าเวลาหยุดน้อยกว่าเวลาเริ่ม แปลว่าเทรดข้ามเที่ยงคืนไปถึงวันถัดไป เสาร์-อาทิตย์ไม่เทรด</p></div>` : ""}
+        <p class="pnote">ใช้<b>เวลาไทย</b> (EA เวอร์ชัน 2.26 ขึ้นไป · เวอร์ชันเก่าใช้เวลาเซิร์ฟเวอร์ของโบรก) ถ้าเวลาหยุดน้อยกว่าเวลาเริ่ม แปลว่าเทรดข้ามเที่ยงคืนไปถึงวันถัดไป เสาร์-อาทิตย์ไม่เทรด</p></div>` : ""}
     </details>`).join("");
 
   function status() {
@@ -2355,7 +2363,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
       if (g.warn) { const w = box.querySelector(".cfg-warn"), t = g.warn(draft, saved()); w.hidden = !t; w.innerHTML = t || ""; }
       if (g.id === "risk") {
-        const on = [draft.cutPctOn ? "-" + draft.cutPct + "%" : "", draft.cutLossOn ? "-" + draft.cutLoss : "", draft.ddStopOn ? "DD " + draft.ddStopPct + "%" : ""].filter(Boolean);
+        const on = [draft.cutPctOn ? "-" + draft.cutPct + "%" : "", draft.cutLossOn ? "-" + draft.cutLoss : ""].filter(Boolean);
         sum.textContent = `${draft.maxOrders} ไม้ · ${on.length ? "ตัด " + on.join(" / ") : "ไม่ตัดขาดทุน"}`; sum.classList.toggle("on", on.length > 0);
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
@@ -2387,7 +2395,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "hedge" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "guard" || g.id === "hedge" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -2401,8 +2409,8 @@ $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
   if (ch.some(k => ["maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn"].includes(k))) {
-    const msg = (riskWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
-    if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / Hedging / ระบบตัดขาดทุน?\n\n" + msg)) return;
+    const msg = (riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
+    if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
   $("cfgSave").disabled = true;
   const r = await api("user_settings", { token: session.token, code: session.port, settings });
