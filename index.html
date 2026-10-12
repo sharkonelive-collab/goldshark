@@ -964,6 +964,29 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .balbox.fast .rk-tag{background:#FFB020;color:#1A1205}
 .balbox.on{border-color:rgba(61,220,151,.5)!important;background:rgba(61,220,151,.07)!important}
 @media (max-width:640px){.presets{grid-template-columns:1fr}}
+/* ---- พอร์ตของฉัน: การ์ดอ่านง่าย + ผลรวม ---- */
+.ports-total{margin:0 0 12px;padding:12px 14px;border-radius:16px;border:1px solid rgba(242,210,127,.28);background:linear-gradient(135deg,rgba(242,210,127,.07),rgba(59,148,255,.05))}
+.pt-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+.pt-h b{font-size:14px}.pt-h span{font-size:11.5px;color:var(--muted)}
+.pt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pt-grid div{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 10px;min-width:0}
+.pt-grid span{display:block;font-size:11px;color:var(--muted)}
+.pt-grid b{display:block;font-family:var(--display);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gold-num{background:linear-gradient(180deg,#FFF3D1,#F2D27F 55%,#DDAE46);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.port-list{display:flex!important;gap:10px;overflow-x:auto!important;scroll-snap-type:x mandatory!important;padding:2px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.pchip{flex:0 0 300px!important;min-width:300px!important;max-width:300px!important;scroll-snap-align:start;display:flex!important;flex-direction:column;gap:8px}
+.pc-eq{display:flex;align-items:baseline;gap:6px}
+.pc-eq em{font-style:normal;font-family:inherit;font-size:11px;color:var(--muted);font-weight:400;margin-right:2px}
+.pc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pc-stats>span{background:rgba(0,0,0,.2);border-radius:9px;padding:6px 8px;min-width:0;display:flex;flex-direction:column}
+.pc-stats i{font-style:normal;font-size:10.5px;color:var(--muted)}
+.pc-stats b{font-family:var(--display);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-stats small{font-size:10.5px}
+.pc-empty{font-size:12.5px;color:var(--muted);padding:8px 0}
+.pc-sub{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pc-sub .pill{font-size:11px;padding:1px 8px}
+.pchip.add{min-height:150px;justify-content:center;align-items:center}
+@media (max-width:600px){.pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pchip{flex-basis:84%!important;min-width:84%!important;max-width:84%!important}}
 </style>
 </head>
 <body>
@@ -1103,6 +1126,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
       <div class="card-label">พอร์ตของฉัน</div>
       <span class="muted" id="portsSum"></span>
     </div>
+    <div class="ports-total" id="portsTotal" hidden></div>
     <div class="port-list" id="portList"></div>
   </section>
 
@@ -1660,7 +1684,8 @@ function demoApi(action, d) {
         for (let i = 167; i >= 0; i--) { if (Math.random() < 0.45) { const v = Math.random() < 0.85 ? 2 + Math.random() * 14 : -(5 + Math.random() * 30); hp.push((nowH - i) + "_" + v.toFixed(2)); } }
         const nb = Date.now();
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
-        const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance, eaOff: !!l.eaOff }; });
+        const ports = u.codes.map((c, i) => { const l = L.find(x => x.code === c); return { code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance != null ? l.balance : (l.equity != null ? l.equity + 21.5 : null), eaOff: !!l.eaOff,
+          profit: l.equity != null ? { today: i === 0 ? 62.56 : 18.4, week: i === 0 ? 412.9 : 96.35 } : null }; });
         return res({ ok: true, host: { on: demo.config.hostOn, pubKey: DEMO_PUB, brokers: demo.config.hostBrokers, agentOnline: true }, hosting: lic.hosting || null, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
           balanced: DEMO_BAL, presets: { balanced: DEMO_BAL, fast: DEMO_FAST }, plans: demoPlans(), planLabels: demoLabels(),
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
@@ -2860,19 +2885,47 @@ $("memberRefresh").addEventListener("click", () => manualRefresh(false));
 /* ============ แถบเลือกพอร์ต ============ */
 function renderPorts() {
   const ports = dashData.ports || [], cur = dashData.license && dashData.license.code;
-  let usd = 0, on = 0;
-  ports.forEach(p => { if (p.equity != null) usd += isCent(p.currency) ? p.equity / 100 : p.equity; if (p.online) on++; });
-  $("portsSum").textContent = ports.length > 1 ? `${ports.length} พอร์ต · ออนไลน์ ${on} · รวมประมาณ $${fmt(usd)}` : "";
+  // รวมทุกพอร์ต (แปลงพอร์ตเซ็นต์ USC → USD ÷ 100)
+  const toUsd = (v, p) => v == null ? 0 : (isCent(p.currency) || (!p.currency && p.port === "cent") ? v / 100 : v);
+  let eq = 0, today = 0, week = 0, flt = 0, on = 0, live = 0;
+  ports.forEach(p => {
+    if (p.online) on++;
+    if (p.equity == null) return;
+    live++;
+    eq += toUsd(p.equity, p);
+    if (p.balance != null) flt += toUsd(p.equity - p.balance, p);
+    if (p.profit) { today += toUsd(p.profit.today, p); week += toUsd(p.profit.week, p); }
+  });
+  const hasCent = ports.some(p => p.equity != null && (isCent(p.currency) || (!p.currency && p.port === "cent")));
+  $("portsSum").textContent = ports.length ? `${ports.length} พอร์ต · ออนไลน์ ${on}` : "";
+  $("portsTotal").hidden = live < 2;
+  if (live >= 2) $("portsTotal").innerHTML = `
+    <div class="pt-h"><b>รวมทุกพอร์ต</b><span>${hasCent ? "หน่วย USD (พอร์ตเซ็นต์ ÷ 100)" : "หน่วย USD"}</span></div>
+    <div class="pt-grid">
+      <div><span>Equity รวม</span><b class="gold-num">$${fmt(eq)}</b></div>
+      <div><span>กำไรวันนี้</span><b class="${cls(today)}">${signed(today)}</b></div>
+      <div><span>กำไร 7 วัน</span><b class="${cls(week)}">${signed(week)}</b></div>
+      <div><span>สถานะรวม</span><b class="${cls(flt)}">${signed(flt)}</b></div>
+    </div>`;
   $("portList").innerHTML = ports.map(p => {
     const dl = daysLeft(p.expires), none = p.plan === "none";
     const left = p.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : p.plan === "life" ? "ถาวร" : dl > 0 ? `เหลือ ${dl} วัน` : "หมดอายุ";
     const ptype = p.port === "usd" || p.port === "cent" ? p.port : (p.currency ? (isCent(p.currency) ? "cent" : "usd") : (p.plan === "trial" ? "cent" : ""));
     const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : (ptype === "cent" ? "USC" : ptype === "usd" ? "USD" : "");
     const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : "";
+    const pr = p.profit, fl = p.equity != null && p.balance != null ? p.equity - p.balance : null;
+    const tp = pr && p.balance ? pr.today / (p.balance - pr.today) * 100 : null;
+    const stats = p.equity == null ? `<span class="pc-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
+      <span class="pc-stats">
+        <span><i>วันนี้</i><b class="${cls(pr ? pr.today : 0)}">${pr ? signed(pr.today) : "–"}</b>${tp != null && isFinite(tp) ? `<small class="${cls(tp)}">${tp > 0 ? "+" : ""}${tp.toFixed(2)}%</small>` : ""}</span>
+        <span><i>7 วัน</i><b class="${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b></span>
+        <span><i>สถานะ</i><b class="${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b></span>
+      </span>`;
     return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
-      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b>${pbadge}<span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span>${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
-      <span class="pc-eq">${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
-      <span class="pc-sub">${p.account ? "บัญชี " + esc(p.account) : "ยังไม่เชื่อม EA"} · ${left}</span></button>`;
+      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span><b>${esc(p.label)}</b>${pbadge}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
+      <span class="pc-eq"><em>Equity</em>${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
+      ${stats}
+      <span class="pc-sub"><span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span> ${left}${p.account ? " · บัญชี " + esc(p.account) : ""}</span></button>`;
   }).join("") + (ports.length < (dashData.maxPorts || 10) ? `<button class="pchip add" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>แพ็กเกจแยกต่อพอร์ต</small></button>` : "");
 }
 function renderEaSwitch() {
