@@ -935,6 +935,23 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .hedge-bar .hb-grid span{display:block;font-size:11px;color:var(--muted)}
 .hedge-bar .hb-grid b{font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 @media (max-width:600px){.hedge-bar .hb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cfg-info{margin:-6px 2px 16px}
+.rk{border-radius:12px;padding:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.02)}
+.rk.bad{border-color:rgba(255,77,77,.5);background:rgba(255,77,77,.07)}
+.rk.mid{border-color:rgba(255,176,32,.45);background:rgba(255,176,32,.06)}
+.rk.ok{border-color:rgba(61,220,151,.4);background:rgba(61,220,151,.05)}
+.rk-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.rk-tag{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px}
+.rk.bad .rk-tag{background:#FF4D4D;color:#fff}.rk.mid .rk-tag{background:#FFB020;color:#1A1205}.rk.ok .rk-tag{background:#3DDC97;color:#06210F}
+.rk-sub{font-size:12.5px;color:var(--muted);line-height:1.55}
+.rk-sub b{color:var(--text)}
+.rk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 8px}
+.rk-grid div{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 10px;min-width:0}
+.rk-grid span{display:block;font-size:11px;color:var(--muted)}
+.rk-grid b{display:block;font-family:var(--display);font-size:15px;white-space:nowrap}
+.rk-grid small{font-size:11px;color:var(--muted)}
+.rk>div:not(.rk-h):not(.rk-sub):not(.rk-grid):not(.rk-note){font-size:13px}
+.rk-note{font-size:11.5px;color:var(--muted);margin-top:6px}
 </style>
 </head>
 <body>
@@ -1578,7 +1595,7 @@ const demo = (() => {
   const config = { hostOn: true, hostMax: 30, hostBrokers: [{ key: "exness", name: "Exness", cent: "XAUUSDc", usd: "XAUUSDm" }, { key: "xm", name: "XM", cent: "GOLD", usd: "GOLD" }], prices: { month: 1290, m3: 3490, m6: 6490, year: 9900, life: 24900 },
     packages: [{ id: "month", label: "1 เดือน", days: 30, price: 1290, on: true }, { id: "m3", label: "3 เดือน", days: 90, price: 3490, on: true }, { id: "m6", label: "6 เดือน", days: 180, price: 6490, on: true }, { id: "year", label: "12 เดือน", days: 365, price: 9900, on: true }, { id: "life", label: "ถาวร", days: 0, price: 24900, on: false }],
     promptpay: "0812345678", payName: "GoldShark", trialRealOnly: true, qrMode: "auto", qrFile: "", qrVer: 0,
-    port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true } } };
+    port: { cent: { gridDist: 300, basketTP: 250, maxOrders: 30, cutLoss: 10000, cutLossOn: false, ddStopOn: false, autoLotOn: false, lotPerBal: 3000, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true }, usd: { startLot: 0.01, gridDist: 1000, lotMult: 1.5, maxOrders: 30, grid2Same: true, firstTP: 120, beOffset: 110, basketTP: 100, cutLossOn: false, cutLoss: 300, ddStopOn: false, cutPctOn: false, cutPct: 20, followOn: false, autoLotOn: false, lotPerBal: 3000, hedgeOn: false, hedgePct: 15, hedgeExitPct: 0, recOn: true } } };
   const users = [{ id: "u1", login: "0812345678", password: "demo123", name: "คุณต้น", code: "GS-7KQ2-M9XA", codes: ["GS-7KQ2-M9XA", "GS-W6JF-KR5P"] }];
   lics[0].label = "Exness Cent หลัก"; lics[0].digits = 3; lics[4].label = "USD ทดลองระบบ"; lics[4].status = "active"; lics[4].online = true;
   const pays = [{ id: "P2609291201", userId: "u9", login: "prae@mail.com", code: "GS-P4RW-2HNE", plan: "year", planLabel: "12 เดือน", amount: 9900, status: "pending", created: now - 3600000, note: "" }];
@@ -2196,6 +2213,59 @@ function riskWarn(d, s) {
   return out.map(t => `<p>⚠️ ${t}</p>`).join("");
 }
 
+/* ============ ตัวคำนวณความเสี่ยง (ทองสวนกี่ $ ถึงติดลบ 30% / 50% / พอร์ตหมด) ============ */
+// ทองขยับ $1 ต่อ 1.00 lot = 100 หน่วยเงินในพอร์ต (USD หรือ USC) · ตรงกับวิธีคิดล็อตของ EA (GridLot)
+function riskCtx() {
+  let adm = null; try { adm = $("setDlg") && $("setDlg").open && admLic; } catch (e) {}
+  if (adm) return { bal: +admLic.balance || 0, cur: admLic.currency, cap: admLic.plan === "trial" ? 0.01 : 0, cent: admLic.port !== "usd" };
+  const L = (dashData && dashData.license) || {}, S = (dashData && dashData.snapshot) || {};
+  return { bal: +S.balance || 0, cur: L.currency, cap: (dashData && dashData.limits && dashData.limits.maxLot) || 0, cent: L.port !== "usd" };
+}
+function riskLot(d) {
+  const c = riskCtx();
+  const bal = c.bal > 0 ? c.bal : (c.cent ? 100000 : 1000);
+  let lot = +d.startLot || 0.01;
+  if (d.autoLotOn && +d.lotPerBal > 0) lot = lot * Math.max(1, Math.floor(bal / +d.lotPerBal));
+  if (c.cap > 0) lot = Math.min(lot, c.cap);
+  return { lot: Math.max(0.01, Math.round(lot * 100) / 100), bal, real: c.bal > 0, cur: c.cent ? "USC" : "USD" };
+}
+function riskSim(d) {
+  const r = riskLot(d), base = r.lot, mult = +d.lotMult || 1, grid = (+d.gridDist || 0) / 100;
+  const n = Math.min(+d.maxOrders > 0 ? +d.maxOrders : 60, 60), rep = +d.repeatLot || 0;
+  const lots = [base];
+  for (let lv = 1; lv < n; lv++) {
+    const x = d.grid2Same !== false ? (lv > 1 ? lv - 1 : 0) : lv;
+    const step = rep > 0 ? Math.floor(x / rep) : x;
+    lots.push(Math.max(0.01, Math.round(base * Math.pow(mult, step) * 100) / 100));
+  }
+  const loss = D => lots.reduce((a, l, i) => a + l * 100 * Math.max(0, D - i * grid), 0);
+  const at = pct => { if (grid <= 0) return 0; let D = 0; while (loss(D) < r.bal * pct && D < 5000) D += 1; return D; };
+  const ordersAt = D => grid > 0 ? Math.min(n, Math.floor(D / grid) + 1) : 1;
+  return Object.assign(r, { grid, n, lots, d30: at(0.3), d50: at(0.5), d100: at(1), totalLots: lots.reduce((a, b) => a + b, 0), ordersAt });
+}
+function riskCalc(d) {
+  const r = riskSim(d);
+  if (!r.grid) return "";
+  const lvl = r.d100 < 100 ? ["bad", "เสี่ยงสูงมาก", "ทองวิ่งเกิน $100 ในวันเดียวเกิดขึ้นได้บ่อย ค่านี้มีโอกาสล้างพอร์ตสูง"]
+            : r.d100 < 200 ? ["mid", "เสี่ยงสูง", "ทนได้ช่วงปกติ แต่ช่วงข่าวใหญ่หรือเทรนด์แรงหลายวันยังล้างพอร์ตได้"]
+            : ["ok", "พอรับได้", "ทนทองวิ่งทางเดียวได้ค่อนข้างไกล (ยังไม่รับประกันว่าไม่ขาดทุน)"];
+  const cut = d.cutPctOn ? `<div>ปิดขาดทุน ${d.cutPct}% จะทำงานเมื่อทองสวนประมาณ <b>$${(() => { let D = 0; const L = r.bal * d.cutPct / 100; while (r.lots.reduce((a, l, i) => a + l * 100 * Math.max(0, D - i * r.grid), 0) < L && D < 5000) D++; return D; })()}</b></div>` : "";
+  return `<div class="rk ${lvl[0]}"><div class="rk-h"><b>ความเสี่ยงของค่าที่ตั้ง</b><span class="rk-tag">${lvl[1]}</span></div>
+    <div class="rk-sub">${r.real ? "ทุนปัจจุบัน" : "ตัวอย่างทุน"} ${fmt(r.bal)} ${r.cur} · ล็อตเริ่ม ${fmt(r.lot)} · แก้ไม้ทุก $${r.grid} · ×${d.lotMult} · สูงสุด ${r.n} ไม้</div>
+    <div class="rk-grid">
+      <div><span>ติดลบ 30%</span><b>ทองสวน $${r.d30}</b><small>ไม้ที่ ${r.ordersAt(r.d30)}</small></div>
+      <div><span>ติดลบ 50%</span><b>ทองสวน $${r.d50}</b><small>ไม้ที่ ${r.ordersAt(r.d50)}</small></div>
+      <div><span>พอร์ตหมด</span><b>ทองสวน $${r.d100}</b><small>ไม้ที่ ${r.ordersAt(r.d100)}</small></div>
+    </div>${cut}<div class="rk-note">${lvl[2]} · คิดจากทองวิ่งทางเดียวไม่ย้อนกลับ ไม่รวมสเปรด/swap</div></div>`;
+}
+function autoLotInfo(d) {
+  const r = riskLot(d);
+  if (!d.autoLotOn) return `<div class="rk-sub">ปิดอยู่: ใช้ล็อตเริ่ม ${fmt(+d.startLot || 0.01)} ทุกตะกร้า ไม่ว่าทุนจะเท่าไหร่</div>`;
+  const step = +d.lotPerBal || 3000;
+  return `<div class="rk-sub">${r.real ? "ทุนปัจจุบัน" : "ตัวอย่างทุน"} ${fmt(r.bal)} ${r.cur} → ล็อตเริ่มตะกร้าถัดไป <b>${fmt(r.lot)} lot</b>
+    · ทุนถึง ${fmt((Math.floor(r.bal / step) + 1) * step)} ${r.cur} จะเพิ่มเป็น ${fmt(Math.round((+d.startLot || 0.01) * (Math.floor(r.bal / step) + 1) * 100) / 100)} lot${riskCtx().cap ? ` · เพดานแพ็กเกจ ${fmt(riskCtx().cap)} lot` : ""}</div>`;
+}
+
 /* ============ คำเตือน กันพอร์ตแตก ============ */
 function guardWarn(d, s) {
   const out = [];
@@ -2219,7 +2289,7 @@ function hedgeWarn(d, s) {
 /* ============ ตั้งค่า EA ทั้งหมด (ต้องตรงกับ SCHEMA ใน Code.gs) ============ */
 const TFO = [[1, "M1"], [5, "M5"], [15, "M15"], [30, "M30"], [16385, "H1"], [16388, "H4"]];
 const CFG_GROUPS = [
-  { id: "main", title: "ไม้หลัก / Martingale", fields: [
+  { id: "main", title: "ไม้หลัก / Martingale", info: riskCalc, fields: [
     ["gridDist", "num", 300, "ระยะแก้ไม้ (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["lotMult", "num", 1.5, "ตัวคูณล็อต", 1, 5, 0.01],
     ["grid2Same", "bool", true, "ไม้แก้ไม้แรกใช้ล็อตเท่าไม้เริ่ม แล้วค่อยคูณ"],
@@ -2237,7 +2307,10 @@ const CFG_GROUPS = [
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
     ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
-  { id: "risk", title: "ไม้แก้ / ตัดขาดทุน", member: true, warn: riskWarn, fields: [
+  { id: "autolot", title: "ล็อตอัตโนมัติตามทุน", info: autoLotInfo, fields: [
+    ["autoLotOn", "bool", false, "ล็อตอัตโนมัติ : ทุนโตล็อตโตตาม ทุนลดล็อตลดตาม (คิดใหม่ทุกครั้งที่เปิดตะกร้าใหม่ · EA 2.27+)"],
+    ["lotPerBal", "num", 3000, "ทุนต่อ 1 ชุดล็อตเริ่ม (เงินในพอร์ต · เช่น ล็อตเริ่ม 0.01 ทุน 3,000 → พอร์ต 9,000 ใช้ 0.03)", 100, 1e8, 100]] },
+  { id: "risk", title: "ไม้แก้ / ตัดขาดทุน", member: true, warn: riskWarn, info: riskCalc, fields: [
     ["maxOrders", "int", 30, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
     ["cutPctOn", "bool", false, "ปิดขาดทุนเป็น % : ตะกร้าติดลบเกิน % ของ Balance → ปิดทั้งตะกร้า"],
     ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance · เช่น 20 = พอร์ต $1,000 ติดลบ $200)", 1, 95, 1],
@@ -2343,6 +2416,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       <summary>${g.title}${g.adv ? ' <span class="adv-tag">ขั้นสูง</span>' : ""}<span class="cfg-dot" title="มีค่าที่ยังไม่บันทึก"></span><span class="spacer"></span><span class="cfg-sum"></span></summary>
       ${g.warn ? `<div class="cfg-warn" hidden></div>` : ""}
       <div class="cfg-grid">${g.fields.map(fieldHTML).join("")}</div>
+      ${g.info ? `<div class="cfg-info"></div>` : ""}
       ${g.days ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days"><tbody>${DAYS.map(([d, name]) => `
         <tr><td class="dname">${name}</td>
           <td><label class="sw"><input type="checkbox" data-k="${d}On" aria-label="เทรดวัน${name}"><span class="track"></span></label></td>
@@ -2362,11 +2436,13 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       else if (g.id === "main") sum.textContent = `${Number(draft.gridDist).toFixed(1)} จุด × ${draft.lotMult}`;
       else if (g.id === "close") sum.textContent = `TP ${draft.basketTP}`;
       if (g.warn) { const w = box.querySelector(".cfg-warn"), t = g.warn(draft, saved()); w.hidden = !t; w.innerHTML = t || ""; }
+      if (g.info) box.querySelector(".cfg-info").innerHTML = g.info(draft) || "";
       if (g.id === "risk") {
         const on = [draft.cutPctOn ? "-" + draft.cutPct + "%" : "", draft.cutLossOn ? "-" + draft.cutLoss : ""].filter(Boolean);
         sum.textContent = `${draft.maxOrders} ไม้ · ${on.length ? "ตัด " + on.join(" / ") : "ไม่ตัดขาดทุน"}`; sum.classList.toggle("on", on.length > 0);
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
+      if (g.id === "autolot") { sum.textContent = draft.autoLotOn ? `${fmt(riskLot(draft).lot)} lot` : "ปิด"; sum.classList.toggle("on", !!draft.autoLotOn); }
     });
     onChange(ch);
   }
@@ -2395,7 +2471,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "risk" || g.id === "guard" || g.id === "hedge" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "risk" || g.id === "guard" || g.id === "hedge" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -2408,7 +2484,7 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn"].includes(k))) {
+  if (ch.some(k => ["autoLotOn", "lotPerBal", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn"].includes(k))) {
     const msg = (riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
     if (msg && !confirm("ยืนยันการเปลี่ยนค่าไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
