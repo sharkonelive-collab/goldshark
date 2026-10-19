@@ -270,6 +270,13 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 
 .lotcard{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;align-items:center}
 .lotcard h3{margin:0 0 4px}
+.lot-in-cfg{margin:4px 0 16px;padding:16px;border-radius:14px;background:rgba(5,9,18,.5);border:1px solid rgba(59,148,255,.22)}
+.lot-in-cfg>div{min-width:0}
+@media (max-width:760px){.lot-in-cfg{grid-template-columns:1fr;gap:14px;padding:12px}
+  .lot-in-cfg .lot-row{flex-wrap:wrap}
+  .lot-in-cfg .lot-row .lot-input{flex:1;min-width:0}
+  .lot-in-cfg #lotSave{flex-basis:100%}
+  .lot-in-cfg .lot-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .lot-row{display:flex;gap:8px;align-items:stretch}
 .lot-row .btn{min-width:44px;font-size:18px;padding:0 12px}
 .lot-row .btn.primary{font-size:15px;padding:0 18px}
@@ -1408,29 +1415,6 @@ body{top:0!important}
     <p class="pnote" id="pNote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย · ตัดวันตามเวลาไทย</p>
   </section>
 
-  <section class="card lotcard">
-    <div>
-      <div class="card-label">ขนาดล็อต</div>
-      <p class="pnote" style="margin:0 0 12px">ล็อตไม้แรกของแต่ละตะกร้า ไม้แก้จะคูณจากค่านี้</p>
-      <div class="lot-row">
-        <button class="btn" id="lotMinus" aria-label="ลดล็อต">−</button>
-        <input id="lotIn" class="field lot-input" type="number" step="0.01" min="0.01" inputmode="decimal" aria-label="ล็อตเริ่มต้น">
-        <button class="btn" id="lotPlus" aria-label="เพิ่มล็อต">+</button>
-        <button class="btn primary" id="lotSave">บันทึกล็อต</button>
-      </div>
-      <div class="lot-steps">
-        <button class="chip" data-lot="0.01">0.01</button>
-        <button class="chip" data-lot="0.02">0.02</button>
-        <button class="chip" data-lot="0.05">0.05</button>
-        <button class="chip" data-lot="0.1">0.10</button>
-      </div>
-    </div>
-    <div>
-      <div class="lot-ladder" id="lotLadder"></div>
-      <p class="pnote">ถ้าราคาสวนต่อเนื่อง ล็อตจะโตตามตารางนี้ ล็อตใหม่ใช้กับตะกร้าถัดไป ตะกร้าที่เปิดอยู่ใช้ล็อตเดิมจนปิด ตั้งได้สูงสุด <span id="lotMax">1</span> lot</p>
-    </div>
-  </section>
-
   <section class="card newscard" id="secNews">
     <div class="profit-head">
       <div class="card-label">ข่าว USD ที่ EA จะหลบ</div>
@@ -1447,6 +1431,28 @@ body{top:0!important}
       <button class="btn primary" id="cfgSave" disabled>บันทึกการตั้งค่า</button>
     </div>
     <p class="cfg-hint">บันทึกแล้ว EA จะใช้ค่าใหม่ภายใน 1 นาที ไม่ต้องเข้าไปแก้ใน MT5</p>
+    <div class="lotcard lot-in-cfg" id="lotBox">
+      <div>
+        <div class="card-label">ขนาดล็อต</div>
+        <p class="pnote" style="margin:0 0 12px">ล็อตไม้แรกของแต่ละตะกร้า ไม้แก้จะคูณจากค่านี้</p>
+        <div class="lot-row">
+          <button class="btn" id="lotMinus" aria-label="ลดล็อต">−</button>
+          <input id="lotIn" class="field lot-input" type="number" step="0.01" min="0.01" inputmode="decimal" aria-label="ล็อตเริ่มต้น">
+          <button class="btn" id="lotPlus" aria-label="เพิ่มล็อต">+</button>
+          <button class="btn primary" id="lotSave">บันทึกล็อต</button>
+        </div>
+        <div class="lot-steps">
+          <button class="chip" data-lot="0.01">0.01</button>
+          <button class="chip" data-lot="0.02">0.02</button>
+          <button class="chip" data-lot="0.05">0.05</button>
+          <button class="chip" data-lot="0.1">0.10</button>
+        </div>
+      </div>
+      <div>
+        <div class="lot-ladder" id="lotLadder"></div>
+        <p class="pnote">ถ้าราคาสวนต่อเนื่อง ล็อตจะโตตามตารางนี้ ล็อตใหม่ใช้กับตะกร้าถัดไป ตะกร้าที่เปิดอยู่ใช้ล็อตเดิมจนปิด ตั้งได้สูงสุด <span id="lotMax">1</span> lot</p>
+      </div>
+      </div>
     <div class="cfg-advice" id="cfgAdvice"></div>
     <div id="cfgForm"></div>
   </section>
