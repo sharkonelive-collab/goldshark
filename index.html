@@ -998,6 +998,46 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .np-info{margin:0 0 14px;padding:9px 12px;border-radius:10px;font-size:13px;background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.35);color:#BFF2DA}
 .np-info.over{background:rgba(255,77,77,.08);border-color:rgba(255,77,77,.4);color:#FFC2C2}
 .np-info:empty{display:none}
+.brand-name{letter-spacing:.12em;white-space:nowrap;font-weight:700!important}
+.brand-name span{background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:goldShine 6s ease-in-out infinite}
+.bn-gold{background-image:linear-gradient(100deg,#B8862E 0%,#F2D27F 25%,#FFF6D8 42%,#F2D27F 58%,#C9952F 78%,#FFE7A3 100%);
+  filter:drop-shadow(0 0 7px rgba(242,196,90,.7)) drop-shadow(0 0 20px rgba(242,180,60,.4))}
+.bn-sky{background-image:linear-gradient(100deg,#2F7BFF 0%,#7CC4FF 25%,#E6F4FF 42%,#7CC4FF 58%,#3B94FF 78%,#A9DBFF 100%);
+  filter:drop-shadow(0 0 7px rgba(80,170,255,.7)) drop-shadow(0 0 20px rgba(59,148,255,.4))}
+@keyframes goldShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@media (prefers-reduced-motion:reduce){.brand-name span{animation:none}}
+/* ---- กระดิ่งแจ้งเตือน ---- */
+.bell{position:relative;width:38px;height:38px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}
+.bell svg{width:19px;height:19px}
+.bell:hover{border-color:rgba(242,210,127,.5);color:#F2D27F}
+.bell-dot{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5283D;color:#fff;font:700 11px/18px var(--display,inherit);font-style:normal;text-align:center;box-shadow:0 0 0 2px #0A0F18}
+.bell-panel{position:fixed;top:64px;right:16px;width:min(380px,calc(100vw - 32px));max-height:min(560px,calc(100vh - 90px));display:flex;flex-direction:column;z-index:60;
+  border-radius:16px;border:1px solid rgba(242,210,127,.25);background:linear-gradient(180deg,#121C31,#0A111F);box-shadow:0 18px 50px -12px rgba(0,0,0,.8)}
+.bp-head{display:flex;align-items:baseline;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.bp-head .muted{font-size:12px}
+.bp-list{overflow-y:auto;padding:6px 8px;flex:1}
+.bp-item{display:flex;gap:10px;padding:9px 8px;border-radius:10px}
+.bp-item.new{background:rgba(59,148,255,.08)}
+.bp-ico{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;font-size:14px;background:rgba(255,255,255,.05)}
+.bp-ico.admin{background:rgba(242,210,127,.12)}.bp-ico.pay{background:rgba(61,220,151,.12)}.bp-ico.ea{background:rgba(229,40,61,.12)}
+.bp-txt{min-width:0;flex:1;font-size:13px;line-height:1.45}
+.bp-txt small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.bp-empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:13px}
+.bp-acc{border-top:1px solid rgba(255,255,255,.06);padding:12px 16px 14px;font-size:12.5px;display:grid;gap:8px}
+.bp-acc .g-ok{color:#7FE8B8}
+/* ---- Google ---- */
+.g-wrap{margin:4px 0 14px}
+.g-btn{display:flex;justify-content:center;min-height:44px}
+.g-demo{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;border-radius:999px;border:1px solid #DADCE0;background:#fff;color:#1F1F1F;font:500 14px inherit;cursor:pointer}
+.g-demo svg{width:18px;height:18px}
+.g-or{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--muted);font-size:12px}
+.g-or::before,.g-or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.1)}
+/* ---- จัดเรียงพอร์ต ---- */
+.pchip.arr{cursor:default;border-style:dashed}
+.pc-move{display:flex;gap:6px;justify-content:flex-end}
+.pc-move span{width:34px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(59,148,255,.14);border:1px solid rgba(59,148,255,.4);color:#8EC1FF;font-size:14px;cursor:pointer}
+.pc-move span.dis{opacity:.25;pointer-events:none}
+#portArrange.on{background:var(--blue,#3B94FF);color:#fff;border-color:transparent}
 </style>
 </head>
 <body>
@@ -1005,7 +1045,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <div id="splash" aria-hidden="true">
   <div class="sp-in">
     <span class="sp-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
-    <b class="sp-name">GoldShark</b>
+    <b class="sp-name brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b>
     <small class="sp-sub">GOLD EA · MT5</small>
     <i class="sp-bar"></i>
   </div>
@@ -1014,14 +1054,20 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <header class="bar">
   <div class="brand">
     <span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
-    <div><b>GoldShark</b><small>GOLD EA · MT5</small></div>
+    <div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div>
   </div>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
   <span class="syncing" id="syncing" hidden>กำลังอัปเดต…</span>
+  <button type="button" class="bell" id="bellBtn" hidden aria-label="การแจ้งเตือน" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg><i class="bell-dot" id="bellDot" hidden></i></button>
   <span class="pill-btn" id="whoami"></span>
   <button class="btn small" id="logoutBtn" hidden>ออกจากระบบ</button>
 </header>
+<div class="bell-panel" id="bellPanel" hidden role="dialog" aria-label="การแจ้งเตือน">
+  <div class="bp-head"><b>การแจ้งเตือน</b><span class="muted" id="bpCount"></span></div>
+  <div class="bp-list" id="bpList"></div>
+  <div class="bp-acc" id="bpAcc"></div>
+</div>
 
 <nav class="rail" id="rail" aria-label="เมนูสมาชิก" hidden>
   <a href="#secOverview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>ภาพรวม</a>
@@ -1036,7 +1082,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <!-- ================= LOGIN ================= -->
 <main id="loginView" class="auth">
   <section class="auth-brand">
-    <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b>GoldShark</b><small>GOLD EA · MT5</small></div></div>
+    <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
     <div class="auth-copy">
       <span class="eyebrow">EA เทรดทอง XAUUSD สำหรับ MetaTrader 5</span>
       <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
@@ -1066,6 +1112,10 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
           <button class="tab" role="tab" aria-selected="true" data-tab="login">เข้าสู่ระบบ</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="reg">สมัครสมาชิก</button>
         </div>
+        <div class="g-wrap" id="gWrap" hidden>
+          <div id="gBtn" class="g-btn"></div>
+          <div class="g-or"><span>หรือใช้เบอร์โทร / อีเมล</span></div>
+        </div>
         <form id="loginForm">
           <div><label for="liLogin">เบอร์โทรหรืออีเมล</label><input id="liLogin" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="08x-xxx-xxxx หรือ name@email.com" required></div>
           <div><label for="liPass">รหัสผ่าน</label><div class="pw"><input id="liPass" class="field" type="password" autocomplete="current-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
@@ -1084,7 +1134,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
       </div>
 
       <div id="adminAuth" hidden>
-        <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b>GoldShark</b><small>GOLD EA · MT5</small></div></div>
+        <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
         <h2>แผงควบคุมแอดมิน</h2>
         <p class="sub">สำหรับผู้ดูแลระบบเท่านั้น <span class="admin-badge">ADMIN</span></p>
         <form id="adminForm">
@@ -1136,6 +1186,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     <div class="ports-head">
       <div class="card-label">พอร์ตของฉัน</div>
       <span class="muted" id="portsSum"></span>
+      <button type="button" class="btn small ghost" id="portArrange" hidden>จัดเรียง</button>
     </div>
     <div class="ports-total" id="portsTotal" hidden></div>
     <div class="port-list" id="portList"></div>
@@ -1410,6 +1461,10 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
       <p class="muted pk-help">แก้ชื่อ จำนวนวัน ราคา ได้เลย · ติ๊ก <b>ขายหน้าเว็บ</b> = สมาชิกเห็นและซื้อเองได้ · ลบแล้วโค้ดที่ใช้แพ็กเกจนั้นอยู่ยังใช้ต่อได้จนหมดอายุ · กด <b>บันทึกการตั้งค่าร้าน</b> ด้านล่างเพื่อบันทึก</p>
       <div class="pk-list" id="pkList"></div>
       <button type="button" class="btn small ghost pk-add" id="pkAdd">+ เพิ่มแพ็กเกจ</button>
+      <h3>เข้าสู่ระบบด้วย Google</h3>
+      <div class="cfg-grid">
+        <label class="fld" style="grid-column:1/-1"><span>Google OAuth Client ID (เว้นว่าง = ปิดปุ่ม Google) · ได้จาก Google Cloud Console → APIs &amp; Services → Credentials</span><input class="field" id="shopGcid" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false"></label>
+      </div>
       <h3>รับเงินพร้อมเพย์</h3>
       <div class="cfg-grid">
         <label class="fld"><span>เบอร์โทร / เลขบัตรประชาชน / รหัส e-Wallet (15 หลัก) ที่ผูกพร้อมเพย์</span><input class="field num" inputmode="numeric" id="shopPP"></label>
@@ -1660,12 +1715,26 @@ function demoCover(lics) {
   const out = {}; [m].concat(lics.filter(l => l !== m)).slice(0, 5).forEach(l => { if (l !== m && !paid(l)) out[l.code] = { plan: m.plan, expires: m.expires, by: m.code, byLabel: m.label || "" }; });
   return out;
 }
+function demoAct(u, code, kind, text) {
+  u.acts = u.acts || demoActsSeed(u);
+  u.acts.unshift({ t: Date.now(), c: code, k: kind, m: text }); u.acts = u.acts.slice(0, 40);
+}
+function demoActsSeed(u) {
+  const n = Date.now(), c0 = (u.codes || [u.code])[0];
+  return [
+    { t: n - 40 * 60000, c: c0, k: "admin", m: "แอดมินอนุมัติการชำระเงิน แพ็กเกจ 1 เดือน ต่ออายุให้แล้ว" },
+    { t: n - 3 * 3600000, c: c0, k: "pay_submit", m: "ส่งสลิปชำระเงิน แพ็กเกจ 1 เดือน รอแอดมินตรวจ" },
+    { t: n - 26 * 3600000, c: c0, k: "user_preset", m: "ใช้ชุดค่า ค่าสมดุล" },
+    { t: n - 50 * 3600000, c: "", k: "login", m: "เข้าสู่ระบบ" }];
+}
 function demoPlans() { return demo.config.packages.filter(k => k.on && k.price > 0).map(k => ({ id: k.id, label: k.label, days: k.days, price: k.price })); }
 function demoLabels() { const o = {}; demo.config.packages.forEach(k => { o[k.id] = k.label; }); return o; }
 function demoApi(action, d) {
   const L = demo.lics;
   const uOf = () => demo.users.find(u => "demo-" + u.id === d.token);
   return new Promise(res => setTimeout(() => {
+    if (action === "auth_cfg") return res({ ok: true, googleClientId: "" });
+    if (action === "google_login") { demoAct(demo.users[0], "", "google_login", "เข้าสู่ระบบด้วย Google"); return res({ ok: true, token: "demo-" + demo.users[0].id, created: false }); }
     if (action === "login") {
       const u = demo.users.find(x => x.login === String(d.login).replace(/[^0-9a-z@.]/gi, "").toLowerCase() && x.password === d.password);
       return res(u ? { ok: true, token: "demo-" + u.id } : { ok: false, error: "เบอร์/อีเมล หรือรหัสผ่านไม่ถูกต้อง (โหมดตัวอย่าง: 0812345678 / demo123)" });
@@ -1676,7 +1745,7 @@ function demoApi(action, d) {
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
-    if (["me", "user_port", "user_lot", "user_settings", "user_balanced", "user_preset", "claim_code", "pay_submit", "port_add", "port_rename", "port_close", "host_set", "host_stop", "ea_toggle"].includes(action)) {
+    if (["me", "user_port", "user_lot", "user_settings", "user_balanced", "user_preset", "claim_code", "pay_submit", "port_add", "port_rename", "port_close", "host_set", "host_stop", "ea_toggle", "port_order", "google_link"].includes(action)) {
       const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
       u.codes = u.codes || [u.code];
       if (action === "port_add") {
@@ -1687,6 +1756,11 @@ function demoApi(action, d) {
       }
       let lic = L.find(l => l.code === (u.codes.includes(d.code) ? d.code : u.codes[0]));
       if (action === "port_rename") { lic.label = d.label; return res({ ok: true }); }
+      if (action === "port_order") { u.codes = (d.order || []).filter(c => u.codes.includes(c)).concat(u.codes.filter(c => !(d.order || []).includes(c))); demoAct(u, "", "port_order", "จัดเรียงพอร์ตใหม่"); return res({ ok: true, order: u.codes }); }
+      if (action === "google_link") { u.google = { linked: true, email: "demo.user@gmail.com" }; demoAct(u, "", "google_link", "ผูกบัญชี Google demo.user@gmail.com"); return res({ ok: true, email: "demo.user@gmail.com" }); }
+      if (action === "ea_toggle") demoAct(u, lic.code, "ea_toggle", d.on ? "เปิด EA" : "ปิด EA (ไม่เปิดตะกร้าใหม่)");
+      if (action === "user_settings") demoAct(u, lic.code, "user_settings", "บันทึกการตั้งค่า EA " + Object.keys(d.settings || {}).length + " รายการ");
+      if (action === "user_preset" || action === "user_balanced") demoAct(u, lic.code, "user_preset", d.on === false ? "กลับไปใช้ค่าเริ่มต้นของร้าน" : "ใช้ชุดค่า " + (d.preset === "fast" ? "ทำกำไรไว" : "ค่าสมดุล"));
       if (action === "ea_toggle") { lic.eaOff = !d.on; return res({ ok: true, eaOff: lic.eaOff }); }
       if (action === "host_set") {
         if (!lic.hosting && !d.encPass) return res({ ok: false, error: "ใส่รหัสผ่าน MT5" });
@@ -1711,6 +1785,8 @@ function demoApi(action, d) {
           balanced: DEMO_BAL, presets: { balanced: DEMO_BAL, fast: DEMO_FAST }, plans: demoPlans(), planLabels: demoLabels(),
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
           payments: demo.pays.filter(x => x.userId === u.id),
+          activity: (u.acts = u.acts || demoActsSeed(u)).map(a => { const l = L.find(x => x.code === a.c); return { t: a.t, code: a.c, port: a.c ? ((l && l.label) || a.c) : "", text: a.m, kind: a.k }; }),
+          google: u.google || { linked: false, email: "", clientId: "" },
           coverPorts: 5, license: { coveredBy: cov[lic.code] ? cov[lic.code].by : "", coveredByLabel: cov[lic.code] ? cov[lic.code].byLabel : "", code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: cov[lic.code] ? cov[lic.code].expires : lic.expires, status: lic.status, plan: cov[lic.code] ? cov[lic.code].plan : lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk, eaOff: !!lic.eaOff },
           settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
@@ -1886,6 +1962,7 @@ function logout(msg) {
   store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port"); store.del("gs_adm_list"); store.del("gs_adm_pays");
   session = { mode: null };
   $("whoami").textContent = "";
+  $("bellBtn").hidden = true; $("bellPanel").hidden = true;
   if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
   $("loginErr").textContent = msg || "";
   show("loginView");
@@ -1923,6 +2000,7 @@ async function loadMe(auto) {
   checkPayResult(r.payments || []);
   renderPorts();
   renderDash();
+  renderBell();
   schedulePrefetch();
   return true;
 }
@@ -1981,6 +2059,100 @@ function switchPort(code) {
   window.scrollTo({ top: 0, behavior: "smooth" });
   loadMe();
 }
+
+/* ============ กระดิ่งแจ้งเตือน (ประวัติการทำรายการ) ============ */
+const ACT_ICO = { admin: "👤", pay: "💳", pay_submit: "💳", ea_toggle: "⏻", user_settings: "⚙", user_preset: "⚙", user_balanced: "⚙", user_lot: "⚙",
+  port_add: "＋", port_close: "✕", port_rename: "✎", port_order: "⇄", login: "🔑", google_login: "🔑", google_link: "🔗", register: "★", change_password: "🔒", host_set: "☁", host_stop: "☁", user_port: "⚙", claim_code: "＋" };
+const actSeenKey = () => "gs_act_seen_" + String(session.token || "").slice(-10);
+function renderBell() {
+  const acts = (dashData && dashData.activity) || [];
+  const seen = +(store.get(actSeenKey()) || 0);
+  const unread = acts.filter(a => a.t > seen).length;
+  $("bellBtn").hidden = false;
+  $("bellDot").hidden = !unread; $("bellDot").textContent = unread > 9 ? "9+" : unread;
+  $("bpCount").textContent = acts.length ? `ล่าสุด ${acts.length} รายการ` : "";
+  $("bpList").innerHTML = acts.length ? acts.map(a => `<div class="bp-item ${a.t > seen ? "new" : ""}">
+      <span class="bp-ico ${a.kind === "admin" ? "admin" : a.kind === "pay" || a.kind === "pay_submit" ? "pay" : a.kind === "ea_toggle" ? "ea" : ""}">${ACT_ICO[a.kind] || "•"}</span>
+      <span class="bp-txt">${esc(a.text)}<small>${a.port ? esc(a.port) + " · " : ""}${ago(a.t)}</small></span></div>`).join("")
+    : `<div class="bp-empty">ยังไม่มีรายการ ทุกอย่างที่ทำในบัญชี เช่น บันทึกการตั้งค่า เปิด/ปิด EA ชำระเงิน จะแสดงที่นี่</div>`;
+  const g = (dashData && dashData.google) || {};
+  $("bpAcc").innerHTML = `<div>บัญชี: <b>${esc((dashData.user || {}).login || "")}</b></div>` +
+    (g.linked ? `<div class="g-ok">✓ ผูกบัญชี Google แล้ว (${esc(g.email)}) เข้าสู่ระบบด้วยปุ่ม Google ได้</div>`
+      : (g.clientId || !API_URL) ? `<div>ผูกบัญชี Google ไว้ เข้าสู่ระบบได้ด้วยคลิกเดียว</div><div id="gLinkBtn" class="g-btn"></div>` : "");
+  if (!g.linked && (g.clientId || !API_URL)) gRender($("gLinkBtn"), "link");
+}
+function bellOpen(open) {
+  $("bellPanel").hidden = !open; $("bellBtn").setAttribute("aria-expanded", open);
+  if (open) { const acts = (dashData && dashData.activity) || []; if (acts.length) store.set(actSeenKey(), String(acts[0].t)); $("bellDot").hidden = true; }
+  else renderBell();
+}
+$("bellBtn").addEventListener("click", e => { e.stopPropagation(); bellOpen($("bellPanel").hidden); });
+document.addEventListener("click", e => { if (!$("bellPanel").hidden && !e.target.closest("#bellPanel") && !e.target.closest("#bellBtn")) bellOpen(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("bellPanel").hidden) bellOpen(false); });
+
+/* ============ เข้าสู่ระบบ / ผูกบัญชีด้วย Google ============ */
+let gCfg = null, gReady = null, gMode = "login";
+const G_ICON = '<svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.2 44 33 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+function gLoad(cid) {
+  if (gReady) return gReady;
+  gReady = new Promise((ok, bad) => {
+    const sc = document.createElement("script"); sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+    sc.onload = () => { try { google.accounts.id.initialize({ client_id: cid, callback: gCallback, ux_mode: "popup", auto_select: false }); ok(); } catch (e) { bad(e); } };
+    sc.onerror = bad; document.head.appendChild(sc);
+  });
+  return gReady;
+}
+async function gCallback(resp) {
+  const cred = resp && resp.credential; if (!cred) return;
+  if (gMode === "link") {
+    const r = await api("google_link", { token: session.token, credential: cred });
+    if (!r.ok) { toast(r.error); return; }
+    dashData.google = Object.assign({}, dashData.google, { linked: true, email: r.email });
+    toast("ผูกบัญชี Google แล้ว"); loadMe(true); renderBell(); return;
+  }
+  $("loginErr").textContent = "";
+  const r = await api("google_login", { credential: cred });
+  if (!r.ok) { $("loginErr").textContent = r.error; return; }
+  store.set("gs_token", r.token);
+  if (r.created) toast("สมัครด้วย Google แล้ว เริ่มทดลองฟรี 15 วัน");
+  openMember(r.token);
+}
+function gRender(el, mode) {
+  if (!el) return;
+  const fake = !API_URL;   // โหมดตัวอย่าง: ปุ่มจำลอง
+  if (fake) {
+    el.innerHTML = `<button type="button" class="g-demo">${G_ICON}${mode === "link" ? "ผูกบัญชี Google" : "เข้าสู่ระบบด้วย Google"}</button>`;
+    el.querySelector("button").onclick = () => { gMode = mode; gCallback({ credential: "demo.google.token" }); };
+    return;
+  }
+  gLoad(gCfg).then(() => {
+    gMode = mode;
+    el.innerHTML = "";
+    google.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: mode === "link" ? "continue_with" : "signin_with", locale: "th", width: Math.min(360, el.clientWidth || 320) });
+    el.addEventListener("click", () => { gMode = mode; }, true);
+  }).catch(() => { el.innerHTML = '<span class="muted" style="font-size:12px">โหลดปุ่ม Google ไม่ได้ ลองรีเฟรชหน้า</span>'; });
+}
+(async () => {
+  try {
+    const r = await api("auth_cfg", {});
+    gCfg = r && r.ok ? r.googleClientId : "";
+    if (gCfg || !API_URL) { $("gWrap").hidden = false; gRender($("gBtn"), "login"); }
+  } catch (e) {}
+})();
+
+/* ============ จัดเรียงพอร์ต ============ */
+let portArr = false;
+$("portArrange").addEventListener("click", async () => {
+  if (!portArr) { portArr = true; $("portArrange").textContent = "เสร็จ"; $("portArrange").classList.add("on"); renderPorts(); return; }
+  const order = (dashData.ports || []).map(p => p.code);
+  $("portArrange").disabled = true;
+  const r = await api("port_order", { token: session.token, order });
+  $("portArrange").disabled = false;
+  portArr = false; $("portArrange").textContent = "จัดเรียง"; $("portArrange").classList.remove("on");
+  renderPorts();
+  if (!r.ok) { toast(r.error); return; }
+  meCachePut(dashData); toast("บันทึกลำดับพอร์ตแล้ว"); loadMe(true);
+});
 
 async function openMember(token) {
   session = { mode: "user", token };
@@ -2931,6 +3103,7 @@ function renderPorts() {
     if (p.profit) { today += toUsd(p.profit.today, p); week += toUsd(p.profit.week, p); }
   });
   const hasCent = ports.some(p => p.equity != null && (isCent(p.currency) || (!p.currency && p.port === "cent")));
+  $("portArrange").hidden = ports.length < 2;
   $("portsSum").textContent = ports.length ? `${ports.length} พอร์ต · ออนไลน์ ${on}${ci.paid ? ` · แพ็กเกจครอบคลุม ${Math.min(ports.length, ci.max)}/${ci.max}` : ""}` : "";
   $("portsTotal").hidden = live < 2;
   if (live >= 2) $("portsTotal").innerHTML = `
@@ -2955,12 +3128,14 @@ function renderPorts() {
         <span><i>7 วัน</i><b class="${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b></span>
         <span><i>สถานะ</i><b class="${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b></span>
       </span>`;
-    return `<button class="pchip ${p.code === cur ? "active" : ""}" data-pcode="${esc(p.code)}">
+    const idx = ports.indexOf(p);
+    const mv = portArr ? `<span class="pc-move"><span data-move="-1" data-i="${idx}" class="${idx === 0 ? "dis" : ""}" title="ย้ายไปซ้าย">◀</span><span data-move="1" data-i="${idx}" class="${idx === ports.length - 1 ? "dis" : ""}" title="ย้ายไปขวา">▶</span></span>` : "";
+    return `<button class="pchip ${p.code === cur ? "active" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}"`}>${mv}
       <span class="pc-top"><span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span><b>${esc(p.label)}</b>${pbadge}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
       <span class="pc-eq"><em>Equity</em>${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
       ${stats}
       <span class="pc-sub"><span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span>${p.coveredBy ? '<span class="pill cover" title="ใช้แพ็กเกจร่วมกับพอร์ตหลัก">แพ็กเกจร่วม</span>' : ""}${none && ci.paid ? '<span class="pill paymore">ต้องชำระเพิ่ม</span>' : ""} ${left}${p.account ? " · บัญชี " + esc(p.account) : ""}</span></button>`;
-  }).join("") + (ports.length < (dashData.maxPorts || 10) ? `<button class="pchip add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "");
+  }).join("") + (ports.length < (dashData.maxPorts || 10) ? portArr ? "" : `<button class="pchip add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "");
 }
 function renderEaSwitch() {
   const L = dashData.license, off = !!(L && L.eaOff);
@@ -2988,6 +3163,13 @@ $("portList").addEventListener("pointerenter", e => {
   if (!c || Date.now() - (c._t || 0) > PREFETCH_FRESH) prefetchPort(b.dataset.pcode);
 }, true);
 $("portList").addEventListener("click", e => {
+  const m = e.target.closest("[data-move]");
+  if (m) {
+    const i = +m.dataset.i, j = i + +m.dataset.move, P = dashData.ports;
+    if (j >= 0 && j < P.length) { [P[i], P[j]] = [P[j], P[i]]; renderPorts(); }
+    return;
+  }
+  if (portArr) return;
   const b = e.target.closest("[data-pcode]");
   if (b) { switchPort(b.dataset.pcode); return; }
   if (e.target.closest("#addPortBtn")) {
@@ -3639,6 +3821,7 @@ async function loadShop() {
   const c = r.config;
   pkDraft = (c.packages || []).filter(k => !k.del).map(k => Object.assign({}, k)); renderPk();
   $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
+  $("shopGcid").value = c.googleClientId || "";
   $("shopTrialReal").checked = c.trialRealOnly !== false;
   $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
   $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, b.usd].join(" | ")).join("\n");
@@ -3695,6 +3878,7 @@ $("shopSave").addEventListener("click", async () => {
   const config = {
     packages: pkDraft.map(k => ({ id: k.id || "", label: k.label, days: +k.days, price: +k.price, on: !!k.on })),
     promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
+    googleClientId: $("shopGcid").value.trim(),
     trialRealOnly: $("shopTrialReal").checked,
     hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
     hostBrokers: $("shopHostBrokers").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
