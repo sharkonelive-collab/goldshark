@@ -4175,8 +4175,7 @@ $("demoTag").hidden = !!API_URL;
 })();
 
 /* ============ เลือกภาษา (แปลทั้งหน้าอัตโนมัติด้วย Google แปลภาษา · ต้นฉบับภาษาไทย) ============ */
-const LANGS = [["th", "ไทย", "TH"], ["en", "English", "EN"], ["zh-CN", "中文 (简体)", "中"], ["vi", "Tiếng Việt", "VI"],
-  ["km", "ភាសាខ្មែរ", "KM"], ["lo", "ພາສາລາວ", "LO"], ["my", "မြန်မာ", "MY"], ["ms", "Bahasa Melayu", "MS"], ["id", "Bahasa Indonesia", "ID"]];
+const LANGS = [["th", "ไทย", "TH"], ["en", "English", "EN"]];
 const langGet = () => { try { return localStorage.getItem("gs_lang") || "th"; } catch (e) { return "th"; } };
 function langCookie(v) {
   const host = location.hostname, exp = v ? "" : ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
