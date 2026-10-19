@@ -195,6 +195,57 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .plabels span{flex:1;min-width:0;text-align:center;font-size:11px;color:var(--muted);white-space:nowrap;overflow:visible}
 .pempty{height:150px;display:grid;place-items:center;color:var(--muted);text-align:center}
 .pnote{font-size:13px;color:var(--muted);margin:12px 0 0}
+/* ---- ปฏิทินกำไร ---- */
+.cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cal-nav b{flex:1;text-align:center;font-size:16px;font-weight:600}
+.cal-nav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-size:15px}
+.cal-nav button:disabled{opacity:.3;cursor:default}
+.cal-nav .cal-today{width:auto;border-radius:999px;padding:0 12px;font-size:12px;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) minmax(0,1.15fr);gap:4px}
+.cal .ch{font-size:11px;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal .ch.wk{color:#9CC8FF}
+.cd{position:relative;min-height:54px;border-radius:9px;padding:5px 5px 4px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);
+  cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;text-align:left;color:var(--text);font:inherit;min-width:0}
+.cd .dn{font-size:11px;color:var(--muted);line-height:1}
+.cd .dv{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.cd.pos{background:rgba(47,191,138,calc(.10 + var(--a,0) * .38));border-color:rgba(47,191,138,.35)}
+.cd.pos .dv{color:#8FF0C8}
+.cd.neg{background:rgba(229,40,61,calc(.10 + var(--a,0) * .38));border-color:rgba(229,40,61,.38)}
+.cd.neg .dv{color:#FFB0B8}
+.cd.out{visibility:hidden;pointer-events:none}
+.cd.fut{opacity:.35;cursor:default}
+.cd.today{box-shadow:inset 0 0 0 1.5px #3B94FF}
+.cd.today .dn{color:#9CC8FF;font-weight:700}
+.cd.sel{outline:2px solid #F2C45A;outline-offset:-1px;z-index:1}
+.cd.wk{background:rgba(59,148,255,.07);border-color:rgba(59,148,255,.25);align-items:flex-end;text-align:right}
+.cd.wk .dn{color:#9CC8FF}
+.cd.wk.pos .dv{color:#8FF0C8} .cd.wk.neg .dv{color:#FFB0B8}
+.cd.wk.sel{background:rgba(242,196,90,.12)}
+.cd:not(.fut):not(.out):hover{filter:brightness(1.2)}
+.cal-sum{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(5,9,18,.55);border:1px solid rgba(242,196,90,.28)}
+.cal-sum .cs-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cal-sum .cs-lbl{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.cal-sum .cs-lbl b{color:var(--text);font-weight:600}
+.cal-sum .cs-tot{font-family:var(--display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.cal-sum .cs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.cal-sum .cs-grid div{font-size:11px;color:var(--muted)}
+.cal-sum .cs-grid b{display:block;font-size:13.5px;color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.cal-quick button{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer;font-family:inherit}
+.cal-quick button[aria-pressed="true"]{color:#FFE7A3;border-color:rgba(242,196,90,.55);background:rgba(242,196,90,.1)}
+.cal-range{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+.cal-range input{background:rgba(5,9,18,.7);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:13px;color-scheme:dark}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px}
+.cal .vs{display:none}
+@media (max-width:560px){
+  .cal{gap:3px}
+  .cd{min-height:46px;padding:4px 3px 3px;border-radius:7px}
+  .cd .dv{font-size:10px;letter-spacing:-.02em}
+  .cd .dn{font-size:10px}
+  .cal-sum .cs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cal .vf{display:none} .cal .vs{display:inline}
+  .cd .dv{font-size:11px;text-overflow:clip}
+}
 
 .lotcard{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;align-items:center}
 .lotcard h3{margin:0 0 4px}
@@ -998,14 +1049,19 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .np-info{margin:0 0 14px;padding:9px 12px;border-radius:10px;font-size:13px;background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.35);color:#BFF2DA}
 .np-info.over{background:rgba(255,77,77,.08);border-color:rgba(255,77,77,.4);color:#FFC2C2}
 .np-info:empty{display:none}
-.brand-name{letter-spacing:.12em;white-space:nowrap;font-weight:700!important}
-.brand-name span{background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:goldShine 6s ease-in-out infinite}
-.bn-gold{background-image:linear-gradient(100deg,#B8862E 0%,#F2D27F 25%,#FFF6D8 42%,#F2D27F 58%,#C9952F 78%,#FFE7A3 100%);
-  filter:drop-shadow(0 0 7px rgba(242,196,90,.7)) drop-shadow(0 0 20px rgba(242,180,60,.4))}
-.bn-sky{background-image:linear-gradient(100deg,#2F7BFF 0%,#7CC4FF 25%,#E6F4FF 42%,#7CC4FF 58%,#3B94FF 78%,#A9DBFF 100%);
-  filter:drop-shadow(0 0 7px rgba(80,170,255,.7)) drop-shadow(0 0 20px rgba(59,148,255,.4))}
-@keyframes goldShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-@media (prefers-reduced-motion:reduce){.brand-name span{animation:none}}
+/* โลโก้: ตัวอักษรขาว + แสงใต้ตัวอักษร สลับ ทอง → ฟ้า → แดง */
+.brand-name{position:relative;display:inline-block;letter-spacing:.12em;white-space:nowrap;font-weight:700!important;color:#fff!important;isolation:isolate;
+  animation:bnGlow 6s ease-in-out infinite}
+.brand-name span{color:#fff;-webkit-text-fill-color:#fff}
+.brand-name::after{content:"";position:absolute;left:-6%;right:-6%;bottom:0;height:7px;border-radius:50%;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,#F2C45A,#FFE7A3,#3B94FF,#7CC4FF,#FF4D4D,#FF8A8A,#F2C45A);background-size:300% 100%;
+  filter:blur(7px);opacity:.95;animation:bnBar 6s linear infinite}
+@keyframes bnBar{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes bnGlow{
+  0%,100%{text-shadow:0 2px 10px rgba(242,196,90,.75),0 6px 18px rgba(242,180,60,.45)}
+  33%{text-shadow:0 2px 10px rgba(80,170,255,.75),0 6px 18px rgba(59,148,255,.45)}
+  66%{text-shadow:0 2px 10px rgba(255,77,77,.75),0 6px 18px rgba(255,60,60,.45)}}
+@media (prefers-reduced-motion:reduce){.brand-name,.brand-name::after{animation:none}}
 /* ---- กระดิ่งแจ้งเตือน ---- */
 .bell{position:relative;width:38px;height:38px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}
 .bell svg{width:19px;height:19px}
@@ -1313,17 +1369,18 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
     <div class="profit-head">
       <div class="card-label">กำไรที่ปิดแล้ว</div>
       <div class="seg" role="group" aria-label="มุมมองกำไร">
-        <button data-p="24" aria-pressed="true">รายชั่วโมง</button>
-        <button data-p="7" aria-pressed="false">รายวัน</button>
+        <button data-p="cal" aria-pressed="true">ปฏิทิน</button>
+        <button data-p="24" aria-pressed="false">รายชั่วโมง</button>
       </div>
     </div>
     <div class="tiles t3 pstats">
-      <div class="tile"><span>ชั่วโมงนี้</span><b id="pHour">–</b></div>
       <div class="tile"><span>วันนี้</span><b id="pToday">–</b></div>
       <div class="tile"><span>7 วัน</span><b id="pWeek">–</b></div>
+      <div class="tile"><span>เดือนนี้</span><b id="pMonth">–</b></div>
     </div>
-    <div id="pChart"></div>
-    <p class="pnote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย เวลาตามเครื่องที่เปิดดู</p>
+    <div id="pCal"></div>
+    <div id="pChart" hidden></div>
+    <p class="pnote" id="pNote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย · ตัดวันตามเวลาไทย</p>
   </section>
 
   <section class="card lotcard">
@@ -1792,7 +1849,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|") } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|"), daily: demoDaily() } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -2332,10 +2389,20 @@ function renderDDToday(S) {
   $("ddBarNow").style.width = Math.min(100, cur / lim * 100) + "%";
 }
 
-/* ============ กำไรที่ปิดแล้ว ============ */
-let pMode = 24;
+// ตัวอย่าง: กำไรรายวันย้อนหลัง ~75 วัน (ค่าคงที่ต่อวัน ไม่สุ่มใหม่ทุกครั้ง)
+function demoDaily() {
+  const td = Math.floor((Date.now() + 7 * 3600000) / 86400000), out = [];
+  for (let d = td - 75; d < td - 6; d++) {
+    const r = Math.abs(Math.sin(d * 12.9898) * 43758.5453) % 1, r2 = Math.abs(Math.sin(d * 78.233) * 12345.678) % 1;
+    if (r < 0.2) continue;                                     // วันหยุด/ไม่มีไม้ปิด
+    out.push(d + "_" + (r2 < 0.8 ? 20 + r2 * 90 : -(40 + r2 * 120)).toFixed(2));
+  }
+  return out.join("|");
+}
+/* ============ กำไรที่ปิดแล้ว: ปฏิทิน + รายชั่วโมง ============ */
+let pMode = "cal";
 document.querySelectorAll(".profit .seg button").forEach(b => b.addEventListener("click", () => {
-  pMode = +b.dataset.p;
+  pMode = b.dataset.p === "cal" ? "cal" : 24;
   document.querySelectorAll(".profit .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
   renderProfit();
 }));
@@ -2351,34 +2418,163 @@ function hourlyMap() {
   return m;
 }
 
+// วันไทย (เลขวัน) ↔ วันที่: วันไทย = floor((ms + 7 ชม.) / 1 วัน) · ใช้ getUTC* กับ (ms + 7 ชม.) ได้วันที่ไทยเสมอ
+const TH_OFF = 7 * 3600000, DAY_MS = 86400000;
+const thDay = ms => Math.floor((ms + TH_OFF) / DAY_MS);
+const thDate = d => new Date(d * DAY_MS);                    // ใช้คู่กับ getUTC*
+const TH_MON = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const TH_MON_S = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const TH_WD = ["จ.","อ.","พ.","พฤ.","ศ.","ส.","อา."];
+const dLabel = d => { const x = thDate(d); return x.getUTCDate() + " " + TH_MON_S[x.getUTCMonth()]; };
+const dLabelY = d => { const x = thDate(d); return x.getUTCDate() + " " + TH_MON_S[x.getUTCMonth()] + " " + String(x.getUTCFullYear() + 543).slice(-2); };
+const dayFromYMD = (y, m, dd) => Math.floor(Date.UTC(y, m, dd) / DAY_MS);
+const dayISO = d => thDate(d).toISOString().slice(0, 10);
+
+// กำไรรายวัน: ค่าที่หลังบ้านเก็บสะสม (snapshot.daily) + คำนวณใหม่จากรายชั่วโมง 7 วันล่าสุด (ครบวัน/วันนี้)
+function dailyMap() {
+  const out = new Map(), sn = dashData && dashData.snapshot;
+  String((sn && sn.daily) || "").split("|").forEach(x => {
+    const [d, v] = x.split("_");
+    if (d && v !== undefined && !isNaN(+d) && !isNaN(+v)) out.set(+d, +v);
+  });
+  const m = hourlyMap(); if (!m.size && !out.size) return out;
+  const nowH = Math.floor(Date.now() / 3600000), firstH = nowH - 167, today = thDay(Date.now());
+  const fresh = new Map();
+  m.forEach((v, h) => { if (h >= firstH && h <= nowH) { const d = Math.floor((h + 7) / 24); fresh.set(d, (fresh.get(d) || 0) + v); } });
+  for (let d = Math.ceil((firstH + 7) / 24); d <= today; d++) { if (fresh.has(d)) out.set(d, fresh.get(d)); else out.delete(d); }
+  return out;
+}
+const sumRange = (dm, a, b) => { let t = 0; for (let d = a; d <= b; d++) t += dm.get(d) || 0; return t; };
+const cmptS = v => { const a = Math.abs(v), s = v > 0 ? "+" : v < 0 ? "−" : "";
+  return a >= 10000 ? s + Math.round(a / 1000) + "k" : a >= 1000 ? s + (a / 1000).toFixed(1) + "k" : a >= 10 ? s + Math.round(a) : s + a.toFixed(1); };
+const dvHtml = v => `<span class="dv"><span class="vf">${cmpt(v)}</span><span class="vs">${cmptS(v)}</span></span>`;
+const cmpt = v => { const a = Math.abs(v), s = v > 0 ? "+" : v < 0 ? "−" : "";
+  return a >= 100000 ? s + (a / 1000).toFixed(0) + "k" : a >= 10000 ? s + (a / 1000).toFixed(1) + "k" : a >= 1000 ? s + Math.round(a).toLocaleString("en-US") : s + a.toFixed(2); };
+
+// สถานะปฏิทิน
+const calSt = { y: null, m: null, sel: null, pick: null };   // sel = {a,b,kind,label}  pick = วันแรกตอนเลือกช่วงเอง
+function calSel(a, b, kind, label) { calSt.sel = { a: Math.min(a, b), b: Math.max(a, b), kind, label }; calSt.pick = null; renderProfit(); }
+function calMonthRange() { return [dayFromYMD(calSt.y, calSt.m, 1), dayFromYMD(calSt.y, calSt.m + 1, 1) - 1]; }
+
+function renderCal(dm) {
+  const box = $("pCal"), today = thDay(Date.now());
+  if (calSt.y == null) { const t = thDate(today); calSt.y = t.getUTCFullYear(); calSt.m = t.getUTCMonth(); }
+  const [m0, m1] = calMonthRange();
+  if (!calSt.sel) { const wd = (thDate(today).getUTCDay() + 6) % 7; calSt.sel = { a: today - wd, b: today - wd + 6, kind: "week", label: "สัปดาห์นี้" }; }
+  const sel = calSt.sel;
+  const first = dm.size ? Math.min(...dm.keys()) : today;
+  const canPrev = dayFromYMD(calSt.y, calSt.m, 1) > first, canNext = m1 < today;
+  // แถวเริ่มวันจันทร์
+  const lead = (thDate(m0).getUTCDay() + 6) % 7, start = m0 - lead;
+  const rows = Math.ceil((lead + (m1 - m0 + 1)) / 7);
+  let maxAbs = 0; for (let d = m0; d <= m1; d++) maxAbs = Math.max(maxAbs, Math.abs(dm.get(d) || 0));
+  const cell = d => {
+    if (d < m0 || d > m1) return `<div class="cd out"></div>`;
+    const v = dm.get(d), x = thDate(d), fut = d > today;
+    const c = v > 0 ? " pos" : v < 0 ? " neg" : "";
+    const a = v && maxAbs ? Math.min(1, Math.abs(v) / maxAbs) : 0;
+    const on = sel && d >= sel.a && d <= sel.b && sel.kind !== "month" && !fut ? " sel" : "";
+    const pk = calSt.pick === d ? " sel" : "";
+    return `<button class="cd${c}${fut ? " fut" : ""}${d === today ? " today" : ""}${on || pk}" style="--a:${a.toFixed(2)}" data-day="${d}" ${fut ? "disabled" : ""}
+      title="${esc(dLabelY(d))}${v ? ": " + signed(v) : ""}"><span class="dn">${x.getUTCDate()}</span>${v ? dvHtml(v) : `<span class="dv">${fut ? "" : "–"}</span>`}</button>`;
+  };
+  let html = `<div class="cal-nav"><button data-cal="prev" ${canPrev ? "" : "disabled"} aria-label="เดือนก่อน">◀</button>
+    <b>${TH_MON[calSt.m]} ${calSt.y + 543}</b>
+    <button class="cal-today" data-cal="now">วันนี้</button>
+    <button data-cal="next" ${canNext ? "" : "disabled"} aria-label="เดือนถัดไป">▶</button></div>
+    <div class="cal">${TH_WD.map(w => `<div class="ch">${w}</div>`).join("")}<div class="ch wk"><span class="vf">รวม/สัปดาห์</span><span class="vs">รวม</span></div>`;
+  for (let r = 0; r < rows; r++) {
+    const ws = start + r * 7;
+    for (let i = 0; i < 7; i++) html += cell(ws + i);
+    const wt = sumRange(dm, ws, ws + 6), fut = ws > today;
+    const won = sel && sel.kind === "week" && sel.a === ws ? " sel" : "";
+    html += `<button class="cd wk${wt > 0 ? " pos" : wt < 0 ? " neg" : ""}${fut ? " fut" : ""}${won}" data-week="${ws}" ${fut ? "disabled" : ""}
+      title="สัปดาห์ ${esc(dLabel(ws))} – ${esc(dLabel(ws + 6))}"><span class="dn"><span class="vf">สัปดาห์ ${r + 1}</span><span class="vs">W${r + 1}</span></span>${fut ? `<span class="dv"></span>` : dvHtml(wt)}</button>`;
+  }
+  html += `</div>`;
+
+  // สรุปช่วงที่เลือก
+  const b2 = Math.min(sel.b, today), days = [];
+  for (let d = sel.a; d <= b2; d++) days.push([d, dm.get(d) || 0]);
+  const tot = days.reduce((t, x) => t + x[1], 0), traded = days.filter(x => x[1] !== 0);
+  const win = traded.filter(x => x[1] > 0).length, loss = traded.filter(x => x[1] < 0).length;
+  const best = traded.length ? traded.reduce((p, x) => x[1] > p[1] ? x : p) : null;
+  const worst = traded.length ? traded.reduce((p, x) => x[1] < p[1] ? x : p) : null;
+  const bal = dashData && dashData.snapshot ? +dashData.snapshot.balance : 0;
+  const after = sumRange(dm, b2 + 1, today), startBal = bal - after - tot;
+  const pct = startBal > 0 ? tot / startBal * 100 : null;
+  const cur = (dashData && dashData.license && dashData.license.currency) || "";
+  const rng = sel.a === sel.b ? dLabelY(sel.a) : `${dLabel(sel.a)} – ${dLabelY(sel.b)}`;
+  html += `<div class="cal-sum"><div class="cs-top"><div class="cs-lbl"><b>${esc(sel.label)}</b> · ${esc(rng)}</div>
+      <div class="cs-tot ${cls(tot)}">${signed(tot)} <small style="font-size:13px;color:var(--muted);font-weight:500">${esc(cur)}</small></div></div>
+    <div class="cs-grid">
+      <div>เทียบยอดเงินต้นช่วง<b class="${cls(tot)}">${pct == null ? "–" : (pct > 0 ? "+" : "") + pct.toFixed(2) + "%"}</b></div>
+      <div>วันบวก / วันลบ<b><span class="pos">${win}</span> / <span class="neg">${loss}</span></b></div>
+      <div>เฉลี่ยต่อวันที่มีเทรด<b class="${cls(traded.length ? tot / traded.length : 0)}">${traded.length ? signed(tot / traded.length) : "–"}</b></div>
+      <div>ดีสุด / แย่สุด<b>${best ? `<span class="pos">${cmpt(best[1])}</span>` : "–"}${worst && worst[1] < 0 ? ` / <span class="neg">${cmpt(worst[1])}</span>` : ""}</b></div>
+    </div>
+    <div class="cal-quick">
+      ${[["today", "วันนี้"], ["week", "สัปดาห์นี้"], ["lweek", "สัปดาห์ก่อน"], ["month", "ทั้งเดือนที่ดู"], ["d30", "30 วัน"], ["custom", "กำหนดเอง"]]
+        .map(([k, t]) => `<button data-q="${k}" aria-pressed="${sel.q === k || (k === "custom" && sel.kind === "range")}">${t}</button>`).join("")}
+    </div>
+    <div class="cal-range" ${sel.kind === "range" || calSt.pick != null ? "" : "hidden"}>
+      ตั้งแต่ <input type="date" id="calFrom" value="${dayISO(sel.a)}" max="${dayISO(today)}"> ถึง <input type="date" id="calTo" value="${dayISO(sel.b)}" max="${dayISO(today)}">
+    </div>
+    <div class="cal-hint">${calSt.pick != null ? `เลือกวันเริ่ม <b>${esc(dLabelY(calSt.pick))}</b> แล้ว · แตะวันสิ้นสุด` : "แตะวันที่ = ดูวันเดียว · แตะช่องรวมขวาสุด = ดูทั้งสัปดาห์ · แตะวันเดิมซ้ำแล้วแตะอีกวัน = รวมช่วงที่เลือกเอง"}</div>
+  </div>`;
+  box.innerHTML = html;
+}
+
+$("pCal").addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t || t.disabled) return;
+  const today = thDay(Date.now());
+  if (t.dataset.cal) {
+    if (t.dataset.cal === "now") { const x = thDate(today); calSt.y = x.getUTCFullYear(); calSt.m = x.getUTCMonth(); }
+    else { const n = calSt.m + (t.dataset.cal === "next" ? 1 : -1); calSt.y += Math.floor(n / 12); calSt.m = (n + 12) % 12; }
+    renderProfit(); return;
+  }
+  if (t.dataset.week) { const ws = +t.dataset.week; calSel(ws, ws + 6, "week", "สัปดาห์ที่เลือก"); return; }
+  if (t.dataset.day) {
+    const d = +t.dataset.day;
+    if (calSt.pick != null) { const a = calSt.pick; calSel(a, d, "range", "ช่วงที่กำหนด"); return; }
+    const s = calSt.sel;
+    if (s && s.kind === "day" && s.a === d) { calSt.pick = d; renderProfit(); return; }   // แตะซ้ำ = เริ่มเลือกช่วง
+    calSel(d, d, "day", "วันที่เลือก"); return;
+  }
+  if (t.dataset.q) {
+    const q = t.dataset.q, wd = (thDate(today).getUTCDay() + 6) % 7;
+    const set = (a, b, kind, label) => { calSel(a, b, kind, label); calSt.sel.q = q; renderProfit(); };
+    if (q === "today") set(today, today, "day", "วันนี้");
+    else if (q === "week") set(today - wd, today - wd + 6, "week", "สัปดาห์นี้");
+    else if (q === "lweek") set(today - wd - 7, today - wd - 1, "week", "สัปดาห์ก่อน");
+    else if (q === "month") { const [a, b] = calMonthRange(); set(a, b, "month", "ทั้งเดือน " + TH_MON[calSt.m]); }
+    else if (q === "d30") set(today - 29, today, "range", "30 วันล่าสุด");
+    else { calSt.sel = Object.assign({}, calSt.sel, { kind: "range", label: "ช่วงที่กำหนด", q: "custom" }); renderProfit(); }
+  }
+});
+$("pCal").addEventListener("change", e => {
+  if (e.target.id !== "calFrom" && e.target.id !== "calTo") return;
+  const f = $("calFrom").value, t = $("calTo").value; if (!f || !t) return;
+  const p = s => { const [y, m, d] = s.split("-").map(Number); return dayFromYMD(y, m - 1, d); };
+  calSel(p(f), p(t), "range", "ช่วงที่กำหนด"); calSt.sel.q = "custom"; renderProfit();
+});
+
 function renderProfit() {
-  const m = hourlyMap();
-  const nowH = Math.floor(Date.now() / 3600000);
-  const mid = new Date(); mid.setHours(0, 0, 0, 0);
-  const midH = Math.floor(mid.getTime() / 3600000);
-  let today = 0, week = 0;
-  m.forEach((v, h) => { if (h >= midH && h <= nowH) today += v; if (h > nowH - 168 && h <= nowH) week += v; });
+  const m = hourlyMap(), dm = dailyMap();
+  const nowH = Math.floor(Date.now() / 3600000), today = thDay(Date.now());
+  const t = thDate(today), mStart = dayFromYMD(t.getUTCFullYear(), t.getUTCMonth(), 1);
   const put = (id, v) => { $(id).textContent = signed(v); $(id).className = cls(v); };
-  put("pHour", m.get(nowH) || 0); put("pToday", today); put("pWeek", week);
+  put("pToday", dm.get(today) || 0); put("pWeek", sumRange(dm, today - 6, today)); put("pMonth", sumRange(dm, mStart, today));
+
+  $("pCal").hidden = pMode !== "cal"; $("pChart").hidden = pMode === "cal";
+  if (pMode === "cal") { renderCal(dm); return; }
 
   const box = $("pChart");
-  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มี Order ที่ปิดใน 7 วันล่าสุด</div>`; return; }
-
+  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มี Order ที่ปิดใน 24 ชั่วโมงล่าสุด</div>`; return; }
   const bars = [];
-  if (pMode === 24) {
-    for (let i = 23; i >= 0; i--) {
-      const h = nowH - i, d = new Date(h * 3600000);
-      const hh = String(d.getHours()).padStart(2, "0");
-      bars.push({ v: m.get(h) || 0, label: i % 3 === 0 ? hh : "", tip: `${hh}:00–${hh}:59` });
-    }
-  } else {
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(mid); d.setDate(d.getDate() - i);
-      const sH = Math.floor(d.getTime() / 3600000);
-      let v = 0; for (let h = sH; h < sH + 24; h++) v += m.get(h) || 0;
-      const lbl = d.toLocaleDateString("th-TH", { weekday: "short", day: "numeric" });
-      bars.push({ v, label: lbl, tip: d.toLocaleDateString("th-TH", { weekday: "long", day: "numeric", month: "short" }) });
-    }
+  for (let i = 23; i >= 0; i--) {
+    const h = nowH - i, hh = String(new Date(h * 3600000 + TH_OFF).getUTCHours()).padStart(2, "0");
+    bars.push({ v: m.get(h) || 0, label: i % 3 === 0 ? hh : "", tip: `${hh}:00–${hh}:59` });
   }
   const maxV = Math.max(0, ...bars.map(b => b.v)), minV = Math.min(0, ...bars.map(b => b.v));
   const span = (maxV - minV) || 1;
