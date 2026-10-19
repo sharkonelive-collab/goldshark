@@ -237,6 +237,22 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .cal-range input{background:rgba(5,9,18,.7);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:13px;color-scheme:dark}
 .cal-hint{font-size:12px;color:var(--muted);margin-top:8px}
 .cal .vs{display:none}
+.sess{margin-bottom:14px}
+.sess-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;font-size:13px;color:var(--muted)}
+.sess-head span{flex:1}
+.sess-head span b{color:var(--text);font-weight:600}
+.sess-tot{font-family:var(--display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.sess-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sess-c{position:relative;padding:10px 12px;border-radius:12px;background:rgba(5,9,18,.55);border:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:2px;min-width:0}
+.sess-c .sn{font-size:13px;font-weight:600;white-space:nowrap}
+.sess-c .st{font-size:11px;color:var(--muted)}
+.sess-c b{font-family:var(--display);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sess-c.pos{border-color:rgba(47,191,138,.35);background:rgba(47,191,138,.08)} .sess-c.pos b{color:#8FF0C8}
+.sess-c.neg{border-color:rgba(229,40,61,.38);background:rgba(229,40,61,.08)} .sess-c.neg b{color:#FFB0B8}
+.sess-c.best{box-shadow:inset 0 0 0 1px rgba(242,196,90,.55)}
+.sess-c.live{box-shadow:inset 0 0 0 1.5px #3B94FF}
+.sess-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3DDC97;box-shadow:0 0 8px #3DDC97;vertical-align:middle;margin-left:2px;animation:sessPulse 1.6s ease-in-out infinite}
+@keyframes sessPulse{50%{opacity:.35}}
 @media (max-width:560px){
   .cal{gap:3px}
   .cd{min-height:46px;padding:4px 3px 3px;border-radius:7px}
@@ -244,6 +260,11 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
   .cd .dn{font-size:10px}
   .cal-sum .cs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cal .vf{display:none} .cal .vs{display:inline}
+  .sess-row{gap:5px}
+  .sess-c{padding:8px 8px;border-radius:10px}
+  .sess-c .sn{font-size:12px}
+  .sess-c .st{font-size:10px}
+  .sess-c b{font-size:15px}
   .cd .dv{font-size:11px;text-overflow:clip}
 }
 
@@ -1057,6 +1078,22 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
   filter:drop-shadow(0 0 7px rgba(80,170,255,.7)) drop-shadow(0 0 20px rgba(59,148,255,.4))}
 @keyframes goldShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @media (prefers-reduced-motion:reduce){.brand-name span{animation:none}}
+/* ---- เลือกภาษา ---- */
+.lang-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 11px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font:inherit;font-size:13px;font-weight:600;flex:none}
+.lang-btn svg{width:17px;height:17px;color:#9CC8FF}
+.lang-float{position:absolute;top:16px;right:16px;z-index:5}
+@media (max-width:560px){.bar .lang-btn{width:38px;padding:0;justify-content:center}.bar .lang-btn .lang-cur{display:none}}
+.auth-panel{position:relative}
+.lang-menu{position:fixed;z-index:200;min-width:190px;padding:6px;border-radius:14px;background:rgba(10,16,30,.97);border:1px solid rgba(59,148,255,.3);box-shadow:0 18px 40px rgba(0,0,0,.5);backdrop-filter:blur(12px)}
+.lang-menu button{display:flex;width:100%;align-items:center;gap:10px;padding:9px 12px;border:0;border-radius:9px;background:none;color:var(--text);font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.lang-menu button:hover{background:rgba(59,148,255,.12)}
+.lang-menu button[aria-checked="true"]{background:rgba(59,148,255,.18);color:#DCEBFF}
+.lang-menu button[aria-checked="true"]::after{content:"✓";margin-left:auto;color:#7CC4FF}
+.lang-menu small{display:block;padding:6px 12px 4px;font-size:11px;color:var(--muted)}
+/* ซ่อนแถบของ Google แปลภาษา */
+iframe.skiptranslate,.goog-te-banner-frame,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf{display:none!important}
+body{top:0!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
 /* ---- กระดิ่งแจ้งเตือน ---- */
 .bell{position:relative;width:38px;height:38px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}
 .bell svg{width:19px;height:19px}
@@ -1096,7 +1133,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <div id="splash" aria-hidden="true">
   <div class="sp-in">
     <span class="sp-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
-    <b class="sp-name brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b>
+    <b class="sp-name brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b>
     <small class="sp-sub">GOLD EA · MT5</small>
     <i class="sp-bar"></i>
   </div>
@@ -1105,11 +1142,12 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <header class="bar">
   <div class="brand">
     <span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
-    <div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div>
+    <div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div>
   </div>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
   <span class="syncing" id="syncing" hidden>กำลังอัปเดต…</span>
+  <button type="button" class="lang-btn notranslate" data-lang-open aria-label="เลือกภาษา" translate="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span class="lang-cur">TH</span></button>
   <button type="button" class="bell" id="bellBtn" hidden aria-label="การแจ้งเตือน" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg><i class="bell-dot" id="bellDot" hidden></i></button>
   <span class="pill-btn" id="whoami"></span>
   <button class="btn small" id="logoutBtn" hidden>ออกจากระบบ</button>
@@ -1133,7 +1171,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 <!-- ================= LOGIN ================= -->
 <main id="loginView" class="auth">
   <section class="auth-brand">
-    <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
+    <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
     <div class="auth-copy">
       <span class="eyebrow">EA เทรดทอง XAUUSD สำหรับ MetaTrader 5</span>
       <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
@@ -1154,6 +1192,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
   </section>
 
   <section class="auth-panel">
+    <button type="button" class="lang-btn lang-float notranslate" data-lang-open aria-label="เลือกภาษา" translate="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span class="lang-cur">TH</span></button>
     <div class="auth-card">
       <div id="memberAuth">
         <span class="trial-badge">ทดลองใช้ฟรี 15 วัน ไม่ต้องใช้บัตร</span>
@@ -1185,7 +1224,7 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
       </div>
 
       <div id="adminAuth" hidden>
-        <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
+        <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
         <h2>แผงควบคุมแอดมิน</h2>
         <p class="sub">สำหรับผู้ดูแลระบบเท่านั้น <span class="admin-badge">ADMIN</span></p>
         <form id="adminForm">
@@ -1363,18 +1402,9 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
   <section class="card profit" id="secProfit">
     <div class="profit-head">
       <div class="card-label">กำไรที่ปิดแล้ว</div>
-      <div class="seg" role="group" aria-label="มุมมองกำไร">
-        <button data-p="cal" aria-pressed="true">ปฏิทิน</button>
-        <button data-p="24" aria-pressed="false">รายชั่วโมง</button>
-      </div>
     </div>
-    <div class="tiles t3 pstats">
-      <div class="tile"><span>วันนี้</span><b id="pToday">–</b></div>
-      <div class="tile"><span>7 วัน</span><b id="pWeek">–</b></div>
-      <div class="tile"><span>เดือนนี้</span><b id="pMonth">–</b></div>
-    </div>
+    <div id="pSess" class="sess"></div>
     <div id="pCal"></div>
-    <div id="pChart" hidden></div>
     <p class="pnote" id="pNote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย · ตัดวันตามเวลาไทย</p>
   </section>
 
@@ -2395,12 +2425,7 @@ function demoDaily() {
   return out.join("|");
 }
 /* ============ กำไรที่ปิดแล้ว: ปฏิทิน + รายชั่วโมง ============ */
-let pMode = "cal";
-document.querySelectorAll(".profit .seg button").forEach(b => b.addEventListener("click", () => {
-  pMode = b.dataset.p === "cal" ? "cal" : 24;
-  document.querySelectorAll(".profit .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  renderProfit();
-}));
+
 
 function hourlyMap() {
   const m = new Map();
@@ -2554,34 +2579,41 @@ $("pCal").addEventListener("change", e => {
   calSel(p(f), p(t), "range", "ช่วงที่กำหนด"); calSt.sel.q = "custom"; renderProfit();
 });
 
+// กำไรแยกตามช่วงตลาด (เวลาไทย) ของวันที่ดู: เอเชีย 05–14 · ลอนดอน 14–19 · นิวยอร์ก 19–05 (รวมช่วงตี 0–5 ของวันเดียวกัน)
+// ใช้ข้อมูลรายชั่วโมงที่ EA ส่งมาอยู่แล้ว (7 วันล่าสุด) — หลังบ้านไม่ต้องเก็บเพิ่ม
+const SESS = [
+  { k: "asia", name: "เอเชีย", time: "05:00–14:00", ico: "🌏", hrs: h => h >= 5 && h < 14 },
+  { k: "ldn", name: "ลอนดอน", time: "14:00–19:00", ico: "🇬🇧", hrs: h => h >= 14 && h < 19 },
+  { k: "ny", name: "นิวยอร์ก", time: "19:00–05:00", ico: "🇺🇸", hrs: h => h >= 19 || h < 5 }
+];
+function renderSessions(m, dm) {
+  const today = thDay(Date.now()), nowH = Math.floor(Date.now() / 3600000);
+  const sel = calSt.sel, d = sel && sel.kind === "day" ? sel.a : today;
+  const covered = d * 24 - 7 >= nowH - 167;            // ชั่วโมงแรกของวัน (เวลาไทย) ยังอยู่ในข้อมูล 7 วัน
+  const sums = SESS.map(() => 0);
+  if (covered) for (let th = 0; th < 24; th++) {
+    const v = m.get(d * 24 - 7 + th) || 0; if (!v) continue;
+    SESS.forEach((S, i) => { if (S.hrs(th)) sums[i] += v; });
+  }
+  const tot = covered ? sums.reduce((a, b) => a + b, 0) : (dm.get(d) || 0);
+  const best = covered && tot ? sums.indexOf(Math.max(...sums)) : -1;
+  const curTh = (Math.floor(Date.now() / 3600000) + 7) % 24;
+  $("pSess").innerHTML = `<div class="sess-head"><span>แยกตามช่วงตลาด · <b>${d === today ? "วันนี้" : esc(dLabelY(d))}</b></span>
+      <b class="sess-tot ${cls(tot)}">${signed(tot)}</b></div>
+    <div class="sess-row">${SESS.map((S, i) => {
+      const v = sums[i], live = d === today && S.hrs(curTh);
+      return `<div class="sess-c ${covered ? cls(v) : ""}${live ? " live" : ""}${i === best && v > 0 ? " best" : ""}">
+        <span class="sn">${S.ico} ${S.name}${live ? ' <i class="sess-dot" title="ตลาดช่วงนี้กำลังเปิด"></i>' : ""}</span>
+        <span class="st">${S.time} น.</span>
+        <b>${covered ? signed(v) : "–"}</b></div>`;
+    }).join("")}</div>
+    ${covered ? "" : `<div class="cal-hint">แยกช่วงตลาดได้เฉพาะ 7 วันล่าสุด วันนี้ดูได้แค่ยอดรวม</div>`}`;
+}
+
 function renderProfit() {
   const m = hourlyMap(), dm = dailyMap();
-  const nowH = Math.floor(Date.now() / 3600000), today = thDay(Date.now());
-  const t = thDate(today), mStart = dayFromYMD(t.getUTCFullYear(), t.getUTCMonth(), 1);
-  const put = (id, v) => { $(id).textContent = signed(v); $(id).className = cls(v); };
-  put("pToday", dm.get(today) || 0); put("pWeek", sumRange(dm, today - 6, today)); put("pMonth", sumRange(dm, mStart, today));
-
-  $("pCal").hidden = pMode !== "cal"; $("pChart").hidden = pMode === "cal";
-  if (pMode === "cal") { renderCal(dm); return; }
-
-  const box = $("pChart");
-  if (!m.size) { box.innerHTML = `<div class="pempty">ยังไม่มี Order ที่ปิดใน 24 ชั่วโมงล่าสุด</div>`; return; }
-  const bars = [];
-  for (let i = 23; i >= 0; i--) {
-    const h = nowH - i, hh = String(new Date(h * 3600000 + TH_OFF).getUTCHours()).padStart(2, "0");
-    bars.push({ v: m.get(h) || 0, label: i % 3 === 0 ? hh : "", tip: `${hh}:00–${hh}:59` });
-  }
-  const maxV = Math.max(0, ...bars.map(b => b.v)), minV = Math.min(0, ...bars.map(b => b.v));
-  const span = (maxV - minV) || 1;
-  const up = maxV / span, dn = -minV / span;
-  box.innerHTML = `<div class="pbars">${bars.map(b => {
-    const hu = b.v > 0 && maxV ? b.v / maxV * 100 : 0;
-    const hd = b.v < 0 && minV ? b.v / minV * 100 : 0;
-    return `<div class="pcol" title="${esc(b.tip)}: ${signed(b.v)}">
-      <div class="pup" style="flex:${up || (dn ? 0 : 1)} 1 0"><i style="height:${hu}%"></i></div>
-      <div class="pdn" style="flex:${dn} 1 0"><i style="height:${hd}%"></i></div></div>`;
-  }).join("")}</div>
-  <div class="plabels">${bars.map(b => `<span>${esc(b.label)}</span>`).join("")}</div>`;
+  renderCal(dm);
+  renderSessions(m, dm);
 }
 
 
@@ -4140,6 +4172,55 @@ $("demoTag").hidden = !!API_URL;
     if (t) { await openMember(t); return; }
     show("loginView");
   } finally { hideSplash(); }
+})();
+
+/* ============ เลือกภาษา (แปลทั้งหน้าอัตโนมัติด้วย Google แปลภาษา · ต้นฉบับภาษาไทย) ============ */
+const LANGS = [["th", "ไทย", "TH"], ["en", "English", "EN"], ["zh-CN", "中文 (简体)", "中"], ["vi", "Tiếng Việt", "VI"],
+  ["km", "ភាសាខ្មែរ", "KM"], ["lo", "ພາສາລາວ", "LO"], ["my", "မြန်မာ", "MY"], ["ms", "Bahasa Melayu", "MS"], ["id", "Bahasa Indonesia", "ID"]];
+const langGet = () => { try { return localStorage.getItem("gs_lang") || "th"; } catch (e) { return "th"; } };
+function langCookie(v) {
+  const host = location.hostname, exp = v ? "" : ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  const val = v ? "googtrans=/th/" + v : "googtrans=";
+  document.cookie = val + ";path=/" + exp;
+  if (host.includes(".")) document.cookie = val + ";path=/;domain=." + host + exp;
+}
+function langSet(code) {
+  try { localStorage.setItem("gs_lang", code); } catch (e) {}
+  langCookie(code === "th" ? "" : code);
+  location.reload();
+}
+(function langInit() {
+  const cur = langGet(), L = LANGS.find(x => x[0] === cur) || LANGS[0];
+  document.querySelectorAll(".lang-cur").forEach(e => e.textContent = L[2]);
+  const menu = document.createElement("div");
+  menu.className = "lang-menu notranslate"; menu.id = "langMenu"; menu.hidden = true; menu.setAttribute("role", "menu"); menu.setAttribute("translate", "no");
+  const gt = document.createElement("div"); gt.id = "gtEl"; gt.hidden = true;
+  document.body.append(menu, gt);
+  menu.innerHTML = `<small>ภาษา · Language</small>` + LANGS.map(x => `<button type="button" role="menuitemradio" aria-checked="${x[0] === cur}" data-lang="${x[0]}">${x[1]}</button>`).join("");
+  document.addEventListener("click", e => {
+    const o = e.target.closest("[data-lang-open]");
+    if (o) {
+      e.stopPropagation();
+      if (!menu.hidden) { menu.hidden = true; return; }
+      const r = o.getBoundingClientRect();
+      menu.hidden = false;
+      menu.style.top = (r.bottom + 6) + "px";
+      menu.style.left = Math.max(8, Math.min(window.innerWidth - menu.offsetWidth - 8, r.right - menu.offsetWidth)) + "px";
+      return;
+    }
+    const b = e.target.closest("[data-lang]");
+    if (b) { menu.hidden = true; if (b.dataset.lang !== langGet()) langSet(b.dataset.lang); return; }
+    if (!menu.hidden && !e.target.closest("#langMenu")) menu.hidden = true;
+  });
+  if (cur === "th") { langCookie(""); return; }
+  if (location.protocol === "file:") return;                 // โหมดตัวอย่างในเครื่อง: ไม่โหลดตัวแปล
+  langCookie(cur);
+  window.googleTranslateElementInit = () => { try { new google.translate.TranslateElement({ pageLanguage: "th", autoDisplay: false }, "gtEl"); } catch (e) {} };
+  const sc = document.createElement("script");
+  sc.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  sc.async = true;
+  sc.onerror = () => toast && toast("โหลดตัวแปลภาษาไม่ได้ ลองรีเฟรชอีกครั้ง");
+  document.head.appendChild(sc);
 })();
 </script>
 </body>
