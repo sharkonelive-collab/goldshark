@@ -300,6 +300,8 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .cfg-group summary .spacer{flex:1}
 .cfg-sum{font-size:13px;color:var(--muted)}
 .cfg-sum.on{color:var(--green)}
+.cfg-group summary .sum-sw{margin:0 0 0 4px;flex:none;gap:0}
+.cfg-tdesc{margin:0 0 12px;font-size:13px;color:var(--muted)}
 .cfg-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);display:none}
 .cfg-group.changed .cfg-dot{display:inline-block}
 .adv-tag{white-space:nowrap;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}
@@ -2835,7 +2837,7 @@ const CFG_GROUPS = [
   { id: "sl", title: "SL ทุกไม้", toggle: "slOn", fields: [
     ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
     ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1]] },
-  { id: "autolot", title: "ล็อตอัตโนมัติตามทุน", info: autoLotInfo, fields: [
+  { id: "autolot", title: "ล็อตอัตโนมัติตามทุน", toggle: "autoLotOn", info: autoLotInfo, fields: [
     ["autoLotOn", "bool", false, "ล็อตอัตโนมัติ : ทุนโตล็อตโตตาม ทุนลดล็อตลดตาม (คิดใหม่ทุกครั้งที่เปิดตะกร้าใหม่ · EA 2.27+)"],
     ["lotPerBal", "num", 3000, "ทุนต่อ 1 ชุดล็อตเริ่ม (เงินในพอร์ต · เช่น ล็อตเริ่ม 0.01 ทุน 3,000 → พอร์ต 9,000 ใช้ 0.03)", 100, 1e8, 100]] },
   { id: "daily", title: "เป้ากำไรรายวัน", toggle: "dailyOn", warn: targetWarn, info: targetInfo, fields: [
@@ -2944,10 +2946,11 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
   root.innerHTML = groups.map(g => `
     <details class="cfg-group" data-g="${g.id}" ${open ? "open" : ""}>
-      <summary>${g.title}${g.adv ? ' <span class="adv-tag">ขั้นสูง</span>' : ""}<span class="cfg-dot" title="มีค่าที่ยังไม่บันทึก"></span><span class="spacer"></span><span class="cfg-sum"></span></summary>
+      <summary>${g.title}${g.adv ? ' <span class="adv-tag">ขั้นสูง</span>' : ""}<span class="cfg-dot" title="มีค่าที่ยังไม่บันทึก"></span><span class="spacer"></span><span class="cfg-sum"></span>${g.toggle ? `<label class="sw sum-sw" title="เปิด/ปิด"><input type="checkbox" data-k="${g.toggle}" aria-label="เปิด/ปิด ${g.title}"><span class="track"></span></label>` : ""}</summary>
       ${g.top ? `<div class="cfg-top"></div>` : ""}
       ${g.warn ? `<div class="cfg-warn" hidden></div>` : ""}
-      <div class="cfg-grid">${g.fields.map(fieldHTML).join("")}</div>
+      ${g.toggle ? g.fields.filter(f => f[0] === g.toggle).map(f => `<p class="cfg-tdesc">${f[3]}</p>`).join("") : ""}
+      <div class="cfg-grid">${g.fields.filter(f => f[0] !== g.toggle).map(fieldHTML).join("")}</div>
       ${g.info ? `<div class="cfg-info"></div>` : ""}
       ${g.days ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days"><tbody>${DAYS.map(([d, name]) => `
         <tr><td class="dname">${name}</td>
@@ -2991,6 +2994,11 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
     else if (el.value !== "") draft[k] = Number(el.value);
     status();
   }
+  // สวิตช์ที่หัวข้อ: กดแล้วไม่ให้หัวข้อพับ/กาง
+  root.querySelectorAll(".sum-sw").forEach(l => l.addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();
+    const i = l.querySelector("input"); i.checked = !i.checked; i.dispatchEvent(new Event("change", { bubbles: true }));
+  }));
   root.addEventListener("input", onInput);
   root.addEventListener("change", onInput);
   function fill(force) {
