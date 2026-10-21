@@ -2821,17 +2821,20 @@ const CFG_GROUPS = [
     ["repeatLot", "int", 0, "ใช้ล็อตซ้ำกี่ไม้ก่อนคูณ (0=ปิด)", 0, 100, 1],
     ["maxOrders", "int", 30, "ไม้สูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 500, 1],
     ["orderGap", "int", 60, "เว้นเวลาระหว่างไม้แก้/ไม้ตามทาง (วินาที, 0=ไม่เว้น)", 0, 86400, 10]] },
-  { id: "close", title: "ปิดกำไร / ขาดทุน", fields: [
+  { id: "close", title: "ปิดกำไร", fields: [
     ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
     ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
     ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
-    ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า"],
-    ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01],
-    ["cutPctOn", "bool", false, "ปิดขาดทุนเมื่อตะกร้าติดลบเกิน % ของ Balance"],
-    ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance)", 1, 95, 1],
-    ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
-    ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1],
     ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
+  { id: "cutmoney", title: "ตัดขาดทุนทั้งตะกร้า (เงิน)", toggle: "cutLossOn", fields: [
+    ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า : ติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
+    ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01]] },
+  { id: "cutpct", title: "ปิดขาดทุนตาม % ของ Balance", toggle: "cutPctOn", fields: [
+    ["cutPctOn", "bool", false, "ปิดขาดทุนเมื่อตะกร้าติดลบเกิน % ของ Balance"],
+    ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance)", 1, 95, 1]] },
+  { id: "sl", title: "SL ทุกไม้", toggle: "slOn", fields: [
+    ["slOn", "bool", false, "ใส่ SL ทุกไม้"],
+    ["slPoints", "num", 500, "ระยะ SL (จุด · 100 จุด = ราคาทองขยับ 1.00)", 0.1, 200000, 0.1]] },
   { id: "autolot", title: "ล็อตอัตโนมัติตามทุน", info: autoLotInfo, fields: [
     ["autoLotOn", "bool", false, "ล็อตอัตโนมัติ : ทุนโตล็อตโตตาม ทุนลดล็อตลดตาม (คิดใหม่ทุกครั้งที่เปิดตะกร้าใหม่ · EA 2.27+)"],
     ["lotPerBal", "num", 3000, "ทุนต่อ 1 ชุดล็อตเริ่ม (เงินในพอร์ต · เช่น ล็อตเริ่ม 0.01 ทุน 3,000 → พอร์ต 9,000 ใช้ 0.03)", 100, 1e8, 100]] },
@@ -2973,6 +2976,9 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
       if (g.id === "daily" && draft.dailyOn) sum.textContent = `${draft.dailyPct}% / วัน`;
+      if (g.id === "cutmoney" && draft.cutLossOn) sum.textContent = `เปิด · -${draft.cutLoss}`;
+      if (g.id === "cutpct" && draft.cutPctOn) sum.textContent = `เปิด · -${draft.cutPct}%`;
+      if (g.id === "sl" && draft.slOn) sum.textContent = `เปิด · ${draft.slPoints} จุด`;
       if (g.id === "autolot") { sum.textContent = draft.autoLotOn ? `${fmt(riskLot(draft).lot)} lot` : "ปิด"; sum.classList.toggle("on", !!draft.autoLotOn); }
     });
     onChange(ch);
