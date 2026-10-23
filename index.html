@@ -1568,6 +1568,53 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 .live-wrap .hdr-px .acct:empty{display:none}
 .live-wrap .hdr-px .acct i{font-style:normal;color:#C9D6EA;font-weight:500}
 @media (max-width:760px){.live-wrap .hdr-px .acct{font-size:10.5px}}
+
+/* ================= กระดานแบบ Perp (หน้า EA Ports) ================= */
+#secLive .chart-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pp-ticker{display:flex;align-items:center;gap:22px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pp-ticker::-webkit-scrollbar{display:none}
+.pp-sym{display:flex;align-items:center;gap:10px}
+.pp-sym .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#1a1200;background:radial-gradient(circle at 30% 30%,#FFF1C4,#E8B64C 60%,#A8761E)}
+.pp-sym b{display:block;font-size:16px;font-weight:600;letter-spacing:.02em;color:#fff;line-height:1.15}
+.pp-sym small{display:block;font-size:11px;color:var(--muted);line-height:1.2}
+.pp-px{font-family:var(--display);font-size:24px;font-weight:600;line-height:1}
+.pp-px.up{color:#2FBF8A}.pp-px.dn{color:#E5283D}
+.pp-st span{display:block;font-size:11px;color:var(--muted);line-height:1.3}
+.pp-st b{display:block;font-size:13.5px;font-weight:500;color:var(--text);line-height:1.3}
+.pp-st b.pos{color:#2FBF8A}.pp-st b.neg{color:#E5283D}
+#secLive .live-wrap .hdr-px{display:none!important}
+#secLive .live-legend{display:none}
+/* แผงตำแหน่ง */
+.pp-panel{margin-top:12px;border-top:1px solid rgba(255,255,255,.07);padding-top:6px}
+.pp-tabs{display:flex;align-items:center;gap:4px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:4px}
+.pp-tabs button{border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pp-tabs button span{display:inline-block;min-width:18px;padding:0 6px;margin-left:4px;border-radius:9px;background:rgba(255,255,255,.08);font-size:11px;color:var(--text)}
+.pp-tabs button[aria-selected="true"]{color:#fff;border-bottom-color:#3B94FF}
+.pp-tot{margin-left:auto;font-size:12.5px;color:var(--muted);padding-right:4px}
+.pp-tot b{font-size:14px;font-variant-numeric:tabular-nums}
+.pp-table{max-height:260px;overflow:auto}
+.pp-table table{width:100%!important;min-width:0!important;table-layout:auto;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.pp-table th{position:sticky;top:0;background:rgba(10,15,26,.92);font-weight:400;font-size:11.5px;color:var(--muted);text-align:right;padding:7px 8px;white-space:nowrap}
+.pp-table td{text-align:right;padding:8px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap}
+.pp-table th:first-child,.pp-table td:first-child{text-align:left}
+.pp-table tr:hover td{background:rgba(255,255,255,.025)}
+.pp-table .sym{display:flex;align-items:center;gap:8px}
+.pp-table .sym i{width:3px;height:22px;border-radius:2px;background:#2FBF8A}
+.pp-table .sym.s i{background:#E5283D}
+.pp-table .sym b{font-weight:500;color:#fff}
+.pp-table .sym small{display:block;font-size:11px}
+.pp-table .lg{color:#2FBF8A}.pp-table .sh{color:#E5283D}
+.pp-empty{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+/* การ์ดตะกร้าด้านขวา: ตารางย้ายไปอยู่ใต้กราฟแล้ว */
+#secBasket .bk-tbl-wrap{display:none!important}
+@media (max-width:760px){
+  .pp-ticker{gap:16px;flex-basis:100%;order:-1}
+  .pp-px{font-size:20px}
+  .pp-sym .ic{width:26px;height:26px;font-size:11px}
+  .pp-table{max-height:none}
+  .pp-table .hide-m{display:none}
+  .pp-table td,.pp-table th{padding:7px 5px}
+}
 </style>
 </head>
 <body>
@@ -1840,7 +1887,7 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 
   <section class="card livecard" id="secLive" data-pages="port" hidden>
     <div class="chart-head">
-      <div class="card-label">กราฟไม้ที่เปิดอยู่</div>
+      <div class="pp-ticker notranslate" id="ppTicker" translate="no"></div>
       <span class="live-badge" id="liveBadge"><i></i><span>สด</span></span>
       <span class="ea-badge" id="eaBadge" hidden title="สถานะ EA"><i></i><b>EA</b><span id="eaBadgeT"></span></span>
       <span class="spacer"></span>
@@ -1857,6 +1904,14 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
       <span><i class="dash" style="border-color:#FFE7A3"></i>ทุนเฉลี่ย</span><span><i class="dash" style="border-color:#7CC4FF"></i>จุดปิดกำไร</span><span><i class="dash" style="border-color:#8E9AB3"></i>แก้ไม้ถัดไป</span><span><i class="dash" style="border-color:#7FE8B8"></i>รอเข้า Buy/Sell</span>
     </div>
     <div class="live-sum" id="liveSum"></div>
+    <div class="pp-panel">
+      <div class="pp-tabs" role="tablist">
+        <button data-pt="pos" aria-selected="true">Positions <span id="ppNPos">0</span></button>
+        <button data-pt="ord" aria-selected="false">Open Orders <span id="ppNOrd">0</span></button>
+        <span class="pp-tot" id="ppTot"></span>
+      </div>
+      <div class="pp-table" id="ppTable"></div>
+    </div>
     <p class="pnote" id="liveNote">ราคาจากโบรกของพอร์ตนี้ · EA 2.31 ขึ้นไปส่งราคาและกำไรแบบเรียลไทม์ทุก 1–2 วินาทีตอนเปิดหน้านี้</p>
   </section>
 
@@ -2837,7 +2892,7 @@ function renderDash() {
   $("myCode").textContent = L.code;
   renderProfit();
   renderLive();
-  renderBaskets();
+  renderBaskets(); renderPerp();
   renderHdrPx();
   renderEaBadge();
   syncLot();
@@ -4896,7 +4951,7 @@ setInterval(async () => {
     if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
       Object.assign(dashData.snapshot, r.snapshot);
       if (fbLastTick && Date.now() - fbTickAt < 15000) applyTick(fbLastTick, true);   // ราคาจาก Firebase ใหม่กว่า
-      renderLive(); renderBaskets(); renderHdrPx(); renderEaBadge();
+      renderLive(); renderBaskets(); renderPerp(); renderHdrPx(); renderEaBadge();
     }
   } catch (e) {} finally { livePollBusy = false; }
 }, 10000);
@@ -5059,7 +5114,7 @@ function applyTick(d, quiet) {
   cancelAnimationFrame(fbRaf);
   fbRaf = requestAnimationFrame(() => {
     if (curPage !== "port") return;
-    renderLive(); renderBaskets(); renderHdrPx(); renderEaBadge();
+    renderLive(); renderBaskets(); renderPerp(); renderHdrPx(); renderEaBadge();
     // ตัวเลขด้านบนอัปเดตตาม (ไม่ render ทั้งหน้า)
     const fl = S.equity - S.balance;
     $("dBal").textContent = fmt(S.balance); $("dEq").textContent = fmt(S.equity);
@@ -5118,6 +5173,48 @@ function renderEaBadge() {
   el.className = "ea-badge " + c;
   $("eaBadgeT").textContent = txt;
   el.title = "สถานะ EA: " + txt;
+}
+
+/* ============ กระดานแบบ Perp: แถบราคา + ตาราง Positions / Open Orders ============ */
+let ppTab = "pos", ppLast = null;
+document.querySelectorAll(".pp-tabs button").forEach(b => b.addEventListener("click", () => {
+  ppTab = b.dataset.pt; document.querySelectorAll(".pp-tabs button").forEach(x => x.setAttribute("aria-selected", x === b)); renderPerp();
+}));
+function renderPerp() {
+  const S = dashData && dashData.snapshot, L = S && S.live, tk = $("ppTicker"); if (!tk) return;
+  if (!L || !L.bid) { tk.innerHTML = ""; $("ppTable").innerHTML = ""; return; }
+  const dg = L.digits || 2, f = v => (+v).toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg });
+  const bid = +L.bid, nowS = Date.now() / 1000, bars = L.bars || [];
+  const day = bars.filter(b => b[0] >= nowS - 86400);
+  const ref = day.length ? day[0][1] : null, hi = day.length ? Math.max(...day.map(b => b[2]), bid) : null, lo = day.length ? Math.min(...day.map(b => b[3]), bid) : null;
+  const ch = ref ? bid - ref : 0, pc = ref ? ch / ref * 100 : 0;
+  const dir = ppLast == null ? (ch >= 0 ? "up" : "dn") : bid > ppLast ? "up" : bid < ppLast ? "dn" : (tk.querySelector(".pp-px") || {}).className && /dn/.test(tk.querySelector(".pp-px").className) ? "dn" : "up";
+  ppLast = bid;
+  const Lc = dashData.license || {}, sym = S.symbol || "XAUUSD";
+  tk.innerHTML = `<div class="pp-sym"><span class="ic">Au</span><span><b>${esc(sym)}</b><small>${esc(S.broker || "")}${(S.account || Lc.account) ? " · #" + esc(S.account || Lc.account) : ""}</small></span></div>
+    <div class="pp-px ${dir}">${f(bid)}</div>
+    <div class="pp-st"><span>24h Change</span><b class="${cls(ch)}">${ref ? `${ch >= 0 ? "+" : ""}${ch.toFixed(2)} (${pc >= 0 ? "+" : ""}${pc.toFixed(2)}%)` : "–"}</b></div>
+    <div class="pp-st"><span>24h High</span><b>${hi ? f(hi) : "–"}</b></div>
+    <div class="pp-st"><span>24h Low</span><b>${lo ? f(lo) : "–"}</b></div>
+    <div class="pp-st"><span>Spread</span><b>${S.spread != null ? esc(S.spread) : "–"}</b></div>
+    <div class="pp-st"><span>Server</span><b>${esc(S.server || "–")}</b></div>`;
+  const pos = (L.pos || []).slice().sort((a, b) => (b.s - a.s) || (b.s > 0 ? b.p - a.p : a.p - b.p)), pend = L.pend || [];
+  $("ppNPos").textContent = pos.length; $("ppNOrd").textContent = pend.length;
+  const tot = pos.reduce((a, o) => a + +o.pl, 0), lots = pos.reduce((a, o) => a + +o.v, 0);
+  $("ppTot").innerHTML = pos.length ? `uPnL <b class="${cls(tot)}">${signed(tot)}</b> · ${fmt(lots)} lot` : "";
+  const KN = { m: "", b: "Balloon", h: "Hedge", r: "Recovery" };
+  if (ppTab === "pos") {
+    $("ppTable").innerHTML = !pos.length ? `<div class="pp-empty">ไม่มีตำแหน่งที่เปิดอยู่</div>` : `<table><thead><tr><th>Symbol</th><th>Size</th><th>Entry</th><th class="hide-m">Mark</th><th>PnL</th><th class="hide-m">Move</th></tr></thead><tbody>${pos.map(o => {
+      const mark = o.s > 0 ? bid : +L.ask, mv = (mark - o.p) * o.s, k = o.k || "m";
+      return `<tr><td><span class="sym ${o.s > 0 ? "" : "s"}"><i></i><span><b>${esc(sym)}</b><small class="${o.s > 0 ? "lg" : "sh"}">${o.s > 0 ? "Long" : "Short"}${KN[k] ? " · " + KN[k] : ""}</small></span></span></td>
+        <td class="${o.s > 0 ? "lg" : "sh"}">${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td class="hide-m">${f(mark)}</td>
+        <td class="${cls(o.pl)}">${signed(+o.pl)}</td><td class="hide-m ${cls(mv)}">${mv >= 0 ? "+" : ""}${mv.toFixed(2)}</td></tr>`;
+    }).join("")}</tbody></table>`;
+  } else {
+    $("ppTable").innerHTML = !pend.length ? `<div class="pp-empty">ไม่มีออเดอร์รอเข้า</div>` : `<table><thead><tr><th>Symbol</th><th>Type</th><th>Size</th><th>Price</th><th>Distance</th></tr></thead><tbody>${pend.map(o =>
+      `<tr><td><span class="sym ${o.s > 0 ? "" : "s"}"><i></i><span><b>${esc(sym)}</b><small class="${o.s > 0 ? "lg" : "sh"}">${o.s > 0 ? "Buy" : "Sell"}</small></span></span></td>
+        <td>${o.t === "limit" ? "Limit" : "Stop"}</td><td>${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td>${Math.abs(+o.p - bid).toFixed(2)}</td></tr>`).join("")}</tbody></table>`;
+  }
 }
 </script>
 </body>
