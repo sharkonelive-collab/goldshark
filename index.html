@@ -1575,7 +1575,7 @@ body[data-view="dashView"]{background:
         <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม 2 URL นี้
           <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
           <div class="copyrow"><code id="fbSiteUrl">https://goldshark-903b1-default-rtdb.asia-southeast1.firebasedatabase.app</code><button class="btn small" id="copyFbSite">คัดลอก</button></div>
-          <small class="muted" style="display:block;margin-top:4px">ต้องเพิ่มทั้ง 2 URL · URL ที่ 2 ทำให้กราฟบนเว็บเป็นเรียลไทม์ (ใส่ URL ละ 1 บรรทัด)</small>
+          <small class="muted" style="display:block;margin-top:4px">ต้องมี<b>ทั้ง 2 URL แยกคนละบรรทัด</b> (ดับเบิลคลิกบรรทัดว่างเพื่อเพิ่ม) · ห้ามแก้ทับ URL แรก ถ้า URL แรกหาย หน้าจอ EA จะขึ้น <b>-1/4014</b> และ EA จะหยุดเทรดใน 12 ชม. · URL ที่ 2 ทำให้กราฟบนเว็บเป็นเรียลไทม์</small>
         </li>
         <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b id="dlEAName">GoldShark_Cent</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
         <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
@@ -4778,7 +4778,7 @@ function renderEaUpd() {
     <button class="btn small" type="button" data-updhow="1">วิธีอัปเดต</button>`;
 }
 $("eaUpd").addEventListener("click", e => {
-  if (e.target.closest("[data-updhow]")) alert("วิธีอัปเดต EA\n\n1. กดดาวน์โหลด EA ตัวใหม่\n2. MT5 → ไฟล์ → เปิดโฟลเดอร์ข้อมูล → MQL5 → Experts → วางไฟล์ทับตัวเดิม\n3. คลิกขวาที่ ตัวนำทาง → รีเฟรช\n4. ลาก EA ตัวใหม่ลงกราฟ XAUUSD เดิม (ทับตัวเก่า) → ใส่โค้ดเดิม → ตกลง\n\nOrder ที่เปิดอยู่ไม่หาย EA ตัวใหม่ดูแลต่อได้เลย ภายใน 1 นาทีหน้านี้จะขึ้นเวอร์ชันใหม่");
+  if (e.target.closest("[data-updhow]")) alert("วิธีอัปเดต EA\n\n1. กดดาวน์โหลด EA ตัวใหม่\n2. MT5 → ไฟล์ → เปิดโฟลเดอร์ข้อมูล → MQL5 → Experts → วางไฟล์ทับตัวเดิม\n3. คลิกขวาที่ ตัวนำทาง → รีเฟรช\n4. Ctrl+O → Expert Advisors → อนุญาต WebRequest: เพิ่มบรรทัดใหม่ (อย่าแก้ทับบรรทัดเดิม)\n   https://goldshark-903b1-default-rtdb.asia-southeast1.firebasedatabase.app\n5. ลาก EA ตัวใหม่ลงกราฟ XAUUSD เดิม (ทับตัวเก่า) → ใส่โค้ดเดิม → ตกลง\n\nถ้าหน้าจอ EA ขึ้น -1/4014 แปลว่า URL เว็บ https://goldshark.vercel.app หายจากรายการ ให้เพิ่มกลับ\n\nOrder ที่เปิดอยู่ไม่หาย EA ตัวใหม่ดูแลต่อได้เลย ภายใน 1 นาทีหน้านี้จะขึ้นเวอร์ชันใหม่");
 });
 
 /* ============ การ์ดตะกร้าที่เปิดอยู่ (หน้าพอร์ต) ============ */
