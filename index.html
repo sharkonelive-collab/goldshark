@@ -1276,7 +1276,7 @@ body{top:0!important}
   padding:6px 10px;border-radius:10px;background:rgba(5,9,18,.72);border:1px solid rgba(140,170,225,.14)}
 .live-wrap .hdr-px b{font-size:12.5px}
 .live-wrap .hdr-px .v{font-size:19px}
-@media (max-width:760px){.live-wrap .hdr-px{top:8px;left:8px;padding:4px 8px}.live-wrap .hdr-px .v{font-size:16px}.live-wrap .hdr-px b,.live-wrap .hdr-px .sp{display:none}}
+@media (max-width:760px){.live-wrap .hdr-px{top:8px;left:8px;padding:4px 8px}.live-wrap .hdr-px .v{font-size:16px}.live-wrap .hdr-px .sp{display:none}.live-wrap .hdr-px b{display:inline;font-size:12px}}
 /* ================= ดีไซน์ใหม่ ขั้นที่ 2: หน้าพอร์ต ================= */
 #dashView[data-pg="port"]{display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:16px;align-content:start}
 #dashView[data-pg="port"] > *{grid-column:1 / -1;min-width:0}
@@ -1562,6 +1562,12 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   #setupBox .dl-btn{max-width:100%;white-space:normal;text-align:center;box-sizing:border-box}
   html,body{overflow-x:hidden}
 }
+
+/* คู่เงิน + โบรก + เลขพอร์ต บนกราฟ */
+.live-wrap .hdr-px .acct{flex-basis:100%;font-size:11.5px;color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-wrap .hdr-px .acct:empty{display:none}
+.live-wrap .hdr-px .acct i{font-style:normal;color:#C9D6EA;font-weight:500}
+@media (max-width:760px){.live-wrap .hdr-px .acct{font-size:10.5px}}
 </style>
 </head>
 <body>
@@ -1844,7 +1850,7 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
         <button data-ltf="60" aria-pressed="false">H1</button>
       </div>
     </div>
-    <div class="live-wrap"><span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span></span><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
+    <div class="live-wrap"><span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b id="hdrSym">XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span><span class="acct" id="hdrAcct"></span></span><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
     <div class="live-legend">
       <span><i style="background:#2FBF8A"></i>Buy</span><span><i style="background:#E5283D"></i>Sell</span>
       <span><i style="background:#B07CFF"></i>Hedge</span><span><i style="background:#F2B84B"></i>ตะกร้ากู้</span>
@@ -5013,6 +5019,10 @@ function renderHdrPx() {
   v.textContent = bid.toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg });
   if (hdrLast != null && bid !== hdrLast) { v.className = "v " + (bid > hdrLast ? "up" : "dn"); clearTimeout(renderHdrPx._t); renderHdrPx._t = setTimeout(() => v.className = "v", 1500); }
   hdrLast = bid;
+  const Lc = dashData.license || {}, Sn = dashData.snapshot || {};
+  $("hdrSym").textContent = Sn.symbol || L.symbol || "XAUUSD";
+  const acct = Sn.account || Lc.account || "", brk = Sn.broker || "";
+  $("hdrAcct").innerHTML = [brk ? `<i>${esc(brk)}</i>` : "", acct ? `#${esc(acct)}` : "", Sn.server ? esc(Sn.server) : ""].filter(Boolean).join(" · ");
   const S = dashData.snapshot; $("hdrPxS").textContent = S && S.spread != null ? "Spread " + S.spread : "";
   // เทียบราคาเปิดวันนี้ (เที่ยงคืนเวลาไทย) จากแท่ง M5
   const mid = (thDay(Date.now()) * 86400000 - TH_OFF) / 1000, first = (L.bars || []).find(b => b[0] >= mid);
