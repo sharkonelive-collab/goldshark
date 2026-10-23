@@ -1253,20 +1253,17 @@ body{top:0!important}
 }
 
 /* ราคาทองมุมซ้ายบน */
-.hdr-px{display:inline-flex;align-items:baseline;gap:8px;padding:6px 12px;border-radius:12px;border:1px solid rgba(140,170,225,.14);background:rgba(255,255,255,.03);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:6px}
+.hdr-px{display:inline-flex;align-items:baseline;gap:8px;padding:0 4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hdr-px .sp{font-size:12px;color:var(--muted)}
 .hdr-px[hidden]{display:none}
-.hdr-px b{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
-.hdr-px .v{font-family:var(--display);font-size:17px;font-weight:600;transition:color .4s}
+.hdr-px b{font-size:15px;color:var(--text);font-weight:600;letter-spacing:.02em}
+.hdr-px .v{font-family:var(--display);font-size:22px;font-weight:600;transition:color .4s}
 .hdr-px .v.up{color:var(--green)} .hdr-px .v.dn{color:var(--red)}
 .hdr-px .d{font-size:12px}
 .hdr-px .d.pos{color:var(--green)} .hdr-px .d.neg{color:var(--red)}
 @media (max-width:760px){
-  .bar.has-px .brand > div{display:none}
-  .hdr-px{margin-left:0;padding:5px 9px;gap:6px}
-  .hdr-px b{display:none}
-  .hdr-px .v{font-size:15px}
-  .hdr-px .d{font-size:11px}
-  .hdr-px .da{display:none}
+  .hdr-px{flex-wrap:wrap;gap:6px 8px}   /* มือถือ: ราคาอยู่บนกราฟ (ไม่อยู่แถบบนสุด) */
+  .hdr-px .v{font-size:19px}
   .bar{gap:8px!important}
   /* ลื่นขึ้นบนมือถือ: เลิกเบลอพื้นหลัง (กินแรงเครื่องตอนเลื่อน) */
   .bar,.rail{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -1365,7 +1362,6 @@ body{top:0!important}
     <span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
     <div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div>
   </div>
-  <span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span></span>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
   <span class="syncing" id="syncing" hidden>กำลังอัปเดต…</span>
@@ -1381,8 +1377,8 @@ body{top:0!important}
 </div>
 
 <nav class="rail" id="rail" aria-label="เมนูสมาชิก" hidden>
-  <a href="#" data-pg="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ทุกพอร์ต</a>
-  <a href="#" data-pg="port"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>พอร์ต</a>
+  <a href="#" data-pg="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All Ports</a>
+  <a href="#" data-pg="port"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Port</a>
   <a href="#" data-pg="profit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>กำไร</a>
   <a href="#" data-pg="cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>ตั้งค่า</a>
   <a href="#" data-pg="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3-2 10H6z"/></svg>แพ็กเกจ</a>
@@ -1618,7 +1614,7 @@ body{top:0!important}
 
   <section class="card livecard" id="secLive" data-pages="port" hidden>
     <div class="chart-head">
-      <div class="card-label">กราฟไม้ที่เปิดอยู่</div>
+      <span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span></span>
       <span class="live-badge" id="liveBadge"><i></i><span>สด</span></span>
       <span class="spacer"></span>
       <div class="seg" role="group" aria-label="ไทม์เฟรม">
@@ -2297,7 +2293,7 @@ function logout(msg) {
   session = { mode: null };
   $("whoami").textContent = "";
   $("bellBtn").hidden = true; $("bellPanel").hidden = true;
-  $("hdrPx").hidden = true; document.querySelector(".bar").classList.remove("has-px"); hdrLast = null;
+  $("hdrPx").hidden = true; hdrLast = null;
   if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
   $("loginErr").textContent = msg || "";
   show("loginView");
@@ -3352,7 +3348,7 @@ function renderNews() {
 
 
 /* ============ หน้า: ทุกพอร์ต / พอร์ต / กำไร / ตั้งค่า / แพ็กเกจ ============ */
-const PAGES = { all: "ทุกพอร์ต", port: "พอร์ต", profit: "กำไร", cfg: "ตั้งค่า EA", plan: "แพ็กเกจ" };
+const PAGES = { all: "All Ports", port: "Port", profit: "กำไร", cfg: "ตั้งค่า EA", plan: "แพ็กเกจ" };
 const PAGE_SUB = {
   all: "ภาพรวมทุกพอร์ตของคุณ แตะพอร์ตเพื่อดูรายละเอียด",
   port: "กราฟสด ไม้ที่เปิดอยู่ และสถานะ EA ของพอร์ตนี้",
@@ -4781,12 +4777,13 @@ let hdrLast = null;
 function renderHdrPx() {
   const L = dashData && dashData.snapshot && dashData.snapshot.live, el = $("hdrPx");
   const on = !!(L && L.bid);
-  el.hidden = !on; document.querySelector(".bar").classList.toggle("has-px", on);
+  el.hidden = !on;
   if (!on) return;
   const dg = L.digits || 2, bid = +L.bid, v = $("hdrPxV");
   v.textContent = bid.toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg });
   if (hdrLast != null && bid !== hdrLast) { v.className = "v " + (bid > hdrLast ? "up" : "dn"); clearTimeout(renderHdrPx._t); renderHdrPx._t = setTimeout(() => v.className = "v", 1500); }
   hdrLast = bid;
+  const S = dashData.snapshot; $("hdrPxS").textContent = S && S.spread != null ? "Spread " + S.spread : "";
   // เทียบราคาเปิดวันนี้ (เที่ยงคืนเวลาไทย) จากแท่ง M5
   const mid = (thDay(Date.now()) * 86400000 - TH_OFF) / 1000, first = (L.bars || []).find(b => b[0] >= mid);
   const d = $("hdrPxD");
