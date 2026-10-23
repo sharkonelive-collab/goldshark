@@ -1270,6 +1270,13 @@ body{top:0!important}
   .bar{background:rgba(5,7,13,.97)!important}
   .rail{background:rgba(9,14,26,.98)!important}
 }
+
+/* ราคาทองวางทับมุมซ้ายบนในกราฟ */
+.live-wrap .hdr-px{position:absolute;top:10px;left:12px;z-index:3;pointer-events:none;flex-wrap:wrap;gap:4px 8px;max-width:calc(100% - 90px);
+  padding:6px 10px;border-radius:10px;background:rgba(5,9,18,.72);border:1px solid rgba(140,170,225,.14)}
+.live-wrap .hdr-px b{font-size:12.5px}
+.live-wrap .hdr-px .v{font-size:19px}
+@media (max-width:760px){.live-wrap .hdr-px{top:8px;left:8px;padding:4px 8px}.live-wrap .hdr-px .v{font-size:16px}.live-wrap .hdr-px b,.live-wrap .hdr-px .sp{display:none}}
 /* ================= ดีไซน์ใหม่ ขั้นที่ 2: หน้าพอร์ต ================= */
 #dashView[data-pg="port"]{display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:16px;align-content:start}
 #dashView[data-pg="port"] > *{grid-column:1 / -1;min-width:0}
@@ -1296,7 +1303,8 @@ body{top:0!important}
 #secOverview .ov-big,#secOverview .ov-metrics .tile{padding:14px 16px 13px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008)),rgba(9,14,26,.85);border:1px solid rgba(140,170,225,.11);min-width:0;box-shadow:none}
 #secOverview .ov-big .ov-k,#secOverview .ov-metrics .tile > span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;letter-spacing:0;text-transform:none;font-weight:400}
 #secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:24px!important;font-weight:600;line-height:1.2}
-#secOverview .ov-big.ov-eq > b{background:none;-webkit-text-fill-color:currentColor;color:var(--text)}
+#secOverview .ov-big.ov-eq > b{background:linear-gradient(180deg,#FFF3D1 0%,#F2D27F 50%,#DDAE46 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+#secOverview .ov-big.ov-eq .ov-cur{-webkit-text-fill-color:var(--muted)}
 #secOverview .ov-big .ov-cur{font-size:12px}
 #secOverview .ov-big .ov-sub,#secOverview .ov-metrics .tile > small{font-size:12px}
 #secOverview .ov-big:nth-child(1){order:1} #secOverview .ov-big.ov-eq{order:2} #tFlt{order:3} #tToday{order:4} #tDD{order:5} #tOpen{display:none!important}
@@ -1614,7 +1622,7 @@ body{top:0!important}
 
   <section class="card livecard" id="secLive" data-pages="port" hidden>
     <div class="chart-head">
-      <span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span></span>
+      <div class="card-label">กราฟไม้ที่เปิดอยู่</div>
       <span class="live-badge" id="liveBadge"><i></i><span>สด</span></span>
       <span class="spacer"></span>
       <div class="seg" role="group" aria-label="ไทม์เฟรม">
@@ -1623,7 +1631,7 @@ body{top:0!important}
         <button data-ltf="60" aria-pressed="false">H1</button>
       </div>
     </div>
-    <div class="live-wrap"><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
+    <div class="live-wrap"><span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span></span><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
     <div class="live-legend">
       <span><i style="background:#2FBF8A"></i>Buy</span><span><i style="background:#E5283D"></i>Sell</span>
       <span><i style="background:#B07CFF"></i>Hedge</span><span><i style="background:#F2B84B"></i>ตะกร้ากู้</span>
@@ -3649,7 +3657,7 @@ function renderPorts() {
   $("portsSum").textContent = ports.length ? `${ports.length} พอร์ต · ออนไลน์ ${on}${ci.paid ? ` · แพ็กเกจครอบคลุม ${Math.min(ports.length, ci.max)}/${ci.max}` : ""}` : "";
   $("allKpis").innerHTML = !live ? "" : `
     <div class="kpi"><span>Balance รวม</span><b class="num">${usd(bal)}</b><small>${hasCent ? "USD · พอร์ตเซ็นต์ ÷ 100" : "USD"}</small></div>
-    <div class="kpi"><span>Equity รวม</span><b class="num">${usd(eq)}</b><small>${bal > 0 ? (eq / bal * 100).toFixed(2) + "% ของ Balance" : "&nbsp;"}</small></div>
+    <div class="kpi"><span>Equity รวม</span><b class="num gold-num">${usd(eq)}</b><small>${bal > 0 ? (eq / bal * 100).toFixed(2) + "% ของ Balance" : "&nbsp;"}</small></div>
     <div class="kpi"><span>ลอยรวม</span><b class="num ${cls(flt)}">${sgnUsd(flt)}</b><small>ออนไลน์ ${on}/${ports.length} พอร์ต</small></div>
     <div class="kpi hl ${today < 0 ? "bad" : ""}"><span>กำไรวันนี้รวม</span><b class="num ${cls(today)}">${sgnUsd(today)}</b><small class="${cls(today)}">${tpct != null && isFinite(tpct) ? (today >= 0 ? "▲ +" : "▼ ") + tpct.toFixed(2) + "%" : "&nbsp;"}</small></div>
     <div class="kpi"><span>กำไร 7 วันรวม</span><b class="num ${cls(week)}">${sgnUsd(week)}</b><small>ปิดแล้ว · เวลาไทย</small></div>`;
