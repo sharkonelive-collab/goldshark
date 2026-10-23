@@ -1109,6 +1109,17 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .side-tag{display:inline-block;font-style:normal;font-weight:600;font-size:13px;color:#fff;padding:1px 10px;border-radius:6px;margin-right:4px}
 .side-tag.b{background:#2FBF8A} .side-tag.s{background:#E5283D}
 @media (max-width:560px){#liveChart{height:320px}}
+.upd-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:14px;font-size:14px;
+  background:linear-gradient(90deg,rgba(242,184,75,.12),rgba(242,184,75,.04));border:1px solid rgba(242,184,75,.45);color:#FFE3A6}
+.upd-notice[hidden]{display:none!important}
+.upd-notice .un-ico{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(242,184,75,.2);color:#F2B84B;font-weight:700}
+.upd-notice .un-t{flex:1;min-width:220px;line-height:1.5}
+.upd-notice .un-t b{color:#fff}
+.upd-notice .un-t small{display:block;color:#C9B58A;font-size:12.5px}
+.upd-notice .btn{white-space:nowrap}
+.upd-notice a.btn{text-decoration:none}
+.pill.upd{font-size:11px;padding:1px 8px;background:rgba(242,184,75,.15);color:#F2C45A;border:1px solid rgba(242,184,75,.45)}
+.ptab .upd-dot{width:7px;height:7px;border-radius:50%;background:#F2B84B;box-shadow:0 0 6px #F2B84B}
 /* ---- เลือกภาษา ---- */
 .lang-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 11px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font:inherit;font-size:13px;font-weight:600;flex:none}
 .lang-btn svg{width:17px;height:17px;color:#9CC8FF}
@@ -1377,6 +1388,7 @@ body{top:0!important}
     <span class="dn-text" id="digitText">ถ้าโบรกเกอร์ของคุณแสดงราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> (เช่น 4161.085) กรุณาแจ้งแอดมินก่อนเริ่มใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก</span>
     <a class="btn small dn-line" href="https://lin.ee/6dAnbt1d" target="_blank" rel="noopener">แจ้งแอดมินทาง LINE</a>
   </div>
+  <div class="upd-notice" id="eaUpd" data-pages="port all" hidden></div>
 
   <section class="ports" id="secPorts" data-pages="all">
     <div class="kpis" id="allKpis"></div>
@@ -1992,7 +2004,7 @@ function demoApi(action, d) {
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
         const cov = demoCover(u.codes.map(c => L.find(x => x.code === c)).filter(Boolean));
         const ports = u.codes.map((c, i) => { const l0 = L.find(x => x.code === c), l = cov[c] ? Object.assign({}, l0, { plan: cov[c].plan, expires: cov[c].expires }) : l0; return { coveredBy: cov[c] ? cov[c].by : "", code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance != null ? l.balance : (l.equity != null ? l.equity + 21.5 : null), eaOff: !!l.eaOff,
-          profit: l.equity != null ? { today: i === 0 ? 62.56 : 18.4, week: i === 0 ? 412.9 : 96.35 } : null }; });
+          profit: l.equity != null ? { today: i === 0 ? 62.56 : 18.4, week: i === 0 ? 412.9 : 96.35 } : null, version: i === 0 ? "2.28" : "2.30" }; });
         return res({ ok: true, host: { on: demo.config.hostOn, pubKey: DEMO_PUB, brokers: demo.config.hostBrokers, agentOnline: true }, hosting: lic.hosting || null, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
           balanced: DEMO_BAL, presets: { balanced: DEMO_BAL, fast: DEMO_FAST }, plans: demoPlans(), planLabels: demoLabels(),
           pay: { promptpay: demo.config.promptpay, payName: demo.config.payName, qrMode: demo.config.qrMode, hasQr: !!demo.config.qrFile, qrVer: demo.config.qrVer },
@@ -2004,7 +2016,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|"), daily: demoDaily(), live: demoLive(settings) } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: lic.code === "GS-7KQ2-M9XA" ? "2.28" : "2.30", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|"), daily: demoDaily(), live: demoLive(settings) } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -2420,7 +2432,7 @@ function renderDash() {
   if (dashData.pay && dashData.pay.qrMode === "image") preloadStaticQr();
   if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
-  renderPlan(); renderPort(); renderEaSwitch(); pageTitle();
+  renderPlan(); renderPort(); renderEaSwitch(); pageTitle(); renderEaUpd();
   $("lCur").textContent = L.currency || "–";
   if (S) {
     const fl = S.equity - S.balance;
@@ -3216,7 +3228,7 @@ function setPage(pg, opts = {}) {
   curPage = pg; store.set("gs_page", pg);
   $("dashView").dataset.pg = pg;
   document.querySelectorAll(".rail a[data-pg]").forEach(a => a.classList.toggle("active", a.dataset.pg === pg && !a.dataset.open));
-  pageTitle();
+  pageTitle(); renderEaUpd();
   if (opts.open) { const t = $(opts.open); if (t) { if (t.tagName === "DETAILS") t.open = true; setTimeout(() => t.scrollIntoView({ behavior: "smooth", block: "start" }), 30); } }
   else if (!opts.keepScroll) window.scrollTo({ top: 0 });
   if (pg === "port" && typeof liveC !== "undefined" && liveC) setTimeout(() => liveC.timeScale().fitContent && renderLive(), 30);
@@ -3513,7 +3525,7 @@ function renderPorts() {
     const nodata = p.equity == null;
     return `<div class="prow ${p.code === cur ? "cur" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}" role="button" tabindex="0"`}>
       <span class="pr-name">${mv}<span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span>
-        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}
+        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}${eaOld(p.version) ? `<span class="pill upd" title="EA เวอร์ชัน ${esc(p.version)} · ล่าสุด ${EA_LATEST}">อัปเดต EA</span>` : ""}
           <small>${esc(PLAN_LABEL[p.plan] || p.plan)} · ${left}${p.coveredBy ? " · แพ็กเกจร่วม" : ""}${none && ci.paid ? ' · <span class="neg">ต้องชำระเพิ่ม</span>' : ""}${p.account ? " · " + esc(p.account) : ""}</small></span></span>
       ${nodata ? `<span class="pr-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
       <span class="pr-c"><i>Balance</i><b class="num">${fmt(p.balance)}</b><small>${esc(unit)}</small></span>
@@ -3528,7 +3540,7 @@ function renderPorts() {
   const add = ports.length < (dashData.maxPorts || 10) && !portArr ? `<button class="prow add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+ เปิดพอร์ตใหม่</b><small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "";
   $("portList").innerHTML = head + ports.map(row).join("") + total + add;
   // แถบสลับพอร์ต (หน้าพอร์ต / กำไร / ตั้งค่า / แพ็กเกจ)
-  $("portTabs").innerHTML = ports.map(p => `<button class="ptab ${p.code === cur ? "on" : ""}" data-pcode="${esc(p.code)}"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><small>${p.account ? esc(p.account) : (p.port === "usd" ? "USD" : p.port === "cent" ? "Cent" : "")}</small>${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</button>`).join("")
+  $("portTabs").innerHTML = ports.map(p => `<button class="ptab ${p.code === cur ? "on" : ""}" data-pcode="${esc(p.code)}"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><small>${p.account ? esc(p.account) : (p.port === "usd" ? "USD" : p.port === "cent" ? "Cent" : "")}</small>${eaOld(p.version) ? '<i class="upd-dot" title="ต้องอัปเดต EA"></i>' : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</button>`).join("")
     + (ports.length < (dashData.maxPorts || 10) ? `<button class="ptab add" data-addport="1">+ เพิ่มพอร์ต</button>` : "");
   initPage(); pageTitle();
 }
@@ -4424,8 +4436,9 @@ document.querySelectorAll("#secLive .seg button").forEach(b => b.addEventListene
   document.querySelectorAll("#secLive .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
   renderLive();
 }));
-function liveBars(raw, tf) {
+function liveBars(raw, tf, h1) {
   const out = [];
+  if (tf === 60 && h1 && h1.length) raw = h1;                // H1 ใช้แท่ง H1 จาก EA (ย้อนหลังได้ยาวกว่า)
   (raw || []).forEach(([t, o, h, l, c]) => {
     const k = Math.floor(t / (tf * 60)) * tf * 60, last = out[out.length - 1];
     if (last && last.time === k) { last.high = Math.max(last.high, h); last.low = Math.min(last.low, l); last.close = c; }
@@ -4461,7 +4474,7 @@ async function renderLive() {
     liveS = liveC.addCandlestickSeries({ upColor: "#2FBF8A", downColor: "#E5283D", borderVisible: false, wickUpColor: "#2FBF8A", wickDownColor: "#E5283D",
       priceFormat: { type: "price", precision: dg, minMove: 1 / Math.pow(10, dg) } });
   }
-  const bars = liveBars(L.bars, liveTF);
+  const bars = liveBars(L.bars, liveTF, L.h1);
   const sig = liveTF + "|" + bars.length + "|" + (bars[0] && bars[0].time);
   liveS.setData(bars);
   if (sig !== liveSig) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
@@ -4476,7 +4489,8 @@ async function renderLive() {
     if (!ps.length) return;
     const lots = ps.reduce((a, o) => a + o.v, 0), avg = ps.reduce((a, o) => a + o.p * o.v, 0) / lots, pl = ps.reduce((a, o) => a + o.pl, 0);
     const be = ps.length >= 2 ? Number(C.beOffset) || 0 : Number(C.firstTP) || 0;
-    const tp = be > 0 ? avg + sd * be * GP : null, nx = L.next && L.next[sd > 0 ? "buy" : "sell"];
+    const tpEA = L.tp && L.tp[sd > 0 ? "buy" : "sell"];          // EA 2.30 ส่งราคาปิดกำไรจริงมา
+    const tp = tpEA ? +tpEA : be > 0 ? avg + sd * be * GP : null, nx = L.next && L.next[sd > 0 ? "buy" : "sell"];
     if (ps.length >= 2) line(avg, "#FFE7A3", `ทุนเฉลี่ย ${nm}`, 2, 1);
     if (tp) line(tp, "#7CC4FF", `ปิดกำไร ${nm}`, 1, 1);
     if (nx && nx.p) line(nx.p, "#8E9AB3", `แก้ไม้ถัดไป ${nx.v.toFixed(2)}`, 2, 1);
@@ -4490,6 +4504,23 @@ async function renderLive() {
   if (oth.length) { const pl = oth.reduce((a, o) => a + o.pl, 0); sums.push(`<div class="ls"><div class="h"><span>Hedge / ตะกร้ากู้ · ${oth.length} ไม้</span><span class="${cls(pl)}">${signed(pl)}</span></div><div><span>ล็อตรวม</span><b>${fmt(oth.reduce((a, o) => a + o.v, 0))}</b></div></div>`); }
   $("liveSum").innerHTML = sums.join("") || `<div class="ls">ไม่มี Order ที่เปิดอยู่ · ราคาปัจจุบัน <b>${(+L.bid).toFixed(dg)}</b></div>`;
 }
+
+// โหมดดูสด: อยู่หน้าพอร์ตและพอร์ตนี้มีกราฟ (EA 2.30+) → ขอข้อมูลใหม่ทุก 10 วิ (EA จะส่งถี่ขึ้นเองตอนมีคนดู)
+let livePollBusy = false;
+setInterval(async () => {
+  if (document.hidden || curPage !== "port" || livePollBusy || !session || !session.token) return;
+  const S = dashData && dashData.snapshot, L = dashData && dashData.license;
+  if (!S || !S.live || !L) return;
+  if (!API_URL) { renderLive(); return; }                      // โหมดตัวอย่าง
+  livePollBusy = true;
+  try {
+    const r = await api("live_ping", { token: session.token, code: L.code });
+    if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
+      Object.assign(dashData.snapshot, r.snapshot);
+      renderLive();
+    }
+  } catch (e) {} finally { livePollBusy = false; }
+}, 10000);
 
 // ตัวอย่าง: แท่ง M5 ~2 วัน + ตะกร้า Buy 4 ไม้ที่ติดลบ + Sell 1 ไม้
 function demoLive(C) {
@@ -4510,6 +4541,36 @@ function demoLive(C) {
   const worst = Math.min(...pos.filter(o => o.s > 0).map(o => o.p));
   return { bid, ask, digits: 2, bars, pos, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
 }
+
+/* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
+// เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
+const EA_LATEST = "2.30";
+const EA_NEWS = "กราฟไม้ที่เปิดอยู่แบบสด · Hedging จับคู่ปิด · นับกำไรรวมไม้ Hedge และไม้ที่ปิดมือ";
+function verLt(a, b) {
+  const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
+  return false;
+}
+const eaOld = v => !!v && verLt(v, EA_LATEST);
+function renderEaUpd() {
+  const el = $("eaUpd"); if (!el || !dashData) return;
+  const ports = dashData.ports || [], L = dashData.license, S = dashData.snapshot;
+  const olds = ports.filter(p => p.equity != null && eaOld(p.version));
+  if (curPage === "all") {
+    el.hidden = !olds.length;
+    if (olds.length) el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>มี EA เวอร์ชันใหม่ ${EA_LATEST}</b> · ${olds.length === ports.length ? "ทุกพอร์ต" : olds.length + " พอร์ต"}ยังใช้เวอร์ชันเก่า (${olds.map(p => esc(p.label) + " " + esc(p.version)).join(", ")})<small>${EA_NEWS}</small></span>`;
+    return;
+  }
+  const v = S && S.version;
+  el.hidden = !(L && eaOld(v));
+  if (el.hidden) return;
+  el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>EA ของพอร์ตนี้ยังเป็นเวอร์ชัน ${esc(v)}</b> · เวอร์ชันล่าสุด ${EA_LATEST}<small>${EA_NEWS}</small></span>
+    <a class="btn small primary" href="${esc($("dlEA").getAttribute("href"))}" download>ดาวน์โหลด EA ${EA_LATEST}</a>
+    <button class="btn small" type="button" data-updhow="1">วิธีอัปเดต</button>`;
+}
+$("eaUpd").addEventListener("click", e => {
+  if (e.target.closest("[data-updhow]")) alert("วิธีอัปเดต EA\n\n1. กดดาวน์โหลด EA ตัวใหม่\n2. MT5 → ไฟล์ → เปิดโฟลเดอร์ข้อมูล → MQL5 → Experts → วางไฟล์ทับตัวเดิม\n3. คลิกขวาที่ ตัวนำทาง → รีเฟรช\n4. ลาก EA ตัวใหม่ลงกราฟ XAUUSD เดิม (ทับตัวเก่า) → ใส่โค้ดเดิม → ตกลง\n\nOrder ที่เปิดอยู่ไม่หาย EA ตัวใหม่ดูแลต่อได้เลย ภายใน 1 นาทีหน้านี้จะขึ้นเวอร์ชันใหม่");
+});
 </script>
 </body>
 </html>
