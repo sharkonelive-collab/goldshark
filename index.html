@@ -1501,6 +1501,54 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   .bar #logoutBtn{color:#FF6B78!important;background:linear-gradient(180deg,rgba(229,40,61,.28),rgba(229,40,61,.12))!important;border-color:rgba(229,40,61,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 0 14px -4px rgba(229,40,61,.7)!important}
   .bar #logoutBtn::before{color:#FF6B78}
 }
+
+/* ================= มือถือ: สมดุลกับหน้าจอ ================= */
+@media (max-width:760px){
+  /* ไอคอนออกจากระบบเป็นภาพ (บาง Android ไม่มีอักษร ⏻ เลยขึ้นเป็นกล่อง) */
+  .bar #logoutBtn::before{content:""!important;width:18px;height:18px;background:#FF6B78;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3v9'/%3E%3Cpath d='M6.3 7.3a8 8 0 1 0 11.4 0'/%3E%3C/svg%3E") center/contain no-repeat;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3v9'/%3E%3Cpath d='M6.3 7.3a8 8 0 1 0 11.4 0'/%3E%3C/svg%3E") center/contain no-repeat}
+  .bar .bell,.bar .lang-btn,.bar #logoutBtn{width:40px!important;height:40px!important;border-radius:14px!important}
+  /* ไอคอนอยู่กึ่งกลางปุ่มเสมอ (ไม่ขึ้นกับข้อความที่ซ่อนอยู่ในปุ่ม) */
+  .bar #logoutBtn{position:relative;display:inline-block!important;overflow:hidden;color:transparent!important;font-size:0!important;line-height:0!important;padding:0!important}
+  .bar #logoutBtn[hidden]{display:none!important}
+  .bar #logoutBtn::before{position:absolute!important;left:50%;top:50%;transform:translate(-50%,-48%);margin:0!important}
+  /* ตัวเลขสรุป: เป็นตาราง 2 คอลัมน์ ขอบเท่าการ์ดอื่น ไม่ต้องเลื่อนข้าง */
+  #dashView[data-pg="port"] > #secOverview{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;overflow:visible!important;margin:0 0 14px!important;padding:0!important}
+  #secOverview .ov-big,#secOverview .ov-metrics .tile{flex:none!important;min-width:0;padding:12px 14px!important}
+  #secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:20px!important}
+  #secOverview .ov-big .ov-cur{font-size:11px}
+  #tDD{grid-column:1 / -1}
+  /* แถบสถานะ EA + สวิตช์เปิด/ปิด ต้องเห็นบนมือถือด้วย */
+  #dashView[data-pg="port"] > #secOverview > .ov-conn{display:flex!important;grid-column:1 / -1;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px!important;font-size:13px}
+  #secOverview > .ov-conn #dAcct{display:none}
+  #secOverview > .ov-conn .ea-right{position:static!important;margin-left:auto;left:auto;right:auto;top:auto;justify-content:flex-end}
+  #secOverview > .ov-conn .ea-right .pill.ptype,#secOverview > .ov-conn .ea-right .ea-sw{height:30px;min-height:30px}
+  #secOverview > .ov-conn #dOnline{font-size:13px}
+  #dashView[data-pg="port"] > #secOverview > .port-warn:not([hidden]),#dashView[data-pg="port"] > #secOverview > .ea-off-note:not([hidden]),#dashView[data-pg="port"] > #secOverview > .hedge-bar:not([hidden]){display:block!important;grid-column:1 / -1}
+  #dashView .kpis{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;overflow:visible;margin:0 0 14px!important;padding:0!important}
+  #dashView .kpi{flex:none!important;min-width:0;padding:12px 14px!important}
+  #dashView .kpi b{font-size:20px!important}
+  #dashView .kpi:last-child{grid-column:1 / -1}
+  /* การ์ดกราฟ: หัวกระชับ ไม่กินที่ */
+  #dashView .card{padding:14px 12px!important}
+  #secLive .chart-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+  #secLive .chart-head .card-label{flex:1 1 auto;margin:0;font-size:12px}
+  #secLive .chart-head .spacer{display:none}
+  #secLive .chart-head .seg{margin-left:auto}
+  #secLive .chart-head .seg button{padding:4px 10px;font-size:12px}
+  #secLive .chart-head .ea-badge{order:10;flex:1 1 100%;max-width:100%;font-size:11.5px}
+  #secLive .live-badge{font-size:11px;padding:2px 8px}
+  #secLive .live-wrap{margin-top:4px}
+  #dashView[data-pg="port"] #liveChart{height:340px}
+  .live-wrap .hdr-px{top:6px;left:6px}
+  #secLive .live-legend{gap:4px 10px;font-size:11px}
+  #secLive #liveNote{font-size:11.5px}
+  /* แถบสลับพอร์ต / หัวหน้า */
+  #dashView .page-head{margin-bottom:14px}
+  #dashView .page-head p{font-size:12.5px}
+  .port-tabs{margin:0 0 12px!important;padding:2px 0 4px!important}
+}
 </style>
 </head>
 <body>
