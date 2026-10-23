@@ -1549,6 +1549,19 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   #dashView .page-head p{font-size:12.5px}
   .port-tabs{margin:0 0 12px!important;padding:2px 0 4px!important}
 }
+
+/* มือถือ: กล่องติดตั้ง EA ไม่ล้นจอ (URL ยาว ๆ ตัดด้วย … และปุ่มคัดลอกอยู่ในจอ) */
+@media (max-width:760px){
+  #setupBox,#setupBox .setup-body,#setupBox .steps,#setupBox .steps li{min-width:0;max-width:100%}
+  #setupBox .setup-body{grid-template-columns:minmax(0,1fr)!important;padding:0 12px 16px}
+  #setupBox .steps{padding-left:20px;margin:0}
+  #setupBox .steps li{overflow-wrap:anywhere}
+  #setupBox .copyrow{display:flex;align-items:center;gap:8px;min-width:0;max-width:100%;box-sizing:border-box}
+  #setupBox .copyrow code{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #setupBox .copyrow .btn{flex:none}
+  #setupBox .dl-btn{max-width:100%;white-space:normal;text-align:center;box-sizing:border-box}
+  html,body{overflow-x:hidden}
+}
 </style>
 </head>
 <body>
