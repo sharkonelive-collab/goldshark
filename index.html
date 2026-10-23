@@ -4813,7 +4813,8 @@ function liveBars(raw, tf, h1) {
   if (tf === 60 && h1 && h1.length) raw = h1;                // H1 ใช้แท่ง H1 จาก EA (ย้อนหลังได้ยาวกว่า)
   (raw || []).forEach(([t, o, h, l, c]) => {
     const k = Math.floor(t / (tf * 60)) * tf * 60, last = out[out.length - 1];
-    if (last && last.time === k) { last.high = Math.max(last.high, h); last.low = Math.min(last.low, l); last.close = c; }
+    // เทียบกับเวลาที่บวกเวลาไทยแล้ว (เดิมเทียบผิด → M15 มีแท่งเวลาซ้ำ กราฟไม่ขึ้น)
+    if (last && last.time === k + TH_OFF / 1000) { last.high = Math.max(last.high, h); last.low = Math.min(last.low, l); last.close = c; }
     else out.push({ time: k + TH_OFF / 1000, open: o, high: h, low: l, close: c });   // แสดงเวลาไทย
   });
   return out;
