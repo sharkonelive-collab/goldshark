@@ -1251,6 +1251,28 @@ body{top:0!important}
   .bar .demo-tag{display:none}
   .bar{overflow:hidden}
 }
+
+/* ราคาทองมุมซ้ายบน */
+.hdr-px{display:inline-flex;align-items:baseline;gap:8px;padding:6px 12px;border-radius:12px;border:1px solid rgba(140,170,225,.14);background:rgba(255,255,255,.03);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:6px}
+.hdr-px[hidden]{display:none}
+.hdr-px b{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.hdr-px .v{font-family:var(--display);font-size:17px;font-weight:600;transition:color .4s}
+.hdr-px .v.up{color:var(--green)} .hdr-px .v.dn{color:var(--red)}
+.hdr-px .d{font-size:12px}
+.hdr-px .d.pos{color:var(--green)} .hdr-px .d.neg{color:var(--red)}
+@media (max-width:760px){
+  .bar.has-px .brand > div{display:none}
+  .hdr-px{margin-left:0;padding:5px 9px;gap:6px}
+  .hdr-px b{display:none}
+  .hdr-px .v{font-size:15px}
+  .hdr-px .d{font-size:11px}
+  .hdr-px .da{display:none}
+  .bar{gap:8px!important}
+  /* ลื่นขึ้นบนมือถือ: เลิกเบลอพื้นหลัง (กินแรงเครื่องตอนเลื่อน) */
+  .bar,.rail{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .bar{background:rgba(5,7,13,.97)!important}
+  .rail{background:rgba(9,14,26,.98)!important}
+}
 /* ================= ดีไซน์ใหม่ ขั้นที่ 2: หน้าพอร์ต ================= */
 #dashView[data-pg="port"]{display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:16px;align-content:start}
 #dashView[data-pg="port"] > *{grid-column:1 / -1;min-width:0}
@@ -1343,6 +1365,7 @@ body{top:0!important}
     <span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span>
     <div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div>
   </div>
+  <span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b>XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span></span>
   <span class="demo-tag" id="demoTag" hidden>โหมดตัวอย่าง</span>
   <div class="spacer"></div>
   <span class="syncing" id="syncing" hidden>กำลังอัปเดต…</span>
@@ -2240,7 +2263,7 @@ $("loginForm").addEventListener("submit", async e => {
   if (!r.ok) { $("loginErr").textContent = r.error; return; }
   store.set("gs_token", r.token);
   $("liPass").value = "";
-  openMember(r.token);
+  openMember(r.token, r.me);
 });
 
 $("regForm").addEventListener("submit", async e => {
@@ -2253,7 +2276,7 @@ $("regForm").addEventListener("submit", async e => {
   store.set("gs_token", r.token);
   $("regForm").reset();
   toast("สมัครแล้ว เริ่มทดลองฟรี 15 วัน");
-  openMember(r.token);
+  openMember(r.token, r.me);
 });
 
 $("adminForm").addEventListener("submit", async e => {
@@ -2274,6 +2297,7 @@ function logout(msg) {
   session = { mode: null };
   $("whoami").textContent = "";
   $("bellBtn").hidden = true; $("bellPanel").hidden = true;
+  $("hdrPx").hidden = true; document.querySelector(".bar").classList.remove("has-px"); hdrLast = null;
   if (!IS_ADMIN) document.querySelector('.tab[data-tab="login"]').click();
   $("loginErr").textContent = msg || "";
   show("loginView");
@@ -2304,6 +2328,10 @@ async function loadMe(auto) {
     else toast(r.error);
     return false;
   }
+  applyMe(r);
+  return true;
+}
+function applyMe(r) {
   dashData = r;
   if (r.planLabels) Object.assign(PLAN_LABEL, r.planLabels);
   if (r.license) { session.port = r.license.code; store.set("gs_port", r.license.code); }
@@ -2314,7 +2342,6 @@ async function loadMe(auto) {
   renderDash();
   renderBell();
   schedulePrefetch();
-  return true;
 }
 
 /* ---- แจ้งผลการตรวจสลิปให้สมาชิก ---- */
@@ -2428,7 +2455,7 @@ async function gCallback(resp) {
   if (!r.ok) { $("loginErr").textContent = r.error; return; }
   store.set("gs_token", r.token);
   if (r.created) toast("สมัครด้วย Google แล้ว เริ่มทดลองฟรี 15 วัน");
-  openMember(r.token);
+  openMember(r.token, r.me);
 }
 function gRender(el, mode) {
   if (!el) return;
@@ -2468,9 +2495,17 @@ $("portArrange").addEventListener("click", async () => {
 });
 
 let authFailed = false, connRetry = null;
-async function openMember(token) {
+async function openMember(token, initial) {
   session = { mode: "user", token };
   authFailed = false;
+  if (initial && initial.ok) {
+    // เข้าสู่ระบบ/สมัคร: หลังบ้านส่งข้อมูลแดชบอร์ดมาพร้อมโทเคนแล้ว → เข้าแดชบอร์ดทันที ไม่ต้องรอเรียกซ้ำ
+    applyMe(initial);
+    $("whoami").textContent = dashData.user.name;
+    show("dashView"); hideSplash();
+    startMemberTimers();
+    return;
+  }
   // แสดงข้อมูลชุดล่าสุดที่จำไว้ทันที (ถ้ามี) ระหว่างรอข้อมูลใหม่
   const cached = meCacheGet();
   if (cached && cached.ok) {
@@ -2497,6 +2532,9 @@ async function openMember(token) {
   clearInterval(connRetry);
   $("whoami").textContent = dashData.user.name;
   show("dashView");
+  startMemberTimers();
+}
+function startMemberTimers() {
   clearInterval(timer);
   autoLeft = autoSec();
   timer = setInterval(autoTick, 1000);
@@ -2577,6 +2615,7 @@ function renderDash() {
   renderProfit();
   renderLive();
   renderBaskets();
+  renderHdrPx();
   syncLot();
   renderNews();
   fillCfg(false);
@@ -4449,7 +4488,7 @@ $("nsRefresh").addEventListener("click", async () => {
 
 /* ============ หน้าเปิด ============ */
 const SPLASH_START = Date.now();
-const SPLASH_MIN = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches ? 500 : 1700;
+const SPLASH_MIN = 300;   // เดิม 1.7 วิ ทำให้เข้าเว็บช้า
 let splashDone = false;
 function hideSplash() {
   if (splashDone) return; splashDone = true;
@@ -4619,13 +4658,13 @@ setInterval(async () => {
   if (document.hidden || curPage !== "port" || livePollBusy || !session || !session.token) return;
   const S = dashData && dashData.snapshot, L = dashData && dashData.license;
   if (!S || !S.live || !L) return;
-  if (!API_URL) { renderLive(); renderBaskets(); return; }                      // โหมดตัวอย่าง
+  if (!API_URL) { renderLive(); renderBaskets(); renderHdrPx(); return; }                      // โหมดตัวอย่าง
   livePollBusy = true;
   try {
     const r = await api("live_ping", { token: session.token, code: L.code });
     if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
       Object.assign(dashData.snapshot, r.snapshot);
-      renderLive(); renderBaskets();
+      renderLive(); renderBaskets(); renderHdrPx();
     }
   } catch (e) {} finally { livePollBusy = false; }
 }, 10000);
@@ -4736,6 +4775,24 @@ function renderBaskets() {
   $("bkSum").textContent = nOrd ? `${nB} ตะกร้า · ${nOrd} ไม้` : "";
 }
 $("bkBody").addEventListener("click", e => { if (e.target.closest("[data-goto-cfg]")) setPage("cfg"); });
+
+/* ============ ราคาทองมุมซ้ายบน (จาก EA 2.30+ ของพอร์ตที่เปิดอยู่) ============ */
+let hdrLast = null;
+function renderHdrPx() {
+  const L = dashData && dashData.snapshot && dashData.snapshot.live, el = $("hdrPx");
+  const on = !!(L && L.bid);
+  el.hidden = !on; document.querySelector(".bar").classList.toggle("has-px", on);
+  if (!on) return;
+  const dg = L.digits || 2, bid = +L.bid, v = $("hdrPxV");
+  v.textContent = bid.toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg });
+  if (hdrLast != null && bid !== hdrLast) { v.className = "v " + (bid > hdrLast ? "up" : "dn"); clearTimeout(renderHdrPx._t); renderHdrPx._t = setTimeout(() => v.className = "v", 1500); }
+  hdrLast = bid;
+  // เทียบราคาเปิดวันนี้ (เที่ยงคืนเวลาไทย) จากแท่ง M5
+  const mid = (thDay(Date.now()) * 86400000 - TH_OFF) / 1000, first = (L.bars || []).find(b => b[0] >= mid);
+  const d = $("hdrPxD");
+  if (first) { const ch = bid - first[1], pc = ch / first[1] * 100; d.className = "d " + cls(ch); d.innerHTML = `${ch >= 0 ? "▲" : "▼"}<span class="da"> ${Math.abs(ch).toFixed(2)}</span> <span class="dp">${pc >= 0 ? "+" : ""}${pc.toFixed(2)}%</span>`; d.title = "เทียบราคาเปิดวันนี้ (เวลาไทย)"; }
+  else d.textContent = "";
+}
 </script>
 </body>
 </html>
