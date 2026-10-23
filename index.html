@@ -4750,8 +4750,8 @@ function demoLive(C) {
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.30";
-const EA_NEWS = "กราฟไม้ที่เปิดอยู่แบบสด · Hedging จับคู่ปิด · นับกำไรรวมไม้ Hedge และไม้ที่ปิดมือ";
+const EA_LATEST = "2.31";
+const EA_NEWS = "กราฟเรียลไทม์ทุก 1–2 วินาที · Hedging จับคู่ปิด · นับกำไรรวมไม้ Hedge และไม้ที่ปิดมือ";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
