@@ -1243,6 +1243,88 @@ body{top:0!important}
   .pr-empty{grid-column:1 / 5}
   .port-tabs{margin:0 -16px 12px;padding:2px 16px 4px}
 }
+
+@media (max-width:560px){
+  .bar #logoutBtn{font-size:0;padding:0;width:38px;height:38px;display:inline-grid;place-items:center;flex:none}
+  .bar #logoutBtn[hidden]{display:none}
+  .bar #logoutBtn::before{content:"⏻";font-size:17px;line-height:1}
+  .bar .demo-tag{display:none}
+  .bar{overflow:hidden}
+}
+/* ================= ดีไซน์ใหม่ ขั้นที่ 2: หน้าพอร์ต ================= */
+#dashView[data-pg="port"]{display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:16px;align-content:start}
+#dashView[data-pg="port"] > *{grid-column:1 / -1;min-width:0}
+#dashView[data-pg="port"] > #secLive{grid-column:1;order:10;margin-top:0;align-self:start}
+#dashView[data-pg="port"] #liveChart{height:470px}
+@media (max-width:760px){#dashView[data-pg="port"] #liveChart{height:320px}}
+#dashView[data-pg="port"] > #secBasket{grid-column:2;order:11;align-self:start}
+#dashView[data-pg="port"].nolive > #secBasket{grid-column:1 / -1}
+#dashView[data-pg="port"] > #secProfit{grid-column:1;order:20;margin-top:16px}
+#dashView[data-pg="port"] > #secNews{grid-column:2;order:21;margin-top:16px;align-self:start}
+#dashView[data-pg="port"] > #secChart{order:30;margin-top:16px}
+#dashView[data-pg="port"] > #setupBox{order:35;margin-top:16px}
+#dashView[data-pg="port"] > #setStrip,#dashView[data-pg="port"] > .foot-note{order:40}
+#dashView[data-pg="port"] > #secBasketOld{display:none!important}
+#dashView:not([data-pg="port"]) > #secBasketOld{display:none!important}
+#liveSum{display:none}
+/* สถานะ MT5 → แถบตัวเลข 5 ช่อง */
+#dashView[data-pg="port"] > #secOverview{background:none;border:0;box-shadow:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;overflow:visible}
+#dashView[data-pg="port"] > #secOverview::before,#dashView[data-pg="port"] > #secOverview::after{display:none}
+#secOverview > .card-label{display:none}
+#secOverview > .ov-conn,#secOverview > .port-warn,#secOverview > .ea-off-note,#secOverview > .hedge-bar,#secOverview > .card-foot{grid-column:1 / -1;margin:0}
+#secOverview > .ov-conn{padding:10px 14px;border-radius:14px;background:rgba(9,14,26,.85);border:1px solid rgba(140,170,225,.11)}
+#secOverview .ov-hero,#secOverview .ov-metrics{display:contents}
+#secOverview .ov-big,#secOverview .ov-metrics .tile{padding:14px 16px 13px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008)),rgba(9,14,26,.85);border:1px solid rgba(140,170,225,.11);min-width:0;box-shadow:none}
+#secOverview .ov-big .ov-k,#secOverview .ov-metrics .tile > span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;letter-spacing:0;text-transform:none;font-weight:400}
+#secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:24px!important;font-weight:600;line-height:1.2}
+#secOverview .ov-big.ov-eq > b{background:none;-webkit-text-fill-color:currentColor;color:var(--text)}
+#secOverview .ov-big .ov-cur{font-size:12px}
+#secOverview .ov-big .ov-sub,#secOverview .ov-metrics .tile > small{font-size:12px}
+#secOverview .ov-big:nth-child(1){order:1} #secOverview .ov-big.ov-eq{order:2} #tFlt{order:3} #tToday{order:4} #tDD{order:5} #tOpen{display:none!important}
+#secOverview > .ov-conn{order:0} #secOverview > .port-warn,#secOverview > .ea-off-note{order:0}
+#secOverview > .hedge-bar,#secOverview > .card-foot{order:9}
+#secOverview > .card-foot{font-size:13px;color:var(--muted)}
+#tToday{background:linear-gradient(180deg,rgba(47,191,138,.10),rgba(47,191,138,.02)),rgba(9,14,26,.85)!important;border-color:rgba(47,191,138,.28)!important}
+#tToday.down{background:linear-gradient(180deg,rgba(229,40,61,.10),rgba(229,40,61,.02)),rgba(9,14,26,.85)!important;border-color:rgba(229,40,61,.3)!important}
+/* การ์ดตะกร้า */
+.bk-card{padding:16px 16px 14px}
+.bk-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bk-head .card-label{flex:1;margin:0}
+.bk-head .muted{font-size:12.5px}
+.bk{border-radius:13px;background:rgba(16,26,44,.7);border:1px solid rgba(140,170,225,.11);padding:12px 13px;margin-bottom:10px}
+.bk.b{border-color:rgba(47,191,138,.3)} .bk.s{border-color:rgba(229,40,61,.32)}
+.bkh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bkh .meta{font-size:13px;color:var(--muted)}
+.bkh .pl{margin-left:auto;font-family:var(--display);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.bk-track{position:relative;height:6px;border-radius:9px;margin:16px 6px 8px;background:linear-gradient(90deg,rgba(229,40,61,.55),rgba(255,255,255,.08) 45%,rgba(59,148,255,.6))}
+.bk.s .bk-track{background:linear-gradient(90deg,rgba(59,148,255,.6),rgba(255,255,255,.08) 55%,rgba(229,40,61,.55))}
+.bk-track .now{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.15);transition:left .4s}
+.bk-track .avg{position:absolute;top:-4px;width:2px;height:14px;margin-left:-1px;background:#FFE7A3;border-radius:2px}
+.bk-tl{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--muted)}
+.bk-tl b{display:block;font-size:13.5px;color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.bk-tl .r{text-align:right}
+.bk-mini{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.bk-mini b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.bk-tbl{width:100%!important;min-width:0!important;border-collapse:collapse;font-size:13px;margin-top:4px;table-layout:auto}
+.bk-tbl th{font-weight:400;color:var(--muted);text-align:right;padding:6px 4px;font-size:11.5px;border-bottom:1px solid rgba(140,170,225,.1)}
+.bk-tbl th:first-child,.bk-tbl td:first-child{text-align:left}
+.bk-tbl td{padding:7px 4px;text-align:right;border-bottom:1px solid rgba(140,170,225,.05);font-variant-numeric:tabular-nums}
+.bk-tbl-wrap{max-height:300px;overflow:auto}
+.side-tag.h{background:#A47CFF} .side-tag.r{background:#F2B84B;color:#1a1200}
+.bk-empty{padding:18px 8px;text-align:center;color:var(--muted);font-size:13.5px}
+.bk-lot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(140,170,225,.1);font-size:13px;color:var(--muted)}
+.bk-lot b{color:var(--text);font-size:16px;font-weight:600}
+.bk-lot .btn{margin-left:auto}
+@media (max-width:1100px){#dashView[data-pg="port"]{grid-template-columns:minmax(0,1fr)}#dashView[data-pg="port"] > #secBasket,#dashView[data-pg="port"] > #secNews{grid-column:1}
+  #dashView[data-pg="port"] > #secOverview{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){
+  #dashView[data-pg="port"] > #secOverview{display:flex;flex-wrap:nowrap;overflow-x:auto;margin:0 -16px 14px;padding:0 16px;scrollbar-width:none}
+  #dashView[data-pg="port"] > #secOverview::-webkit-scrollbar{display:none}
+  #secOverview > .ov-conn,#secOverview > .port-warn,#secOverview > .ea-off-note,#secOverview > .hedge-bar,#secOverview > .card-foot{display:none}
+  #secOverview .ov-big,#secOverview .ov-metrics .tile{flex:0 0 178px}
+  #secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:21px!important}
+  #dashView[data-pg="port"] > #secBasket{margin-top:14px}
+}
 </style>
 </head>
 <body>
@@ -1494,7 +1576,12 @@ body{top:0!important}
     </form>
   </section>
 
-  <section data-pages="port">
+  <section class="card bk-card" id="secBasket" data-pages="port">
+    <div class="bk-head"><div class="card-label">ตะกร้าที่เปิดอยู่</div><span class="muted" id="bkSum"></span></div>
+    <div id="bkBody"></div>
+  </section>
+
+  <section id="secBasketOld" data-pages="port">
     <div class="card">
       <div class="card-label">ตะกร้าที่เปิดอยู่</div>
       <div class="tiles t4">
@@ -1542,7 +1629,7 @@ body{top:0!important}
     <div id="chart"></div>
   </section>
 
-  <section class="card profit" id="secProfit" data-pages="profit">
+  <section class="card profit" id="secProfit" data-pages="port profit">
     <div class="profit-head">
       <div class="card-label">กำไรที่ปิดแล้ว</div>
     </div>
@@ -2211,7 +2298,8 @@ async function loadMe(auto) {
   $("syncing").hidden = true;
   $("dashView").classList.remove("port-loading");
   if (!r.ok) {
-    if (/เข้าสู่ระบบ|สมาชิก/.test(r.error || "")) logout(r.error);
+    // ออกจากระบบเฉพาะตอนโทเคนใช้ไม่ได้จริง · หลังบ้านช้า/กำลังอัปเดต/เน็ตหลุด → เก็บการเข้าสู่ระบบไว้ แล้วลองใหม่
+    if (r.auth || /^(กรุณาเข้าสู่ระบบใหม่|หมดเวลาเข้าสู่ระบบ|ไม่พบบัญชีสมาชิก)/.test(r.error || "")) { authFailed = true; logout(r.error); }
     else if (auto === true && r.busy) { $("lastSync").textContent = "เชื่อมต่อช้า จะลองใหม่อัตโนมัติ"; }
     else toast(r.error);
     return false;
@@ -2379,8 +2467,10 @@ $("portArrange").addEventListener("click", async () => {
   meCachePut(dashData); toast("บันทึกลำดับพอร์ตแล้ว"); loadMe(true);
 });
 
+let authFailed = false, connRetry = null;
 async function openMember(token) {
   session = { mode: "user", token };
+  authFailed = false;
   // แสดงข้อมูลชุดล่าสุดที่จำไว้ทันที (ถ้ามี) ระหว่างรอข้อมูลใหม่
   const cached = meCacheGet();
   if (cached && cached.ok) {
@@ -2389,9 +2479,22 @@ async function openMember(token) {
     show("dashView"); hideSplash();
     $("syncing").hidden = false;
   }
-  const ok = await loadMe();
+  let ok = await loadMe();
+  for (let i = 0; !ok && !authFailed && i < 2; i++) { await new Promise(r => setTimeout(r, 1500 * (i + 1))); ok = await loadMe(); }
   $("syncing").hidden = true;
-  if (!ok) return;
+  if (authFailed) return;
+  if (!ok) {
+    // ยังต่อหลังบ้านไม่ได้ (เช่น ระหว่างอัปเดตระบบ) → อยู่หน้าสมาชิกต่อ ไม่เด้งไปหน้าเข้าสู่ระบบ แล้วลองใหม่ทุก 15 วิ
+    show("dashView");
+    if (!dashData) $("lastSync").textContent = "เชื่อมต่อหลังบ้านไม่ได้ชั่วคราว กำลังลองใหม่…";
+    clearInterval(connRetry);
+    connRetry = setInterval(async () => {
+      if (authFailed || session.mode !== "user") { clearInterval(connRetry); return; }
+      if (await loadMe()) { clearInterval(connRetry); openMember(session.token); }
+    }, 15000);
+    return;
+  }
+  clearInterval(connRetry);
   $("whoami").textContent = dashData.user.name;
   show("dashView");
   clearInterval(timer);
@@ -2473,6 +2576,7 @@ function renderDash() {
   $("myCode").textContent = L.code;
   renderProfit();
   renderLive();
+  renderBaskets();
   syncLot();
   renderNews();
   fillCfg(false);
@@ -3231,7 +3335,7 @@ function setPage(pg, opts = {}) {
   pageTitle(); renderEaUpd();
   if (opts.open) { const t = $(opts.open); if (t) { if (t.tagName === "DETAILS") t.open = true; setTimeout(() => t.scrollIntoView({ behavior: "smooth", block: "start" }), 30); } }
   else if (!opts.keepScroll) window.scrollTo({ top: 0 });
-  if (pg === "port" && typeof liveC !== "undefined" && liveC) setTimeout(() => liveC.timeScale().fitContent && renderLive(), 30);
+  if (pg === "port") { liveSig = ""; setTimeout(() => { if (dashData) renderLive(); }, 60); }
 }
 document.querySelectorAll(".rail a[data-pg]").forEach(a => a.addEventListener("click", e => {
   e.preventDefault(); setPage(a.dataset.pg, { open: a.dataset.open });
@@ -4356,7 +4460,8 @@ setTimeout(hideSplash, 6000);   // กันค้าง ถ้าเน็ต�
 
 /* ============ boot ============ */
 $("demoTag").hidden = !!API_URL;
-(async () => {
+// เริ่มทำงานหลังโค้ดทั้งไฟล์โหลดครบ (กันเรียกฟังก์ชัน/ค่าที่ประกาศไว้ท้ายไฟล์ก่อนพร้อม → เคยทำให้รีเฟรชแล้วเด้งไปหน้าเข้าสู่ระบบ)
+setTimeout(async () => {
   try {
     if (IS_ADMIN) {
       const a = store.get("gs_admin");
@@ -4366,8 +4471,11 @@ $("demoTag").hidden = !!API_URL;
     const t = store.get("gs_token");
     if (t) { await openMember(t); return; }
     show("loginView");
+  } catch (e) {
+    console.error(e);
+    if (store.get("gs_token") && session.mode === "user") show("dashView"); else show("loginView");
   } finally { hideSplash(); }
-})();
+}, 0);
 
 /* ============ เลือกภาษา (แปลทั้งหน้าอัตโนมัติด้วย Google แปลภาษา · ต้นฉบับภาษาไทย) ============ */
 const LANGS = [["th", "ไทย", "TH"], ["en", "English", "EN"]];
@@ -4477,7 +4585,7 @@ async function renderLive() {
   const bars = liveBars(L.bars, liveTF, L.h1);
   const sig = liveTF + "|" + bars.length + "|" + (bars[0] && bars[0].time);
   liveS.setData(bars);
-  if (sig !== liveSig) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
+  if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
   liveLines.forEach(l => liveS.removePriceLine(l)); liveLines = [];
   const line = (price, color, title, style = 0, width = 1) => liveLines.push(liveS.createPriceLine({ price, color, lineWidth: width, lineStyle: style, axisLabelVisible: true, title }));
   const pos = L.pos || [], C = Object.assign({}, CFG_DEF, dashData.settings || {});
@@ -4511,13 +4619,13 @@ setInterval(async () => {
   if (document.hidden || curPage !== "port" || livePollBusy || !session || !session.token) return;
   const S = dashData && dashData.snapshot, L = dashData && dashData.license;
   if (!S || !S.live || !L) return;
-  if (!API_URL) { renderLive(); return; }                      // โหมดตัวอย่าง
+  if (!API_URL) { renderLive(); renderBaskets(); return; }                      // โหมดตัวอย่าง
   livePollBusy = true;
   try {
     const r = await api("live_ping", { token: session.token, code: L.code });
     if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
       Object.assign(dashData.snapshot, r.snapshot);
-      renderLive();
+      renderLive(); renderBaskets();
     }
   } catch (e) {} finally { livePollBusy = false; }
 }, 10000);
@@ -4571,6 +4679,63 @@ function renderEaUpd() {
 $("eaUpd").addEventListener("click", e => {
   if (e.target.closest("[data-updhow]")) alert("วิธีอัปเดต EA\n\n1. กดดาวน์โหลด EA ตัวใหม่\n2. MT5 → ไฟล์ → เปิดโฟลเดอร์ข้อมูล → MQL5 → Experts → วางไฟล์ทับตัวเดิม\n3. คลิกขวาที่ ตัวนำทาง → รีเฟรช\n4. ลาก EA ตัวใหม่ลงกราฟ XAUUSD เดิม (ทับตัวเก่า) → ใส่โค้ดเดิม → ตกลง\n\nOrder ที่เปิดอยู่ไม่หาย EA ตัวใหม่ดูแลต่อได้เลย ภายใน 1 นาทีหน้านี้จะขึ้นเวอร์ชันใหม่");
 });
+
+/* ============ การ์ดตะกร้าที่เปิดอยู่ (หน้าพอร์ต) ============ */
+const BK_TAG = { m: ["Buy", "Sell"], b: ["บอลลูน B", "บอลลูน S"], h: ["Hedge B", "Hedge S"], r: ["กู้ B", "กู้ S"] };
+function renderBaskets() {
+  const S = dashData && dashData.snapshot, body = $("bkBody"); if (!body) return;
+  const L = S && S.live, C = Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
+  $("dashView").classList.toggle("nolive", !(L && L.bars && L.bars.length));
+  if (!S) { body.innerHTML = `<div class="bk-empty">ยังไม่มีข้อมูลจาก EA</div>`; $("bkSum").textContent = ""; return; }
+  const dg = (L && L.digits) || S.digits || 2, f = v => (+v).toFixed(dg);
+  const pos = (L && L.pos) || [];
+  const html = [];
+  let nB = 0;
+  [[1, "b", "Buy"], [-1, "s", "Sell"]].forEach(([sd, c, nm]) => {
+    const ps = pos.filter(o => o.s === sd && (o.k || "m") === "m");
+    const cnt = L ? ps.length : (sd > 0 ? S.buyCount : S.sellCount);
+    if (!cnt) return;
+    nB++;
+    const lots = L ? ps.reduce((a, o) => a + o.v, 0) : (sd > 0 ? S.buyLots : S.sellLots);
+    const pl = L ? ps.reduce((a, o) => a + o.pl, 0) : (sd > 0 ? S.buyPL : S.sellPL);
+    let mid = "";
+    if (L && ps.length) {
+      const avg = ps.reduce((a, o) => a + o.p * o.v, 0) / lots, cur = sd > 0 ? +L.bid : +L.ask;
+      const tpEA = L.tp && L.tp[sd > 0 ? "buy" : "sell"], nx = L.next && L.next[sd > 0 ? "buy" : "sell"];
+      const be = ps.length >= 2 ? Number(C.beOffset) || 0 : Number(C.firstTP) || 0;
+      const tp = tpEA ? +tpEA : be > 0 ? avg + sd * be * 0.01 : null;
+      const worst = sd > 0 ? Math.min(...ps.map(o => o.p)) : Math.max(...ps.map(o => o.p));
+      const np = nx && nx.p ? +nx.p : worst - sd * (Number(C.gridDist) || 300) * 0.01;
+      const lo = sd > 0 ? np : (tp || cur), hi = sd > 0 ? (tp || cur) : np, span = hi - lo || 1;
+      const pct = v => Math.max(0, Math.min(100, (v - lo) / span * 100)).toFixed(1);
+      const nxTxt = nx && nx.p ? `<b>${f(nx.p)}</b>${(+nx.v).toFixed(2)} lot · อีก ${Math.abs(cur - nx.p).toFixed(2)}` : `<b>–</b>ไม้แก้ครบแล้ว`;
+      const tpTxt = tp ? `<b>${f(tp)}</b>อีก ${Math.abs(tp - cur).toFixed(2)}` : `<b>–</b>`;
+      const left = sd > 0 ? `<span>แก้ไม้ถัดไป${nxTxt}</span>` : `<span>ปิดกำไรที่${tpTxt}</span>`;
+      const right = sd > 0 ? `<span class="r">ปิดกำไรที่${tpTxt}</span>` : `<span class="r">แก้ไม้ถัดไป${nxTxt}</span>`;
+      mid = `<div class="bk-track">${ps.length >= 2 ? `<i class="avg" style="left:${pct(avg)}%" title="ทุนเฉลี่ย ${f(avg)}"></i>` : ""}<i class="now" style="left:${pct(cur)}%" title="ราคาตอนนี้ ${f(cur)}"></i></div>
+        <div class="bk-tl">${left}${right}</div>`;
+    }
+    html.push(`<div class="bk ${c}"><div class="bkh"><i class="side-tag ${c}">${nm}</i><span class="meta">${cnt} ไม้ · ${fmt(lots)} lot</span><span class="pl ${cls(pl)}">${signed(pl)}</span></div>${mid}</div>`);
+  });
+  const oth = pos.filter(o => (o.k || "m") !== "m");
+  if (oth.length) {
+    const pl = oth.reduce((a, o) => a + o.pl, 0);
+    html.push(`<div class="bk"><div class="bkh"><i class="side-tag h">Hedge / กู้</i><span class="meta">${oth.length} ไม้ · ${fmt(oth.reduce((a, o) => a + o.v, 0))} lot</span><span class="pl ${cls(pl)}">${signed(pl)}</span></div></div>`);
+  }
+  if (!html.length) html.push(`<div class="bk-empty">ไม่มี Order ที่เปิดอยู่${L ? ` · ราคาตอนนี้ <b>${f(L.bid)}</b>` : ""}</div>`);
+  if (pos.length) {
+    const rows = pos.slice().sort((a, b) => (b.s - a.s) || (b.s > 0 ? b.p - a.p : a.p - b.p));
+    html.push(`<div class="bk-tbl-wrap"><table class="bk-tbl"><thead><tr><th>ไม้</th><th>Lot</th><th>ราคาเข้า</th><th>กำไร/ขาดทุน</th></tr></thead><tbody>${rows.map(o => {
+      const k = o.k || "m", tc = k === "m" || k === "b" ? (o.s > 0 ? "b" : "s") : k;
+      return `<tr><td><i class="side-tag ${tc}">${BK_TAG[k] ? BK_TAG[k][o.s > 0 ? 0 : 1] : (o.s > 0 ? "Buy" : "Sell")}</i></td><td>${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td class="${cls(o.pl)}">${signed(o.pl)}</td></tr>`;
+    }).join("")}</tbody></table></div>`);
+  }
+  html.push(`<div class="bk-lot">ล็อตเริ่มต้น <b>${esc(C.startLot)}</b> · ไม้แก้คูณ ${esc(C.lotMult)}<button class="btn small" type="button" data-goto-cfg="1">ปรับในตั้งค่า</button></div>`);
+  body.innerHTML = html.join("");
+  const nOrd = L ? pos.length : (S.buyCount || 0) + (S.sellCount || 0);
+  $("bkSum").textContent = nOrd ? `${nB} ตะกร้า · ${nOrd} ไม้` : "";
+}
+$("bkBody").addEventListener("click", e => { if (e.target.closest("[data-goto-cfg]")) setPage("cfg"); });
 </script>
 </body>
 </html>
