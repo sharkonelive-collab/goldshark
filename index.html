@@ -5206,7 +5206,7 @@ function renderPerp() {
   if (ppTab === "pos") {
     $("ppTable").innerHTML = !pos.length ? `<div class="pp-empty">ไม่มีตำแหน่งที่เปิดอยู่</div>` : `<table><thead><tr><th>Symbol</th><th>Size</th><th>Entry</th><th class="hide-m">Mark</th><th>PnL</th><th class="hide-m">Move</th></tr></thead><tbody>${pos.map(o => {
       const mark = o.s > 0 ? bid : +L.ask, mv = (mark - o.p) * o.s, k = o.k || "m";
-      return `<tr><td><span class="sym ${o.s > 0 ? "" : "s"}"><i></i><span><b>${esc(sym)}</b><small class="${o.s > 0 ? "lg" : "sh"}">${o.s > 0 ? "Long" : "Short"}${KN[k] ? " · " + KN[k] : ""}</small></span></span></td>
+      return `<tr><td><span class="sym ${o.s > 0 ? "" : "s"}"><i></i><span><b>${esc(sym)}</b><small class="${o.s > 0 ? "lg" : "sh"}">${o.s > 0 ? "Buy" : "Sell"}${KN[k] ? " · " + KN[k] : ""}</small></span></span></td>
         <td class="${o.s > 0 ? "lg" : "sh"}">${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td class="hide-m">${f(mark)}</td>
         <td class="${cls(o.pl)}">${signed(+o.pl)}</td><td class="hide-m ${cls(mv)}">${mv >= 0 ? "+" : ""}${mv.toFixed(2)}</td></tr>`;
     }).join("")}</tbody></table>`;
