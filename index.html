@@ -4812,7 +4812,7 @@ async function renderLive() {
     $("liveSum").innerHTML = ""; return;
   }
   const fresh = S.online && Date.now() - S.time < 90000;
-  badge.classList.toggle("off", !fresh); badge.lastElementChild.textContent = fbTickAt && Date.now() - fbTickAt < 10000 ? "เรียลไทม์" : fresh ? `สด · ${ago(S.time)}` : "ออฟไลน์";
+  badge.classList.toggle("off", !fresh); badge.lastElementChild.textContent = fbTickAt && Date.now() - fbTickAt < 10000 ? "Realtime" : fresh ? `สด · ${ago(S.time)}` : "ออฟไลน์";
   try { await loadLWC(); } catch (e) { empty.hidden = false; empty.textContent = "โหลดกราฟไม่ได้ ลองรีเฟรชอีกครั้ง"; return; }
   empty.hidden = true;
   const dg = L.digits || 2, box = $("liveChart");
