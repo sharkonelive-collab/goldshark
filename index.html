@@ -1495,6 +1495,12 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 .ea-badge.warn{border-color:rgba(242,184,75,.45);color:#FFE3A6}.ea-badge.warn i{background:#F2B84B;box-shadow:0 0 8px #F2B84B}
 .ea-badge.bad{border-color:rgba(229,40,61,.45);color:#FFB0B8}.ea-badge.bad i{background:#E5283D;box-shadow:0 0 8px #E5283D}
 @media (max-width:760px){.ea-badge{max-width:calc(100% - 8px)}}
+
+/* ปุ่มออกจากระบบบนมือถือ: สีแดงชัดเจน */
+@media (max-width:560px){
+  .bar #logoutBtn{color:#FF6B78!important;background:linear-gradient(180deg,rgba(229,40,61,.28),rgba(229,40,61,.12))!important;border-color:rgba(229,40,61,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 0 14px -4px rgba(229,40,61,.7)!important}
+  .bar #logoutBtn::before{color:#FF6B78}
+}
 </style>
 </head>
 <body>
