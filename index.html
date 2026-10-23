@@ -1572,8 +1572,10 @@ body[data-view="dashView"]{background:
       <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
       <ol class="steps">
         <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
-        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
+        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม 2 URL นี้
           <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
+          <div class="copyrow"><code id="fbSiteUrl">https://goldshark-903b1-default-rtdb.asia-southeast1.firebasedatabase.app</code><button class="btn small" id="copyFbSite">คัดลอก</button></div>
+          <small class="muted" style="display:block;margin-top:4px">ต้องเพิ่มทั้ง 2 URL · URL ที่ 2 ทำให้กราฟบนเว็บเป็นเรียลไทม์ (ใส่ URL ละ 1 บรรทัด)</small>
         </li>
         <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b id="dlEAName">GoldShark_Cent</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
         <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
@@ -4307,6 +4309,7 @@ $("setDlg").addEventListener("close", async () => {
 document.addEventListener("click", e => { const b = e.target.closest("[data-copy]"); if (b) copy(b.dataset.copy); });
 $("siteUrl").textContent = location.origin;
 $("copySite").addEventListener("click", () => copy(location.origin));
+$("copyFbSite").addEventListener("click", () => copy($("fbSiteUrl").textContent));
 $("copyMyCode").addEventListener("click", () => copy($("myCode").textContent));
 let setupTouched = false;
 $("setupBox").addEventListener("toggle", () => { setupTouched = true; });
