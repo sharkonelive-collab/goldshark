@@ -1285,6 +1285,13 @@ body{top:0!important}
 @media (max-width:760px){#dashView[data-pg="port"] #liveChart{height:320px}}
 #dashView[data-pg="port"] > #secBasket{grid-column:2;order:11;align-self:start}
 #dashView[data-pg="port"].nolive > #secBasket{grid-column:1 / -1}
+/* การ์ดตะกร้า: แถวเดียวกับกราฟ ขอบบน-ล่างเท่ากัน (สูงตามการ์ดกราฟ เนื้อหาเกินเลื่อนในการ์ด) */
+#dashView[data-pg="port"]:not(.nolive) > #secBasket{margin-top:0;align-self:stretch;height:0;min-height:100%;display:flex;flex-direction:column;overflow:hidden}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket > #bkBody{flex:1;min-height:0;display:flex;flex-direction:column}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-tbl-wrap{flex:1;min-height:60px;max-height:none;overflow:auto}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-lot{margin-top:auto}
+@media (max-width:1100px){#dashView[data-pg="port"]:not(.nolive) > #secBasket{height:auto;min-height:0;margin-top:14px;overflow:visible}
+  #dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-tbl-wrap{max-height:300px}}
 #dashView[data-pg="port"] > #secProfit{grid-column:1;order:20;margin-top:16px}
 #dashView[data-pg="port"] > #secNews{grid-column:2;order:21;margin-top:16px;align-self:start}
 #dashView[data-pg="port"] > #secChart{order:30;margin-top:16px}
@@ -1403,6 +1410,86 @@ body[data-view="dashView"]{background:
   #dashView .upd-notice .un-ico,#dashView .digit-notice .dn-ico{width:24px;height:24px;font-size:12px}
   #dashView .digit-notice .btn,#dashView .upd-notice .btn{padding:5px 10px;font-size:12px;min-height:0}
   .fab-line{width:46px!important;height:46px!important}.fab-line svg{width:24px!important;height:24px!important}}
+
+/* ================= Liquid Glass (เรียบหรู) ================= */
+:root{
+  --lg-bg:rgba(18,26,44,.42); --lg-bg2:rgba(22,32,54,.38);
+  --lg-edge:rgba(255,255,255,.14); --lg-edge2:rgba(255,255,255,.05);
+  --lg-blur:saturate(160%) blur(22px);
+}
+/* ฉากหลัง: ลูกแสงนุ่ม ๆ ให้กระจกมีอะไรสะท้อน */
+body[data-view="dashView"]{background:#04070D!important}
+body[data-view="dashView"]::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38vmax 30vmax at 82% 8%,rgba(59,148,255,.22),transparent 60%),
+    radial-gradient(34vmax 28vmax at 6% 22%,rgba(232,196,106,.14),transparent 62%),
+    radial-gradient(40vmax 34vmax at 60% 92%,rgba(120,90,255,.12),transparent 60%),
+    radial-gradient(30vmax 26vmax at 18% 80%,rgba(47,191,138,.08),transparent 62%);
+  filter:blur(10px);animation:lgDrift 38s ease-in-out infinite alternate}
+@keyframes lgDrift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-3vmax,2vmax,0) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){body[data-view="dashView"]::before{animation:none}}
+/* กระจก: การ์ดหลัก */
+#dashView .card,#dashView .kpi,#secOverview .ov-big,#secOverview .ov-metrics .tile,#secOverview > .ov-conn,
+#dashView .bk,#dashView .ptab,#dashView .prow:not(.head):not(.total),.rail,#dashView details.setup{
+  background:linear-gradient(155deg,rgba(255,255,255,.09) 0%,rgba(255,255,255,.025) 38%,rgba(255,255,255,.01) 62%,rgba(255,255,255,.05) 100%),var(--lg-bg)!important;
+  -webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);
+  border:1px solid var(--lg-edge2)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(255,255,255,.03),inset 0 0 0 1px rgba(255,255,255,.02),
+    0 1px 2px rgba(0,0,0,.25),0 24px 48px -28px rgba(0,0,0,.75)!important}
+#dashView .card,#dashView .kpi,#secOverview .ov-big,#secOverview .ov-metrics .tile,#dashView .bk,#dashView .ptab,#dashView .prow,#dashView details.setup{position:relative}
+#dashView .card{border-radius:24px!important}
+#dashView .kpi,#secOverview .ov-big,#secOverview .ov-metrics .tile{border-radius:20px!important}
+/* ขอบสะท้อนแสงแบบกระจกเหลว (ไล่จากมุมซ้ายบน) */
+#dashView .card::after,#dashView .kpi::after,#secOverview .ov-big::after,#secOverview .ov-metrics .tile::after,#dashView .bk::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;display:block!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.38),rgba(255,255,255,.06) 30%,rgba(255,255,255,0) 55%,rgba(255,255,255,.10) 85%,rgba(255,255,255,.22));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+/* การ์ดกำไรวันนี้ / แถว highlight: กระจกสีอ่อน */
+#dashView .kpi.hl,#tToday{background:linear-gradient(155deg,rgba(47,191,138,.22),rgba(47,191,138,.04) 55%,rgba(255,255,255,.04)),var(--lg-bg)!important}
+#dashView .kpi.hl.bad,#tToday.down{background:linear-gradient(155deg,rgba(229,40,61,.22),rgba(229,40,61,.04) 55%,rgba(255,255,255,.04)),var(--lg-bg)!important}
+#dashView .bk.b{background:linear-gradient(155deg,rgba(47,191,138,.14),rgba(255,255,255,.02) 50%),var(--lg-bg2)!important}
+#dashView .bk.s{background:linear-gradient(155deg,rgba(229,40,61,.14),rgba(255,255,255,.02) 50%),var(--lg-bg2)!important}
+#dashView .ptab.on{background:linear-gradient(155deg,rgba(232,196,106,.22),rgba(232,196,106,.05) 60%),var(--lg-bg)!important;border-color:rgba(232,196,106,.4)!important}
+#dashView .prow.cur{background:linear-gradient(90deg,rgba(232,196,106,.14),rgba(255,255,255,.02) 60%),var(--lg-bg)!important}
+#dashView .prow:not(.head):not(.total){border-radius:16px;margin-bottom:8px}
+/* แถบบน + เมนู: กระจกบาง */
+.bar{background:rgba(6,10,18,.45)!important;-webkit-backdrop-filter:saturate(160%) blur(20px)!important;backdrop-filter:saturate(160%) blur(20px)!important;border-bottom:1px solid rgba(255,255,255,.06)!important}
+.rail{border-radius:26px!important}
+.rail a.active{background:linear-gradient(155deg,rgba(232,196,106,.30),rgba(232,196,106,.06))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(232,196,106,.35)!important}
+/* ปุ่ม / ตัวเลือก: เม็ดกระจก */
+#dashView .btn:not(.primary),#dashView .seg,.bar .btn,.bar .bell,.bar .lang-btn{background:rgba(255,255,255,.05)!important;border-color:rgba(255,255,255,.10)!important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+#dashView .seg button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08))!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 14px -6px rgba(0,0,0,.6)!important}
+/* ช่องภายในการ์ด (กราฟ ตาราง ปฏิทิน): ลึกลงไปเล็กน้อย */
+#secLive .live-wrap,#dashView .cal-sum,#dashView .sess-c{background:rgba(3,6,12,.35)!important;border:1px solid rgba(255,255,255,.06)!important}
+/* แจ้งเตือน: กระจกสี */
+#dashView .digit-notice{background:linear-gradient(155deg,rgba(229,40,61,.20),rgba(229,40,61,.05))!important;-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);border:1px solid rgba(255,120,130,.25)!important}
+#dashView .upd-notice{background:linear-gradient(155deg,rgba(242,184,75,.20),rgba(242,184,75,.04))!important;-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);border:1px solid rgba(255,214,140,.28)!important}
+/* หน้าเข้าสู่ระบบ: การ์ดกระจก */
+body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.02) 45%,rgba(255,255,255,.05)),rgba(14,20,36,.45);
+  -webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 30px 60px -30px rgba(0,0,0,.8)}
+/* กล่องสถานะ MT5 เป็นแค่ตัวจัดวาง ไม่ใช่การ์ด (แต่ละช่องข้างในเป็นกระจกเอง) */
+#dashView[data-pg="port"] > #secOverview{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important}
+#dashView[data-pg="port"] > #secOverview::after{display:none!important}
+/* มือถือ: เบลอน้อยลงให้ลื่น */
+@media (max-width:760px){
+  :root{--lg-blur:saturate(150%) blur(12px);--lg-bg:rgba(18,26,44,.62);--lg-bg2:rgba(22,32,54,.6)}
+  body[data-view="dashView"]::before{animation:none}
+  .bar{background:rgba(6,10,18,.82)!important}
+  .rail{background:rgba(10,14,26,.72)!important;-webkit-backdrop-filter:saturate(150%) blur(16px)!important;backdrop-filter:saturate(150%) blur(16px)!important}
+  #dashView .card{border-radius:22px!important}
+}
+
+/* สถานะ EA บนหัวกราฟ (ต่อจากป้ายเรียลไทม์) */
+.ea-badge{display:inline-flex;align-items:center;gap:6px;max-width:min(420px,60vw);font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ea-badge[hidden]{display:none}
+.ea-badge b{font-weight:600;color:var(--muted)}
+.ea-badge span{overflow:hidden;text-overflow:ellipsis}
+.ea-badge i{flex:none;width:7px;height:7px;border-radius:50%;background:#3DDC97;box-shadow:0 0 8px #3DDC97}
+.ea-badge.ok{border-color:rgba(61,220,151,.35);color:#BFF2DA}
+.ea-badge.warn{border-color:rgba(242,184,75,.45);color:#FFE3A6}.ea-badge.warn i{background:#F2B84B;box-shadow:0 0 8px #F2B84B}
+.ea-badge.bad{border-color:rgba(229,40,61,.45);color:#FFB0B8}.ea-badge.bad i{background:#E5283D;box-shadow:0 0 8px #E5283D}
+@media (max-width:760px){.ea-badge{max-width:calc(100% - 8px)}}
 </style>
 </head>
 <body>
@@ -1677,6 +1764,7 @@ body[data-view="dashView"]{background:
     <div class="chart-head">
       <div class="card-label">กราฟไม้ที่เปิดอยู่</div>
       <span class="live-badge" id="liveBadge"><i></i><span>สด</span></span>
+      <span class="ea-badge" id="eaBadge" hidden title="สถานะ EA"><i></i><b>EA</b><span id="eaBadgeT"></span></span>
       <span class="spacer"></span>
       <div class="seg" role="group" aria-label="ไทม์เฟรม">
         <button data-ltf="5" aria-pressed="true">M5</button>
@@ -1688,7 +1776,7 @@ body[data-view="dashView"]{background:
     <div class="live-legend">
       <span><i style="background:#2FBF8A"></i>Buy</span><span><i style="background:#E5283D"></i>Sell</span>
       <span><i style="background:#B07CFF"></i>Hedge</span><span><i style="background:#F2B84B"></i>ตะกร้ากู้</span>
-      <span><i class="dash" style="border-color:#FFE7A3"></i>ทุนเฉลี่ย</span><span><i class="dash" style="border-color:#7CC4FF"></i>จุดปิดกำไร</span><span><i class="dash" style="border-color:#8E9AB3"></i>แก้ไม้ถัดไป</span>
+      <span><i class="dash" style="border-color:#FFE7A3"></i>ทุนเฉลี่ย</span><span><i class="dash" style="border-color:#7CC4FF"></i>จุดปิดกำไร</span><span><i class="dash" style="border-color:#8E9AB3"></i>แก้ไม้ถัดไป</span><span><i class="dash" style="border-color:#7FE8B8"></i>รอเข้า Buy/Sell</span>
     </div>
     <div class="live-sum" id="liveSum"></div>
     <p class="pnote" id="liveNote">ราคาจากโบรกของพอร์ตนี้ · EA 2.31 ขึ้นไปส่งราคาและกำไรแบบเรียลไทม์ทุก 1–2 วินาทีตอนเปิดหน้านี้</p>
@@ -2673,6 +2761,7 @@ function renderDash() {
   renderLive();
   renderBaskets();
   renderHdrPx();
+  renderEaBadge();
   syncLot();
   renderNews();
   fillCfg(false);
@@ -4688,6 +4777,8 @@ async function renderLive() {
   const pos = L.pos || [], C = Object.assign({}, CFG_DEF, dashData.settings || {});
   const GP = 0.01;                                         // 100 จุด = ราคาทองขยับ 1.00
   pos.forEach(o => line(o.p, LIVE_COL[o.k || "m"][o.s > 0 ? 0 : 1], `${LIVE_NAME[o.k || "m"]}${o.s > 0 ? "B" : "S"} ${o.v.toFixed(2)} · ${o.pl > 0 ? "+" : ""}${o.pl.toFixed(2)}`));
+  // ออเดอร์รอเข้า (EA 2.32+): เส้นประ "รอ Buy Stop 0.01"
+  (L.pend || []).forEach(o => line(+o.p, o.s > 0 ? "#7FE8B8" : "#FF9AA6", `รอ ${o.s > 0 ? "Buy" : "Sell"} ${o.t === "limit" ? "Limit" : "Stop"} ${(+o.v).toFixed(2)}`, 2, 1));
   const sums = [];
   [[1, "Buy", "b"], [-1, "Sell", "s"]].forEach(([sd, nm, c]) => {
     const ps = pos.filter(o => o.s === sd && (o.k || "m") === "m");
@@ -4726,7 +4817,7 @@ setInterval(async () => {
     if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
       Object.assign(dashData.snapshot, r.snapshot);
       if (fbLastTick && Date.now() - fbTickAt < 15000) applyTick(fbLastTick, true);   // ราคาจาก Firebase ใหม่กว่า
-      renderLive(); renderBaskets(); renderHdrPx();
+      renderLive(); renderBaskets(); renderHdrPx(); renderEaBadge();
     }
   } catch (e) {} finally { livePollBusy = false; }
 }, 10000);
@@ -4748,13 +4839,14 @@ function demoLive(C) {
   const pos = lots.map((v, i) => { const p = +(top - g * i).toFixed(2); return { s: 1, k: "m", p, v, pl: +((bid - p) * v * 100).toFixed(2) }; });
   pos.push({ s: -1, k: "m", p: +(bid + 3.6).toFixed(2), v: 0.01, pl: +((bid + 3.6 - ask) * 0.01 * 100).toFixed(2) });
   const worst = Math.min(...pos.filter(o => o.s > 0).map(o => o.p));
-  return { bid, ask, digits: 2, bars, pos, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
+  const pend = [{ s: 1, t: "stop", p: +(bid + 4.3).toFixed(2), v: 0.01 }, { s: -1, t: "stop", p: +(bid - 3.8).toFixed(2), v: 0.01 }];
+  return { bid, ask, digits: 2, bars, pos, pend, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
 }
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.31";
-const EA_NEWS = "กราฟเรียลไทม์ทุก 1–2 วินาที · Hedging จับคู่ปิด · นับกำไรรวมไม้ Hedge และไม้ที่ปิดมือ";
+const EA_LATEST = "2.32";
+const EA_NEWS = "กราฟเรียลไทม์ทุก 1–2 วินาที · บอกว่า EA รอเข้า Buy/Sell ที่ราคาไหน · Hedging จับคู่ปิด";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
@@ -4863,7 +4955,8 @@ let fbES = null, fbESKey = "", fbTickAt = 0, fbLastTick = null, livePingAt = 0, 
 function applyTick(d, quiet) {
   const S = dashData && dashData.snapshot; if (!S || !d || !d.bid) return;
   const L = S.live = S.live || { bars: [], pos: [] };
-  L.bid = +d.bid; L.ask = +d.ask; if (Array.isArray(d.pos)) L.pos = d.pos; else if (d.pos === undefined && !quiet) L.pos = L.pos || [];
+  L.bid = +d.bid; L.ask = +d.ask; if (Array.isArray(d.pend)) L.pend = d.pend; else if (!quiet && d.pos !== undefined) L.pend = [];
+  if (Array.isArray(d.pos)) L.pos = d.pos; else if (d.pos === undefined && !quiet) L.pos = L.pos || [];
   if (d.sp != null) S.spread = d.sp;
   if (d.bal) S.balance = +d.bal; if (d.eq) S.equity = +d.eq;
   if (S.balance) S.dd = Math.max(0, (S.balance - S.equity) / S.balance * 100);
@@ -4883,7 +4976,7 @@ function applyTick(d, quiet) {
   cancelAnimationFrame(fbRaf);
   fbRaf = requestAnimationFrame(() => {
     if (curPage !== "port") return;
-    renderLive(); renderBaskets(); renderHdrPx();
+    renderLive(); renderBaskets(); renderHdrPx(); renderEaBadge();
     // ตัวเลขด้านบนอัปเดตตาม (ไม่ render ทั้งหน้า)
     const fl = S.equity - S.balance;
     $("dBal").textContent = fmt(S.balance); $("dEq").textContent = fmt(S.equity);
@@ -4915,8 +5008,34 @@ setInterval(() => {
   const px = +(L.bid + (Math.random() - .5) * 0.6).toFixed(2), ask = +(px + 0.16).toFixed(2);
   const pos = (L.pos || []).map(o => Object.assign({}, o, { pl: +((o.s > 0 ? px - o.p : o.p - ask) * o.v * 100).toFixed(2) }));
   const fl = pos.reduce((a, o) => a + o.pl, 0);
-  applyTick({ t: Math.floor(Date.now() / 1000), bid: px, ask, sp: 16, bal: S.balance, eq: +(S.balance + fl).toFixed(2), pos });
+  applyTick({ t: Math.floor(Date.now() / 1000), bid: px, ask, sp: 16, bal: S.balance, eq: +(S.balance + fl).toFixed(2), pos, pend: L.pend || [] });
 }, 1000);
+
+/* ============ สถานะ EA บนหัวกราฟ ============ */
+function renderEaBadge() {
+  const el = $("eaBadge"); if (!el) return;
+  const S = dashData && dashData.snapshot, L = dashData && dashData.license;
+  if (!S) { el.hidden = true; return; }
+  el.hidden = false;
+  const off = L && L.eaOff, online = S.online && Date.now() - (S.time || 0) < 180000;
+  const st = String(S.tradeStatus || "").trim();
+  let txt = st || "–", c = "ok";
+  if (!online) { txt = "ออฟไลน์"; c = "bad"; }
+  else if (off) { txt = "ปิดอยู่ (ดูแลไม้เดิมจนปิด)"; c = "warn"; }
+  else if (/พร้อมเทรด/.test(st)) c = "ok";
+  else if (/ไม่ได้|ปิด|หยุด|ปฏิเสธ|error|ผิดพลาด|disabled|หมดอายุ|ไม่พอ/i.test(st)) c = "bad";
+  else c = "warn";
+  // ออเดอร์รอเข้า (EA 2.32+): บอกว่ารอ Buy/Sell ที่ราคาไหน
+  const Lv = S.live, pend = (Lv && Lv.pend) || [], dg = (Lv && Lv.digits) || 2;
+  if (online && !off && pend.length) {
+    const cur = Lv.bid ? +Lv.bid : 0;
+    txt = pend.slice().sort((a, b) => b.s - a.s).map(o => `รอ ${o.s > 0 ? "Buy" : "Sell"} ${(+o.p).toFixed(dg)}${cur ? ` (อีก ${Math.abs(+o.p - cur).toFixed(2)})` : ""}`).join(" · ");
+    if (c === "warn") c = "ok";
+  }
+  el.className = "ea-badge " + c;
+  $("eaBadgeT").textContent = txt;
+  el.title = "สถานะ EA: " + txt;
+}
 </script>
 </body>
 </html>
