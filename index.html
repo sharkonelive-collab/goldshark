@@ -1371,7 +1371,7 @@ body[data-view="dashView"]{background:
   box-shadow:0 24px 60px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
 #dashView .card::before,#dashView .card::after{display:none}
 #dashView .card-label{font-size:12.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#9AA8C2}
-#dashView .card-label::before{width:6px;height:6px;border-radius:2px;transform:rotate(45deg);background:linear-gradient(135deg,var(--pm-gold),var(--pm-gold2));box-shadow:0 0 10px rgba(232,196,106,.5)}
+#dashView .card-label::before{width:6px;height:6px;border-radius:50%;transform:none;flex:none;margin-right:18px;background:#2FBF8A;box-shadow:9px 0 0 #E5283D,18px 0 0 #3B94FF,0 0 8px rgba(47,191,138,.5)}
 /* หัวหน้า */
 #dashView .page-head h1{font-size:30px;letter-spacing:-.01em;font-weight:600}
 #dashView .page-head p{font-size:13.5px;color:#7F8CA3}
@@ -1418,14 +1418,14 @@ body[data-view="dashView"]{background:
   --lg-blur:saturate(160%) blur(22px);
 }
 /* ฉากหลัง: ลูกแสงนุ่ม ๆ ให้กระจกมีอะไรสะท้อน */
-body[data-view="dashView"]{background:#04070D!important}
-body[data-view="dashView"]::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;
+html:has(body[data-view="dashView"]){background:#04070D!important}
+body[data-view="dashView"]{background:transparent!important}
+body[data-view="dashView"]::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;opacity:1;
   background:
-    radial-gradient(38vmax 30vmax at 82% 8%,rgba(59,148,255,.22),transparent 60%),
-    radial-gradient(34vmax 28vmax at 6% 22%,rgba(232,196,106,.14),transparent 62%),
-    radial-gradient(40vmax 34vmax at 60% 92%,rgba(120,90,255,.12),transparent 60%),
-    radial-gradient(30vmax 26vmax at 18% 80%,rgba(47,191,138,.08),transparent 62%);
-  filter:blur(10px);animation:lgDrift 38s ease-in-out infinite alternate}
+    radial-gradient(44vmax 34vmax at 80% 22%,rgba(59,148,255,.30),transparent 64%),
+    radial-gradient(38vmax 30vmax at 18% 28%,rgba(229,40,61,.20),transparent 66%),
+    radial-gradient(42vmax 32vmax at 40% 82%,rgba(47,191,138,.18),transparent 64%),
+    radial-gradient(34vmax 28vmax at 86% 80%,rgba(59,148,255,.14),transparent 66%);animation:lgDrift 38s ease-in-out infinite alternate}
 @keyframes lgDrift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-3vmax,2vmax,0) scale(1.06)}}
 @media (prefers-reduced-motion:reduce){body[data-view="dashView"]::before{animation:none}}
 /* กระจก: การ์ดหลัก */
