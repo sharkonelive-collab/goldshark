@@ -1087,6 +1087,28 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
   filter:drop-shadow(0 0 7px rgba(80,170,255,.7)) drop-shadow(0 0 20px rgba(59,148,255,.4))}
 @keyframes goldShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @media (prefers-reduced-motion:reduce){.brand-name span{animation:none}}
+/* ---- กราฟไม้ที่เปิดอยู่ ---- */
+.livecard{margin-top:14px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7FE8B8;border:1px solid rgba(61,220,151,.4);background:rgba(61,220,151,.08);border-radius:999px;padding:2px 10px}
+.live-badge i{width:7px;height:7px;border-radius:50%;background:#3DDC97;box-shadow:0 0 8px #3DDC97;animation:sessPulse 1.6s ease-in-out infinite}
+.live-badge.off{color:var(--muted);border-color:var(--line);background:none}
+.live-badge.off i{background:var(--muted);box-shadow:none;animation:none}
+.live-wrap{position:relative;margin-top:8px}
+#liveChart{height:380px;border-radius:12px;overflow:hidden}
+.live-empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);text-align:center;padding:20px;background:rgba(5,9,18,.6);border-radius:12px}
+.live-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--muted)}
+.live-legend span{display:inline-flex;align-items:center;gap:6px}
+.live-legend i{width:12px;height:3px;border-radius:2px;display:inline-block}
+.live-legend i.dash{height:0;border-top:2px dashed;background:none}
+.live-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:12px}
+.live-sum .ls{padding:10px 12px;border-radius:12px;background:rgba(5,9,18,.55);border:1px solid rgba(255,255,255,.06);font-size:13px;color:var(--muted)}
+.live-sum .ls.b{border-color:rgba(47,191,138,.3)} .live-sum .ls.s{border-color:rgba(229,40,61,.32)}
+.live-sum .ls b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.live-sum .ls .h{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:14px;color:var(--text);font-weight:600}
+.live-sum .ls div{display:flex;justify-content:space-between;gap:8px;line-height:1.7}
+.side-tag{display:inline-block;font-style:normal;font-weight:600;font-size:13px;color:#fff;padding:1px 10px;border-radius:6px;margin-right:4px}
+.side-tag.b{background:#2FBF8A} .side-tag.s{background:#E5283D}
+@media (max-width:560px){#liveChart{height:320px}}
 /* ---- เลือกภาษา ---- */
 .lang-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 11px;border-radius:12px;border:1px solid var(--line,#26344A);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font:inherit;font-size:13px;font-weight:600;flex:none}
 .lang-btn svg{width:17px;height:17px;color:#9CC8FF}
@@ -1135,6 +1157,81 @@ body{top:0!important}
 .pc-move span{width:34px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(59,148,255,.14);border:1px solid rgba(59,148,255,.4);color:#8EC1FF;font-size:14px;cursor:pointer}
 .pc-move span.dis{opacity:.25;pointer-events:none}
 #portArrange.on{background:var(--blue,#3B94FF);color:#fff;border-color:transparent}
+
+/* ================= ดีไซน์ใหม่: แยกหน้า ================= */
+#dashView[data-pg="all"] > [data-pages]:not([data-pages~="all"]){display:none!important}
+#dashView[data-pg="port"] > [data-pages]:not([data-pages~="port"]){display:none!important}
+#dashView[data-pg="profit"] > [data-pages]:not([data-pages~="profit"]){display:none!important}
+#dashView[data-pg="cfg"] > [data-pages]:not([data-pages~="cfg"]){display:none!important}
+#dashView[data-pg="plan"] > [data-pages]:not([data-pages~="plan"]){display:none!important}
+.n-tab,.num{font-variant-numeric:tabular-nums}
+/* ตัวเลขสรุป */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.kpis:empty{display:none}
+.kpi{padding:14px 16px 13px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008)),rgba(9,14,26,.85);border:1px solid rgba(140,170,225,.11);min-width:0}
+.kpi span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.kpi b{display:block;font-family:var(--display);font-size:24px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi small{display:block;font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi small.pos{color:var(--green)} .kpi small.neg{color:var(--red)}
+.kpi.hl{background:linear-gradient(180deg,rgba(47,191,138,.10),rgba(47,191,138,.02)),rgba(9,14,26,.85);border-color:rgba(47,191,138,.28)}
+.kpi.hl.bad{background:linear-gradient(180deg,rgba(229,40,61,.10),rgba(229,40,61,.02)),rgba(9,14,26,.85);border-color:rgba(229,40,61,.3)}
+/* รายการพอร์ต (หน้าทุกพอร์ต) */
+.all-card{padding:16px 18px}
+.all-card .ports-head{margin-bottom:6px}
+#secPorts .port-list{display:block!important;overflow:visible!important;padding:0!important}
+.prow{display:grid;grid-template-columns:minmax(0,2.3fr) repeat(5,minmax(0,1fr)) 22px;gap:10px;align-items:center;width:100%;padding:13px 10px;border-radius:12px;border:0;border-bottom:1px solid rgba(140,170,225,.07);background:none;color:var(--text);text-align:right;font:inherit;cursor:pointer;transition:background .15s}
+.prow:hover{background:rgba(59,148,255,.06)}
+.prow.cur{background:rgba(59,148,255,.07);box-shadow:inset 3px 0 0 var(--blue)}
+.prow.head{cursor:default;font-size:12px;color:var(--muted);padding-top:4px;padding-bottom:8px}
+.prow.head:hover,.prow.total:hover,.prow.arr:hover{background:none}
+.prow.total{cursor:default;border-bottom:0;border-top:1px solid rgba(140,170,225,.2);border-radius:0;font-weight:600;margin-top:2px}
+.prow.arr{cursor:default}
+.pr-name{display:flex;align-items:center;gap:10px;text-align:left;min-width:0}
+.pr-t{min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pr-t b{font-weight:500;font-size:15px}
+.pr-t small{flex-basis:100%;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-c{min-width:0}
+.pr-c i{display:none;font-style:normal;font-size:11px;color:var(--muted)}
+.pr-c b{display:block;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-c small{display:block;font-size:11px;color:var(--muted)}
+.pr-empty{grid-column:2 / 7;text-align:left;font-size:13px;color:var(--muted)}
+.pr-go{color:var(--muted);font-size:20px;line-height:1}
+.pr-move{display:inline-flex;flex-direction:column;gap:2px;margin-right:2px}
+.pr-move span{cursor:pointer;font-size:11px;line-height:1;padding:3px 6px;border-radius:6px;background:rgba(59,148,255,.15);color:#8EC1FF}
+.pr-move span.dis{opacity:.3;pointer-events:none}
+.prow.add{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:10px;border:1px dashed rgba(59,148,255,.4);color:#8EC1FF;text-align:center}
+.prow.add b{font-weight:500}.prow.add small{font-size:12px;color:var(--muted)}
+.prow.add.over{border-color:rgba(229,40,61,.45);color:#FF9A9A}
+/* แถบสลับพอร์ต */
+.port-tabs{display:flex!important;gap:8px;overflow-x:auto;margin:0 0 14px;padding:2px 2px 4px;scrollbar-width:none}
+.port-tabs::-webkit-scrollbar{display:none}
+.ptab{flex:none;display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:12px;border:1px solid rgba(140,170,225,.13);background:rgba(255,255,255,.02);color:var(--muted);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.ptab b{color:var(--text);font-weight:500}
+.ptab:hover{border-color:rgba(59,148,255,.4)}
+.ptab.on{border-color:rgba(59,148,255,.55);background:rgba(59,148,255,.12)}
+.ptab.add{border-style:dashed;color:#8EC1FF}
+.ptab .dot,.prow .dot{width:8px;height:8px;flex:none}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){
+  .kpis{display:flex;overflow-x:auto;gap:10px;margin:0 -16px 14px;padding:0 16px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .kpis::-webkit-scrollbar{display:none}
+  .kpi{flex:0 0 158px;scroll-snap-align:start}
+  .kpi b{font-size:21px}
+  .all-card{padding:12px}
+  .prow{position:relative;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 8px;padding:12px 10px;text-align:left;border:1px solid rgba(140,170,225,.1);border-radius:13px;margin-bottom:8px;background:rgba(255,255,255,.02)}
+  .all-card .ports-head{flex-wrap:wrap}
+  #portsSum{order:3;flex-basis:100%;font-size:12px}
+  .prow.head{display:none}
+  .prow.total{border:1px solid rgba(242,210,127,.28);border-radius:13px;background:rgba(242,210,127,.05)}
+  .pr-name{grid-column:1 / 5;padding-right:22px}
+  .pr-go{position:absolute;right:12px;top:16px}
+  .pr-c i{display:block}
+  .pr-c b{font-size:14px}
+  .prow.total .pr-c b{font-size:12.5px}
+  .pr-c:nth-of-type(2){display:none}
+  .pr-empty{grid-column:1 / 5}
+  .port-tabs{margin:0 -16px 12px;padding:2px 16px 4px}
+}
 </style>
 </head>
 <body>
@@ -1168,13 +1265,12 @@ body{top:0!important}
 </div>
 
 <nav class="rail" id="rail" aria-label="เมนูสมาชิก" hidden>
-  <a href="#secOverview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>ภาพรวม</a>
-  <a href="#secPlan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3-2 10H6z"/></svg>แพ็กเกจ</a>
-  <a href="#secChart" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>กราฟ</a>
-  <a href="#secProfit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>กำไร</a>
-  <a href="#secNews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>ข่าว</a>
-  <a href="#cfgCard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>ตั้งค่า</a>
-  <a href="#setupBox" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>ติดตั้ง</a>
+  <a href="#" data-pg="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ทุกพอร์ต</a>
+  <a href="#" data-pg="port"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>พอร์ต</a>
+  <a href="#" data-pg="profit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>กำไร</a>
+  <a href="#" data-pg="cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>ตั้งค่า</a>
+  <a href="#" data-pg="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3-2 10H6z"/></svg>แพ็กเกจ</a>
+  <a href="#" data-pg="port" data-open="setupBox" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>ติดตั้ง</a>
 </nav>
 
 <!-- ================= LOGIN ================= -->
@@ -1253,17 +1349,12 @@ body{top:0!important}
 </main>
 
 <!-- ================= CUSTOMER DASHBOARD ================= -->
-<main id="dashView" class="wrap app" hidden>
-  <div class="digit-notice" id="digitNotice" role="note">
-    <span class="dn-ico" aria-hidden="true">!</span>
-    <span class="dn-text" id="digitText">ถ้าโบรกเกอร์ของคุณแสดงราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> (เช่น 4161.085) กรุณาแจ้งแอดมินก่อนเริ่มใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก</span>
-    <a class="btn small dn-line" href="https://lin.ee/6dAnbt1d" target="_blank" rel="noopener">แจ้งแอดมินทาง LINE</a>
-  </div>
+<main id="dashView" class="wrap app" data-pg="port" hidden>
   <div class="pay-notice" id="payNotice" role="status" hidden></div>
   <div class="pull-hint" id="pullHint" aria-hidden="true"><span class="ph-ico">↻</span><span id="pullText">ดึงลงเพื่อรีเฟรช</span></div>
   <div class="page-head">
     <div class="ph-row">
-      <h1>แดชบอร์ด EA</h1>
+      <h1 id="pgTitle">แดชบอร์ด EA</h1>
       <div class="ph-actions">
         <span class="last-sync"><span id="lastSync"></span><span id="autoLeft"></span></span>
         <label class="auto-rf" title="รีเฟรชอัตโนมัติ">
@@ -1278,21 +1369,88 @@ body{top:0!important}
         <button class="btn small refresh-btn" id="memberRefresh" aria-label="รีเฟรชข้อมูล"><span class="rf-ico">↻</span> รีเฟรช</button>
       </div>
     </div>
-    <p>ดูพอร์ต Order ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
+    <p id="pgSub">ดูพอร์ต Order ที่เปิดอยู่ และกำไรแบบสด ตั้งค่าข่าวและเวลาเทรดได้เอง ข้อมูลอัปเดตอัตโนมัติ</p>
+  </div>
+  <div class="port-tabs" id="portTabs" data-pages="port profit cfg plan"></div>
+  <div class="digit-notice" id="digitNotice" role="note" data-pages="port">
+    <span class="dn-ico" aria-hidden="true">!</span>
+    <span class="dn-text" id="digitText">ถ้าโบรกเกอร์ของคุณแสดงราคาทอง<b>ทศนิยม 3 ตำแหน่ง</b> (เช่น 4161.085) กรุณาแจ้งแอดมินก่อนเริ่มใช้งาน เพื่อตั้งค่าให้เหมาะกับโบรก</span>
+    <a class="btn small dn-line" href="https://lin.ee/6dAnbt1d" target="_blank" rel="noopener">แจ้งแอดมินทาง LINE</a>
   </div>
 
-  <section class="ports" id="secPorts">
-    <div class="ports-head">
-      <div class="card-label">พอร์ตของฉัน</div>
-      <span class="muted" id="portsSum"></span>
-      <button type="button" class="btn small ghost" id="portArrange" hidden>จัดเรียง</button>
+  <section class="ports" id="secPorts" data-pages="all">
+    <div class="kpis" id="allKpis"></div>
+    <div class="card all-card">
+      <div class="ports-head">
+        <div class="card-label">แต่ละพอร์ต</div>
+        <span class="muted" id="portsSum"></span>
+        <button type="button" class="btn small ghost" id="portArrange" hidden>จัดเรียง</button>
+      </div>
+      <div class="ports-total" id="portsTotal" hidden></div>
+      <div class="port-list" id="portList"></div>
     </div>
-    <div class="ports-total" id="portsTotal" hidden></div>
-    <div class="port-list" id="portList"></div>
   </section>
 
 
-  <section class="card host-card" id="secHost" hidden>
+
+  <details class="setup hl" id="setupBox" data-pages="port">
+    <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
+    <div class="setup-body">
+      <div class="purge-note" id="purgeNote" hidden></div>
+      <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
+      <ol class="steps">
+        <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
+        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
+          <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
+        </li>
+        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b id="dlEAName">GoldShark_Cent</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
+        <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
+          <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
+        </li>
+        <li>กด <b>ตกลง</b> และเปิดปุ่ม <b>Algo Trading</b> ให้เป็นสีเขียว ภายใน 1 นาทีหน้านี้จะขึ้นว่า EA ออนไลน์</li>
+      </ol>
+    </div>
+  </details>
+
+  <section class="card" id="secOverview" data-pages="port">
+    <div class="card-label">สถานะ MT5</div>
+    <div class="conn ov-conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span>
+      <span class="ea-right"><span class="pill ptype" id="portBadge" hidden></span>
+      <label class="sw ea-sw" title="ปิด = EA ไม่เปิดตะกร้าใหม่ Order ที่เปิดอยู่ยังดูแลจนปิด"><input type="checkbox" id="eaOn"><span class="track"></span><span id="eaOnText">EA เปิดทำงาน</span></label></span></div>
+    <div class="port-warn bad" id="portWarn" hidden></div>
+    <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ Order ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
+    <div class="ov-hero">
+      <div class="ov-big"><span class="ov-k">Balance</span><b class="num"><span id="dBal">–</span><small class="ov-cur" id="dBalCur"></small></b><small class="ov-sub" id="dBalSub">&nbsp;</small></div>
+      <div class="ov-big ov-eq"><span class="ov-k">Equity</span><b class="num"><span id="dEq">–</span><small class="ov-cur" id="dEqCur"></small></b><small class="ov-sub" id="dEqSub">&nbsp;</small></div>
+    </div>
+    <div class="tiles t4 ov-metrics">
+      <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
+      <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
+        <small id="dDDAll">–</small><div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div></div>
+      <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
+      <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
+    </div>
+    <div class="hedge-bar" id="hedgeBar" hidden></div>
+    <p class="card-foot" id="dFloat"></p>
+  </section>
+
+  <section class="card" id="secPlan" data-pages="plan">
+    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button> <button class="linkish" id="closePort" style="color:var(--red)">ปิดพอร์ต</button></div><span class="pill plan" id="planPill">–</span></div>
+    <div class="tiles t3">
+      <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
+      <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
+      <div class="tile"><span>โค้ดใส่ใน EA</span><button class="code-copy" id="planCode" title="คลิกเพื่อคัดลอก">–</button></div>
+    </div>
+    <div class="plan-note" id="planNote"></div>
+    <div class="plan-actions">
+      <button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button>
+      <details class="claim"><summary>มีโค้ดจากแอดมิน? เพิ่มเป็นพอร์ตใหม่</summary>
+        <div class="claim-row"><input class="field" id="claimIn" placeholder="GS-XXXX-XXXX" maxlength="12" aria-label="โค้ดจากแอดมิน"><button class="btn" id="claimBtn">ผูกโค้ด</button></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="card host-card" id="secHost" data-pages="plan" hidden>
     <div class="card-head"><div class="card-label">รัน EA บนเซิร์ฟเวอร์ GoldShark</div><span class="pill host-pill" id="hostPill">–</span></div>
     <p class="muted host-lead">ไม่ต้องมี VPS ไม่ต้องเปิดคอมทิ้งไว้ ใส่บัญชี MT5 ของคุณ ระบบจะเปิด MT5 และ EA ให้บนเซิร์ฟเวอร์ของเรา</p>
 
@@ -1324,64 +1482,7 @@ body{top:0!important}
     </form>
   </section>
 
-  <details class="setup hl" id="setupBox">
-    <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
-    <div class="setup-body">
-      <div class="purge-note" id="purgeNote" hidden></div>
-      <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
-      <ol class="steps">
-        <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
-        <li>กด <b>Ctrl+O</b> → แท็บ <b>Expert Advisors</b> → ติ๊ก <b>อนุญาต WebRequest สำหรับ URL ที่ระบุ</b> แล้วเพิ่ม URL นี้
-          <div class="copyrow"><code id="siteUrl">–</code><button class="btn small" id="copySite">คัดลอก</button></div>
-        </li>
-        <li>เปิดกราฟ <b>XAUUSD</b> แล้วลาก <b id="dlEAName">GoldShark_Cent</b> จาก <b>ตัวนำทาง</b> (Ctrl+N) ลงกราฟ</li>
-        <li>แท็บ <b>ทั่วไป</b> ติ๊ก <b>อนุญาตการเทรดอัลกอริทึม</b> แท็บ <b>ค่าตัวแปร</b> ใส่โค้ดนี้ในช่อง <b>โค้ดใช้งาน</b>
-          <div class="copyrow"><code id="myCode">–</code><button class="btn small" id="copyMyCode">คัดลอก</button></div>
-        </li>
-        <li>กด <b>ตกลง</b> และเปิดปุ่ม <b>Algo Trading</b> ให้เป็นสีเขียว ภายใน 1 นาทีหน้านี้จะขึ้นว่า EA ออนไลน์</li>
-      </ol>
-    </div>
-  </details>
-
-  <section class="card" id="secOverview">
-    <div class="card-label">สถานะ MT5</div>
-    <div class="conn ov-conn"><span class="dot" id="dDot"></span><b id="dOnline">–</b><span class="muted" id="dAcct"></span>
-      <span class="ea-right"><span class="pill ptype" id="portBadge" hidden></span>
-      <label class="sw ea-sw" title="ปิด = EA ไม่เปิดตะกร้าใหม่ Order ที่เปิดอยู่ยังดูแลจนปิด"><input type="checkbox" id="eaOn"><span class="track"></span><span id="eaOnText">EA เปิดทำงาน</span></label></span></div>
-    <div class="port-warn bad" id="portWarn" hidden></div>
-    <div class="ea-off-note" id="eaOffNote" hidden>EA ปิดอยู่: ไม่เปิดตะกร้าใหม่ Order ที่เปิดค้างอยู่ EA ยังแก้ไม้และปิดกำไรตามปกติจนปิดหมด · เปิดสวิตช์เพื่อให้กลับมาเทรดต่อ</div>
-    <div class="ov-hero">
-      <div class="ov-big"><span class="ov-k">Balance</span><b class="num"><span id="dBal">–</span><small class="ov-cur" id="dBalCur"></small></b><small class="ov-sub" id="dBalSub">&nbsp;</small></div>
-      <div class="ov-big ov-eq"><span class="ov-k">Equity</span><b class="num"><span id="dEq">–</span><small class="ov-cur" id="dEqCur"></small></b><small class="ov-sub" id="dEqSub">&nbsp;</small></div>
-    </div>
-    <div class="tiles t4 ov-metrics">
-      <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
-      <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
-        <small id="dDDAll">–</small><div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div></div>
-      <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
-      <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
-    </div>
-    <div class="hedge-bar" id="hedgeBar" hidden></div>
-    <p class="card-foot" id="dFloat"></p>
-  </section>
-
-  <section class="card" id="secPlan">
-    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button> <button class="linkish" id="closePort" style="color:var(--red)">ปิดพอร์ต</button></div><span class="pill plan" id="planPill">–</span></div>
-    <div class="tiles t3">
-      <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
-      <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
-      <div class="tile"><span>โค้ดใส่ใน EA</span><button class="code-copy" id="planCode" title="คลิกเพื่อคัดลอก">–</button></div>
-    </div>
-    <div class="plan-note" id="planNote"></div>
-    <div class="plan-actions">
-      <button class="btn primary" id="renewBtn">ต่ออายุ / อัปเกรด</button>
-      <details class="claim"><summary>มีโค้ดจากแอดมิน? เพิ่มเป็นพอร์ตใหม่</summary>
-        <div class="claim-row"><input class="field" id="claimIn" placeholder="GS-XXXX-XXXX" maxlength="12" aria-label="โค้ดจากแอดมิน"><button class="btn" id="claimBtn">ผูกโค้ด</button></div>
-      </details>
-    </div>
-  </section>
-
-  <section>
+  <section data-pages="port">
     <div class="card">
       <div class="card-label">ตะกร้าที่เปิดอยู่</div>
       <div class="tiles t4">
@@ -1393,7 +1494,28 @@ body{top:0!important}
     </div>
   </section>
 
-  <section class="card chart-card" id="secChart">
+  <section class="card livecard" id="secLive" data-pages="port" hidden>
+    <div class="chart-head">
+      <div class="card-label">กราฟไม้ที่เปิดอยู่</div>
+      <span class="live-badge" id="liveBadge"><i></i><span>สด</span></span>
+      <span class="spacer"></span>
+      <div class="seg" role="group" aria-label="ไทม์เฟรม">
+        <button data-ltf="5" aria-pressed="true">M5</button>
+        <button data-ltf="15" aria-pressed="false">M15</button>
+        <button data-ltf="60" aria-pressed="false">H1</button>
+      </div>
+    </div>
+    <div class="live-wrap"><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
+    <div class="live-legend">
+      <span><i style="background:#2FBF8A"></i>Buy</span><span><i style="background:#E5283D"></i>Sell</span>
+      <span><i style="background:#B07CFF"></i>Hedge</span><span><i style="background:#F2B84B"></i>ตะกร้ากู้</span>
+      <span><i class="dash" style="border-color:#FFE7A3"></i>ทุนเฉลี่ย</span><span><i class="dash" style="border-color:#7CC4FF"></i>จุดปิดกำไร</span><span><i class="dash" style="border-color:#8E9AB3"></i>แก้ไม้ถัดไป</span>
+    </div>
+    <div class="live-sum" id="liveSum"></div>
+    <p class="pnote" id="liveNote">ราคาจากโบรกของพอร์ตนี้ · เปิดหน้านี้ค้างไว้ EA จะส่งข้อมูลถี่ขึ้นเป็นทุก 10 วินาที (EA 2.30+)</p>
+  </section>
+
+  <section class="card chart-card" id="secChart" data-pages="port">
     <div class="chart-head">
       <div class="card-label">กราฟพอร์ต</div>
       <span class="key"><i style="background:var(--blue)"></i>Equity</span>
@@ -1408,7 +1530,7 @@ body{top:0!important}
     <div id="chart"></div>
   </section>
 
-  <section class="card profit" id="secProfit">
+  <section class="card profit" id="secProfit" data-pages="profit">
     <div class="profit-head">
       <div class="card-label">กำไรที่ปิดแล้ว</div>
     </div>
@@ -1417,7 +1539,7 @@ body{top:0!important}
     <p class="pnote" id="pNote">นับเฉพาะ Order ที่ปิดแล้ว รวมค่าคอมมิชชันและ swap ไม่รวมกำไรลอย · ตัดวันตามเวลาไทย</p>
   </section>
 
-  <section class="card newscard" id="secNews">
+  <section class="card newscard" id="secNews" data-pages="port">
     <div class="profit-head">
       <div class="card-label">ข่าว USD ที่ EA จะหลบ</div>
       <span class="pill" id="newsState"></span>
@@ -1426,7 +1548,7 @@ body{top:0!important}
     <p class="pnote">ปฏิทินข่าวจาก ForexFactory อัปเดตทุกชั่วโมง เวลาตามเครื่องที่เปิดดู เปิด/ปิดและตั้งช่วงหลบข่าวได้ด้านล่าง</p>
   </section>
 
-  <section class="card cfg" id="cfgCard">
+  <section class="card cfg" id="cfgCard" data-pages="cfg">
     <div class="cfg-head">
       <div class="card-label" style="flex:1">ตั้งค่าแก้ไม้ ปิดขาดทุน ข่าว และเวลาเทรด</div>
       <button class="btn small ghost" id="cfgUndo" hidden>ยกเลิกที่แก้</button>
@@ -1459,7 +1581,7 @@ body{top:0!important}
     <div id="cfgForm"></div>
   </section>
 
-  <div class="settings-strip" id="setStrip"></div>
+  <div class="settings-strip" id="setStrip" data-pages="port cfg"></div>
   <p class="foot-note">การเทรดมีความเสี่ยง ผลในอดีตไม่รับประกันผลในอนาคต © 2026 GoldShark · <a href="https://lin.ee/6dAnbt1d" target="_blank" rel="noopener" style="color:#06C755">ติดต่อแอดมินทาง LINE</a></p>
 </main>
 
@@ -1882,7 +2004,7 @@ function demoApi(action, d) {
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
           history: snapOk ? demo.hist : [],
-          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|"), daily: demoDaily() } : null });
+          snapshot: snapOk ? { digits: lic.digits || 2, time: Date.now() - 12000, online: true, balance: last.b, equity: last.e, dd: (last.b - last.e) / last.b * 100, ddAll: 12.84, ddAllAmt: 1384.2, ddAllTime: Date.now() - 4 * 86400000, ddSince: Date.now() - 30 * 86400000, ddDay: Math.floor((Date.now() + 7 * 3600000) / 86400000), ddMax: 4.37, ddMaxAmt: 482.6, buyCount: 4, buyLots: 0.14, buyPL: +(last.e - last.b - 3.1).toFixed(2), sellCount: 1, sellLots: 0.01, sellPL: 3.1, spread: 160, broker: "Exness", server: "Exness-MT5Real8", version: "1.6", tradeStatus: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? "Hedging · ตะกร้ากู้สะสม 4.20 · รวม -312.40 · รอกลับมาเท่าทุน" : "พร้อมเทรด", hedge: lic.code === "GS-7KQ2-M9XA" && settings.hedgeOn ? JSON.stringify({ n: 1, side: -1, lots: 0.21, pl: 286.4, recN: 2, recPL: 3.15, bank: 4.2 }) : "", hourly: hp.join("|"), daily: demoDaily(), live: demoLive(settings) } : null });
       }
       if (action === "user_port") {
         if (lic.port !== d.port) { delete lic.settings.basketTP; }
@@ -2140,6 +2262,7 @@ function switchPort(code) {
   if (!code || code === session.port) return;
   hostEditing = false; delete $("hostForm").dataset.filled;
   session.port = code; store.set("gs_port", code);
+  if (curPage === "all") setPage("port");
   document.querySelectorAll(".pchip[data-pcode]").forEach(x => x.classList.toggle("active", x.dataset.pcode === code));
   fillCfg(true); lotDirty = false;
   const c = meCacheGet(code);
@@ -2297,7 +2420,7 @@ function renderDash() {
   if (dashData.pay && dashData.pay.qrMode === "image") preloadStaticQr();
   if (!dashData.license) { renderNoLicense(); return; }
   const { license: L, snapshot: S, settings: C } = dashData;
-  renderPlan(); renderPort(); renderEaSwitch();
+  renderPlan(); renderPort(); renderEaSwitch(); pageTitle();
   $("lCur").textContent = L.currency || "–";
   if (S) {
     const fl = S.equity - S.balance;
@@ -2337,6 +2460,7 @@ function renderDash() {
   $("setStrip").innerHTML = Object.keys(names).map(k => `<span>${names[k]}<b>${k === "gridDist" ? Number(C[k]).toFixed(1) : esc(C[k])}</b></span>`).join("");
   $("myCode").textContent = L.code;
   renderProfit();
+  renderLive();
   syncLot();
   renderNews();
   fillCfg(false);
@@ -3072,25 +3196,41 @@ function renderNews() {
 }
 
 
-/* ============ เมนูด้านข้าง ============ */
-(() => {
-  const links = [...document.querySelectorAll(".rail a")];
-  const setActive = id => links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + id));
-  links.forEach(a => a.addEventListener("click", e => {
-    const t = document.querySelector(a.getAttribute("href")); if (!t) return;
-    e.preventDefault();
-    if (t.tagName === "DETAILS") t.open = true;
-    t.scrollIntoView({ behavior: "smooth", block: "start" });
-    setActive(t.id);
-  }));
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(es => {
-      const v = es.filter(x => x.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (v) setActive(v.target.id);
-    }, { rootMargin: "-20% 0px -65% 0px" });
-    links.forEach(a => { const t = document.querySelector(a.getAttribute("href")); if (t && t.id !== "setupBox") io.observe(t); });
-  }
-})();
+/* ============ หน้า: ทุกพอร์ต / พอร์ต / กำไร / ตั้งค่า / แพ็กเกจ ============ */
+const PAGES = { all: "ทุกพอร์ต", port: "พอร์ต", profit: "กำไร", cfg: "ตั้งค่า EA", plan: "แพ็กเกจ" };
+const PAGE_SUB = {
+  all: "ภาพรวมทุกพอร์ตของคุณ แตะพอร์ตเพื่อดูรายละเอียด",
+  port: "กราฟสด ไม้ที่เปิดอยู่ และสถานะ EA ของพอร์ตนี้",
+  profit: "กำไรที่ปิดแล้วรายวัน เลือกดูรายสัปดาห์หรือช่วงที่กำหนดได้",
+  cfg: "บันทึกแล้ว EA ใช้ค่าใหม่ภายใน 1 นาที ไม่ต้องแก้ใน MT5",
+  plan: "แพ็กเกจ วันหมดอายุ และโค้ดของพอร์ตนี้"
+};
+let curPage = null;
+function pageTitle() {
+  if (!curPage) return;
+  $("pgTitle").textContent = PAGES[curPage];
+  $("pgSub").textContent = PAGE_SUB[curPage];
+}
+function setPage(pg, opts = {}) {
+  if (!PAGES[pg]) pg = "port";
+  curPage = pg; store.set("gs_page", pg);
+  $("dashView").dataset.pg = pg;
+  document.querySelectorAll(".rail a[data-pg]").forEach(a => a.classList.toggle("active", a.dataset.pg === pg && !a.dataset.open));
+  pageTitle();
+  if (opts.open) { const t = $(opts.open); if (t) { if (t.tagName === "DETAILS") t.open = true; setTimeout(() => t.scrollIntoView({ behavior: "smooth", block: "start" }), 30); } }
+  else if (!opts.keepScroll) window.scrollTo({ top: 0 });
+  if (pg === "port" && typeof liveC !== "undefined" && liveC) setTimeout(() => liveC.timeScale().fitContent && renderLive(), 30);
+}
+document.querySelectorAll(".rail a[data-pg]").forEach(a => a.addEventListener("click", e => {
+  e.preventDefault(); setPage(a.dataset.pg, { open: a.dataset.open });
+}));
+// หน้าแรกหลังเข้าสู่ระบบ: มีหลายพอร์ต → ทุกพอร์ต · พอร์ตเดียว → พอร์ต (จำหน้าล่าสุดไว้)
+function initPage() {
+  if (curPage) return;
+  const n = (dashData && dashData.ports || []).length;
+  const saved = store.get("gs_page");
+  setPage(n === 0 ? "all" : saved && PAGES[saved] ? saved : (n >= 2 ? "all" : "port"), { keepScroll: true });
+}
 
 /* ============ แพ็กเกจ / พอร์ต / ชำระเงิน ============ */
 let PLAN_LABEL = { none: "ยังไม่มีแพ็กเกจ", trial: "ทดลองฟรี", month: "1 เดือน", m3: "3 เดือน", m6: "6 เดือน", year: "12 เดือน", life: "ถาวร" };
@@ -3339,51 +3479,70 @@ function coverInfo() {
 function renderPorts() {
   const ports = dashData.ports || [], cur = dashData.license && dashData.license.code, ci = coverInfo();
   // รวมทุกพอร์ต (แปลงพอร์ตเซ็นต์ USC → USD ÷ 100)
-  const toUsd = (v, p) => v == null ? 0 : (isCent(p.currency) || (!p.currency && p.port === "cent") ? v / 100 : v);
-  let eq = 0, today = 0, week = 0, flt = 0, on = 0, live = 0;
+  const centOf = p => isCent(p.currency) || (!p.currency && p.port === "cent");
+  const toUsd = (v, p) => v == null ? 0 : (centOf(p) ? v / 100 : v);
+  let bal = 0, eq = 0, today = 0, week = 0, flt = 0, on = 0, live = 0;
   ports.forEach(p => {
     if (p.online) on++;
     if (p.equity == null) return;
     live++;
     eq += toUsd(p.equity, p);
-    if (p.balance != null) flt += toUsd(p.equity - p.balance, p);
+    if (p.balance != null) { bal += toUsd(p.balance, p); flt += toUsd(p.equity - p.balance, p); }
     if (p.profit) { today += toUsd(p.profit.today, p); week += toUsd(p.profit.week, p); }
   });
-  const hasCent = ports.some(p => p.equity != null && (isCent(p.currency) || (!p.currency && p.port === "cent")));
+  const hasCent = ports.some(p => p.equity != null && centOf(p));
+  const usd = v => (v < 0 ? "−$" : "$") + fmt(Math.abs(v)), sgnUsd = v => (v > 0 ? "+$" : v < 0 ? "−$" : "$") + fmt(Math.abs(v));
+  const startBal = bal - today, tpct = startBal > 0 ? today / startBal * 100 : null;
   $("portArrange").hidden = ports.length < 2;
+  $("portsTotal").hidden = true;
   $("portsSum").textContent = ports.length ? `${ports.length} พอร์ต · ออนไลน์ ${on}${ci.paid ? ` · แพ็กเกจครอบคลุม ${Math.min(ports.length, ci.max)}/${ci.max}` : ""}` : "";
-  $("portsTotal").hidden = live < 2;
-  if (live >= 2) $("portsTotal").innerHTML = `
-    <div class="pt-h"><b>รวมทุกพอร์ต</b><span>${hasCent ? "หน่วย USD (พอร์ตเซ็นต์ ÷ 100)" : "หน่วย USD"}</span></div>
-    <div class="pt-grid">
-      <div><span>Equity รวม</span><b class="gold-num">$${fmt(eq)}</b></div>
-      <div><span>กำไรวันนี้</span><b class="${cls(today)}">${signed(today)}</b></div>
-      <div><span>กำไร 7 วัน</span><b class="${cls(week)}">${signed(week)}</b></div>
-      <div><span>สถานะรวม</span><b class="${cls(flt)}">${signed(flt)}</b></div>
-    </div>`;
-  $("portList").innerHTML = ports.map(p => {
+  $("allKpis").innerHTML = !live ? "" : `
+    <div class="kpi"><span>Balance รวม</span><b class="num">${usd(bal)}</b><small>${hasCent ? "USD · พอร์ตเซ็นต์ ÷ 100" : "USD"}</small></div>
+    <div class="kpi"><span>Equity รวม</span><b class="num">${usd(eq)}</b><small>${bal > 0 ? (eq / bal * 100).toFixed(2) + "% ของ Balance" : "&nbsp;"}</small></div>
+    <div class="kpi"><span>ลอยรวม</span><b class="num ${cls(flt)}">${sgnUsd(flt)}</b><small>ออนไลน์ ${on}/${ports.length} พอร์ต</small></div>
+    <div class="kpi hl ${today < 0 ? "bad" : ""}"><span>กำไรวันนี้รวม</span><b class="num ${cls(today)}">${sgnUsd(today)}</b><small class="${cls(today)}">${tpct != null && isFinite(tpct) ? (today >= 0 ? "▲ +" : "▼ ") + tpct.toFixed(2) + "%" : "&nbsp;"}</small></div>
+    <div class="kpi"><span>กำไร 7 วันรวม</span><b class="num ${cls(week)}">${sgnUsd(week)}</b><small>ปิดแล้ว · เวลาไทย</small></div>`;
+  const row = (p, idx) => {
     const dl = daysLeft(p.expires), none = p.plan === "none";
     const left = p.status !== "active" ? "ถูกระงับ" : none ? "ยังไม่มีแพ็กเกจ" : p.plan === "life" ? "ถาวร" : dl > 0 ? `เหลือ ${dl} วัน` : "หมดอายุ";
-    const ptype = p.port === "usd" || p.port === "cent" ? p.port : (p.currency ? (isCent(p.currency) ? "cent" : "usd") : (p.plan === "trial" ? "cent" : ""));
+    const ptype = p.port === "usd" || p.port === "cent" ? p.port : (p.currency ? (centOf(p) ? "cent" : "usd") : (p.plan === "trial" ? "cent" : ""));
     const unit = p.currency ? (isCent(p.currency) ? "USC" : p.currency) : (ptype === "cent" ? "USC" : ptype === "usd" ? "USD" : "");
-    const pbadge = ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : "";
     const pr = p.profit, fl = p.equity != null && p.balance != null ? p.equity - p.balance : null;
     const tp = pr && p.balance ? pr.today / (p.balance - pr.today) * 100 : null;
-    const stats = p.equity == null ? `<span class="pc-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
-      <span class="pc-stats">
-        <span><i>วันนี้</i><b class="${cls(pr ? pr.today : 0)}">${pr ? signed(pr.today) : "–"}</b>${tp != null && isFinite(tp) ? `<small class="${cls(tp)}">${tp > 0 ? "+" : ""}${tp.toFixed(2)}%</small>` : ""}</span>
-        <span><i>7 วัน</i><b class="${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b></span>
-        <span><i>สถานะ</i><b class="${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b></span>
-      </span>`;
-    const idx = ports.indexOf(p);
-    const mv = portArr ? `<span class="pc-move"><span data-move="-1" data-i="${idx}" class="${idx === 0 ? "dis" : ""}" title="ย้ายไปซ้าย">◀</span><span data-move="1" data-i="${idx}" class="${idx === ports.length - 1 ? "dis" : ""}" title="ย้ายไปขวา">▶</span></span>` : "";
-    return `<button class="pchip ${p.code === cur ? "active" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}"`}>${mv}
-      <span class="pc-top"><span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span><b>${esc(p.label)}</b>${pbadge}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</span>
-      <span class="pc-eq"><em>Equity</em>${p.equity != null ? fmt(p.equity) : "–"}<small>${esc(unit)}</small></span>
-      ${stats}
-      <span class="pc-sub"><span class="pill plan ${none ? "none" : ""}">${esc(PLAN_LABEL[p.plan] || p.plan)}</span>${p.coveredBy ? '<span class="pill cover" title="ใช้แพ็กเกจร่วมกับพอร์ตหลัก">แพ็กเกจร่วม</span>' : ""}${none && ci.paid ? '<span class="pill paymore">ต้องชำระเพิ่ม</span>' : ""} ${left}${p.account ? " · บัญชี " + esc(p.account) : ""}</span></button>`;
-  }).join("") + (ports.length < (dashData.maxPorts || 10) ? portArr ? "" : `<button class="pchip add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+</b>เปิดพอร์ตใหม่<small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "");
+    const mv = portArr ? `<span class="pr-move"><span data-move="-1" data-i="${idx}" class="${idx === 0 ? "dis" : ""}" title="เลื่อนขึ้น">▲</span><span data-move="1" data-i="${idx}" class="${idx === ports.length - 1 ? "dis" : ""}" title="เลื่อนลง">▼</span></span>` : "";
+    const nodata = p.equity == null;
+    return `<div class="prow ${p.code === cur ? "cur" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}" role="button" tabindex="0"`}>
+      <span class="pr-name">${mv}<span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span>
+        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}
+          <small>${esc(PLAN_LABEL[p.plan] || p.plan)} · ${left}${p.coveredBy ? " · แพ็กเกจร่วม" : ""}${none && ci.paid ? ' · <span class="neg">ต้องชำระเพิ่ม</span>' : ""}${p.account ? " · " + esc(p.account) : ""}</small></span></span>
+      ${nodata ? `<span class="pr-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
+      <span class="pr-c"><i>Balance</i><b class="num">${fmt(p.balance)}</b><small>${esc(unit)}</small></span>
+      <span class="pr-c"><i>Equity</i><b class="num">${fmt(p.equity)}</b><small>${esc(unit)}</small></span>
+      <span class="pr-c"><i>ลอย</i><b class="num ${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b></span>
+      <span class="pr-c"><i>วันนี้</i><b class="num ${cls(pr ? pr.today : 0)}">${pr ? signed(pr.today) : "–"}</b>${tp != null && isFinite(tp) ? `<small class="${cls(tp)}">${tp > 0 ? "+" : ""}${tp.toFixed(2)}%</small>` : ""}</span>
+      <span class="pr-c"><i>7 วัน</i><b class="num ${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b></span>`}
+      ${portArr ? "" : '<span class="pr-go" aria-hidden="true">›</span>'}</div>`;
+  };
+  const head = ports.length ? `<div class="prow head"><span class="pr-name">พอร์ต</span><span class="pr-c">Balance</span><span class="pr-c">Equity</span><span class="pr-c">ลอย</span><span class="pr-c">วันนี้</span><span class="pr-c">7 วัน</span><span class="pr-go"></span></div>` : "";
+  const total = live >= 2 ? `<div class="prow total"><span class="pr-name"><b>รวม (USD)</b></span><span class="pr-c"><i>Balance</i><b class="num">${usd(bal)}</b></span><span class="pr-c"><i>Equity</i><b class="num">${usd(eq)}</b></span><span class="pr-c"><i>ลอย</i><b class="num ${cls(flt)}">${sgnUsd(flt)}</b></span><span class="pr-c"><i>วันนี้</i><b class="num ${cls(today)}">${sgnUsd(today)}</b></span><span class="pr-c"><i>7 วัน</i><b class="num ${cls(week)}">${sgnUsd(week)}</b></span><span class="pr-go"></span></div>` : "";
+  const add = ports.length < (dashData.maxPorts || 10) && !portArr ? `<button class="prow add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+ เปิดพอร์ตใหม่</b><small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "";
+  $("portList").innerHTML = head + ports.map(row).join("") + total + add;
+  // แถบสลับพอร์ต (หน้าพอร์ต / กำไร / ตั้งค่า / แพ็กเกจ)
+  $("portTabs").innerHTML = ports.map(p => `<button class="ptab ${p.code === cur ? "on" : ""}" data-pcode="${esc(p.code)}"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><small>${p.account ? esc(p.account) : (p.port === "usd" ? "USD" : p.port === "cent" ? "Cent" : "")}</small>${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</button>`).join("")
+    + (ports.length < (dashData.maxPorts || 10) ? `<button class="ptab add" data-addport="1">+ เพิ่มพอร์ต</button>` : "");
+  initPage(); pageTitle();
 }
+$("portList").addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.pcode) { e.preventDefault(); e.target.click(); } });
+$("portTabs").addEventListener("click", e => {
+  const b = e.target.closest("[data-pcode]");
+  if (b) { switchPort(b.dataset.pcode); return; }
+  if (e.target.closest("[data-addport]")) { const a = $("addPortBtn"); if (a) a.click(); }
+});
+$("portTabs").addEventListener("pointerenter", e => {
+  const b = e.target.closest && e.target.closest("[data-pcode]"); if (!b || b.dataset.pcode === session.port) return;
+  const c = meCacheGet(b.dataset.pcode);
+  if (!c || Date.now() - (c._t || 0) > PREFETCH_FRESH) prefetchPort(b.dataset.pcode);
+}, true);
 function renderEaSwitch() {
   const L = dashData.license, off = !!(L && L.eaOff);
   $("eaOn").checked = !off; $("eaOn").disabled = false;
@@ -3418,7 +3577,7 @@ $("portList").addEventListener("click", e => {
   }
   if (portArr) return;
   const b = e.target.closest("[data-pcode]");
-  if (b) { switchPort(b.dataset.pcode); return; }
+  if (b) { if (b.dataset.pcode === session.port) setPage("port"); else switchPort(b.dataset.pcode); return; }
   if (e.target.closest("#addPortBtn")) {
     const ci = coverInfo();
     if (ci.paid && !ci.free && !confirm(`แพ็กเกจของคุณใช้ได้ ${ci.max} พอร์ต และเปิดครบแล้ว\n\nพอร์ตที่ ${(dashData.ports || []).length + 1} ต้องชำระแพ็กเกจเพิ่มแยกสำหรับพอร์ตนี้ EA ถึงจะเริ่มเทรด\n\nต้องการเปิดพอร์ตเพิ่มและชำระเงินต่อไหม?`)) return;
@@ -4245,6 +4404,112 @@ function langSet(code) {
   sc.onerror = () => toast && toast("โหลดตัวแปลภาษาไม่ได้ ลองรีเฟรชอีกครั้ง");
   document.head.appendChild(sc);
 })();
+
+/* ============ กราฟไม้ที่เปิดอยู่ (Lightweight Charts by TradingView) ============ */
+// ข้อมูลจาก EA 2.30+ (snapshot.live): { bid, ask, digits, bars:[[t,o,h,l,c],...M5], pos:[{s:1|-1, k:"m"|"b"|"h"|"r", p, v, pl}], next:{buy:{p,v},sell:{p,v}}, beOff, every }
+let lwcP = null, liveC = null, liveS = null, liveLines = [], liveTF = 5, liveSig = "";
+function loadLWC() {
+  if (window.LightweightCharts) return Promise.resolve();
+  if (lwcP) return lwcP;
+  lwcP = new Promise((ok, no) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js";
+    sc.onload = ok; sc.onerror = () => { lwcP = null; no(); };
+    document.head.appendChild(sc);
+  });
+  return lwcP;
+}
+document.querySelectorAll("#secLive .seg button").forEach(b => b.addEventListener("click", () => {
+  liveTF = +b.dataset.ltf; liveSig = "";
+  document.querySelectorAll("#secLive .seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderLive();
+}));
+function liveBars(raw, tf) {
+  const out = [];
+  (raw || []).forEach(([t, o, h, l, c]) => {
+    const k = Math.floor(t / (tf * 60)) * tf * 60, last = out[out.length - 1];
+    if (last && last.time === k) { last.high = Math.max(last.high, h); last.low = Math.min(last.low, l); last.close = c; }
+    else out.push({ time: k + TH_OFF / 1000, open: o, high: h, low: l, close: c });   // แสดงเวลาไทย
+  });
+  return out;
+}
+const LIVE_COL = { m: ["#2FBF8A", "#E5283D"], b: ["#2FBF8A", "#E5283D"], h: ["#B07CFF", "#B07CFF"], r: ["#F2B84B", "#F2B84B"] };
+const LIVE_NAME = { m: "", b: "บอลลูน ", h: "Hedge ", r: "กู้ " };
+async function renderLive() {
+  const S = dashData && dashData.snapshot, L = S && S.live, empty = $("liveEmpty");
+  const badge = $("liveBadge");
+  $("secLive").hidden = !(L && L.bars && L.bars.length);       // ซ่อนการ์ดจนกว่า EA 2.30+ จะส่งข้อมูลกราฟ
+  if (!L || !L.bars || !L.bars.length) {
+    empty.hidden = false;
+    empty.innerHTML = S ? "ต้องใช้ EA เวอร์ชัน 2.30 ขึ้นไป ถึงจะเห็นกราฟไม้แบบสด<br><small>ดาวน์โหลด EA ล่าสุดได้ที่หน้าสมาชิก</small>" : "ยังไม่มีข้อมูลจาก EA";
+    badge.classList.add("off"); badge.lastElementChild.textContent = "ออฟไลน์";
+    $("liveSum").innerHTML = ""; return;
+  }
+  const fresh = S.online && Date.now() - S.time < 90000;
+  badge.classList.toggle("off", !fresh); badge.lastElementChild.textContent = fresh ? `สด · ${ago(S.time)}` : "ออฟไลน์";
+  try { await loadLWC(); } catch (e) { empty.hidden = false; empty.textContent = "โหลดกราฟไม่ได้ ลองรีเฟรชอีกครั้ง"; return; }
+  empty.hidden = true;
+  const dg = L.digits || 2, box = $("liveChart");
+  if (!liveC) {
+    liveC = LightweightCharts.createChart(box, {
+      autoSize: true, layout: { background: { color: "rgba(5,9,18,.55)" }, textColor: "#8E9AB3", fontFamily: "Kanit, system-ui, sans-serif" },
+      grid: { vertLines: { color: "rgba(110,150,230,.07)" }, horzLines: { color: "rgba(110,150,230,.07)" } },
+      rightPriceScale: { borderColor: "rgba(110,150,230,.16)", scaleMargins: { top: .12, bottom: .16 } },
+      timeScale: { borderColor: "rgba(110,150,230,.16)", timeVisible: true, secondsVisible: false, rightOffset: 6 },
+      crosshair: { mode: 0 }, localization: { locale: "en-GB", priceFormatter: v => v.toFixed(dg) }
+    });
+    liveS = liveC.addCandlestickSeries({ upColor: "#2FBF8A", downColor: "#E5283D", borderVisible: false, wickUpColor: "#2FBF8A", wickDownColor: "#E5283D",
+      priceFormat: { type: "price", precision: dg, minMove: 1 / Math.pow(10, dg) } });
+  }
+  const bars = liveBars(L.bars, liveTF);
+  const sig = liveTF + "|" + bars.length + "|" + (bars[0] && bars[0].time);
+  liveS.setData(bars);
+  if (sig !== liveSig) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
+  liveLines.forEach(l => liveS.removePriceLine(l)); liveLines = [];
+  const line = (price, color, title, style = 0, width = 1) => liveLines.push(liveS.createPriceLine({ price, color, lineWidth: width, lineStyle: style, axisLabelVisible: true, title }));
+  const pos = L.pos || [], C = Object.assign({}, CFG_DEF, dashData.settings || {});
+  const GP = 0.01;                                         // 100 จุด = ราคาทองขยับ 1.00
+  pos.forEach(o => line(o.p, LIVE_COL[o.k || "m"][o.s > 0 ? 0 : 1], `${LIVE_NAME[o.k || "m"]}${o.s > 0 ? "B" : "S"} ${o.v.toFixed(2)} · ${o.pl > 0 ? "+" : ""}${o.pl.toFixed(2)}`));
+  const sums = [];
+  [[1, "Buy", "b"], [-1, "Sell", "s"]].forEach(([sd, nm, c]) => {
+    const ps = pos.filter(o => o.s === sd && (o.k || "m") === "m");
+    if (!ps.length) return;
+    const lots = ps.reduce((a, o) => a + o.v, 0), avg = ps.reduce((a, o) => a + o.p * o.v, 0) / lots, pl = ps.reduce((a, o) => a + o.pl, 0);
+    const be = ps.length >= 2 ? Number(C.beOffset) || 0 : Number(C.firstTP) || 0;
+    const tp = be > 0 ? avg + sd * be * GP : null, nx = L.next && L.next[sd > 0 ? "buy" : "sell"];
+    if (ps.length >= 2) line(avg, "#FFE7A3", `ทุนเฉลี่ย ${nm}`, 2, 1);
+    if (tp) line(tp, "#7CC4FF", `ปิดกำไร ${nm}`, 1, 1);
+    if (nx && nx.p) line(nx.p, "#8E9AB3", `แก้ไม้ถัดไป ${nx.v.toFixed(2)}`, 2, 1);
+    const cur = sd > 0 ? L.bid : L.ask, dist = nx && nx.p ? Math.abs(cur - nx.p) : null;
+    sums.push(`<div class="ls ${c}"><div class="h"><span><i class="side-tag ${c}">${nm}</i> ${ps.length} ไม้ · ${fmt(lots)} lot</span><span class="${cls(pl)}">${signed(pl)}</span></div>
+      <div><span>ทุนเฉลี่ย</span><b>${avg.toFixed(dg)}</b></div>
+      ${tp ? `<div><span>ปิดกำไรที่</span><b>${tp.toFixed(dg)} <small class="muted">(อีก ${Math.abs(tp - cur).toFixed(2)})</small></b></div>` : ""}
+      ${nx && nx.p ? `<div><span>แก้ไม้ถัดไป</span><b>${nx.p.toFixed(dg)} · ${nx.v.toFixed(2)} lot <small class="muted">(อีก ${dist.toFixed(2)})</small></b></div>` : `<div><span>แก้ไม้ถัดไป</span><b class="muted">ไม้แก้ครบแล้ว</b></div>`}</div>`);
+  });
+  const oth = pos.filter(o => (o.k || "m") !== "m");
+  if (oth.length) { const pl = oth.reduce((a, o) => a + o.pl, 0); sums.push(`<div class="ls"><div class="h"><span>Hedge / ตะกร้ากู้ · ${oth.length} ไม้</span><span class="${cls(pl)}">${signed(pl)}</span></div><div><span>ล็อตรวม</span><b>${fmt(oth.reduce((a, o) => a + o.v, 0))}</b></div></div>`); }
+  $("liveSum").innerHTML = sums.join("") || `<div class="ls">ไม่มี Order ที่เปิดอยู่ · ราคาปัจจุบัน <b>${(+L.bid).toFixed(dg)}</b></div>`;
+}
+
+// ตัวอย่าง: แท่ง M5 ~2 วัน + ตะกร้า Buy 4 ไม้ที่ติดลบ + Sell 1 ไม้
+function demoLive(C) {
+  const now = Math.floor(Date.now() / 1000), t0 = Math.floor(now / 300) * 300 - 599 * 300;
+  let seed = Math.floor(t0 / 86400) + 7, px = 4128;
+  const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  const bars = [];
+  for (let i = 0; i < 600; i++) {
+    const t = t0 + i * 300, drift = i > 470 ? -0.32 : 0.02;
+    const o = px, c = +(o + drift + (rnd() - .5) * 3.2).toFixed(2);
+    const h = +(Math.max(o, c) + rnd() * 1.4).toFixed(2), l = +(Math.min(o, c) - rnd() * 1.4).toFixed(2);
+    bars.push([t, o, h, l, c]); px = c;
+  }
+  const bid = px, ask = +(px + 0.16).toFixed(2), g = (Number(C.gridDist) || 300) * 0.01;
+  const lots = [0.02, 0.03, 0.04, 0.05], top = bid + g * 3 + 1.4;
+  const pos = lots.map((v, i) => { const p = +(top - g * i).toFixed(2); return { s: 1, k: "m", p, v, pl: +((bid - p) * v * 100).toFixed(2) }; });
+  pos.push({ s: -1, k: "m", p: +(bid + 3.6).toFixed(2), v: 0.01, pl: +((bid + 3.6 - ask) * 0.01 * 100).toFixed(2) });
+  const worst = Math.min(...pos.filter(o => o.s > 0).map(o => o.p));
+  return { bid, ask, digits: 2, bars, pos, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
+}
 </script>
 </body>
 </html>
