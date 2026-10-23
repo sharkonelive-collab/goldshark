@@ -1371,7 +1371,12 @@ body[data-view="dashView"]{background:
   box-shadow:0 24px 60px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
 #dashView .card::before,#dashView .card::after{display:none}
 #dashView .card-label{font-size:12.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#9AA8C2}
-#dashView .card-label::before{width:6px;height:6px;border-radius:50%;transform:none;flex:none;margin-right:18px;background:#2FBF8A;box-shadow:9px 0 0 #E5283D,18px 0 0 #3B94FF,0 0 8px rgba(47,191,138,.5)}
+/* จุดหน้าหัวข้อการ์ด: 1 จุด สีตามหมวด · น้ำเงิน = ข้อมูล/กราฟ/ตั้งค่า · เขียว = กำไร/ไม้ที่เปิด · แดง = ความเสี่ยง/ข่าว */
+#dashView .card-label::before{--dot:#3B94FF;width:7px;height:7px;border-radius:50%;transform:none;flex:none;margin-right:2px;background:var(--dot);box-shadow:0 0 0 3px color-mix(in srgb,var(--dot) 22%,transparent),0 0 10px var(--dot)}
+#secProfit .card-label::before,#secBasket .card-label::before,#bkSum ~ * .card-label::before{--dot:#2FBF8A}
+#secNews .card-label::before{--dot:#E5283D}
+#secLive .card-label::before,#secChart .card-label::before,#secPorts .card-label::before{--dot:#3B94FF}
+#cfgCard .card-label::before,#secPlan .card-label::before,#secHost .card-label::before{--dot:#3B94FF}
 /* หัวหน้า */
 #dashView .page-head h1{font-size:30px;letter-spacing:-.01em;font-weight:600}
 #dashView .page-head p{font-size:13.5px;color:#7F8CA3}
