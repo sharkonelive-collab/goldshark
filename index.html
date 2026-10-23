@@ -1352,6 +1352,57 @@ body{top:0!important}
   #secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:21px!important}
   #dashView[data-pg="port"] > #secBasket{margin-top:14px}
 }
+
+/* ================= ชั้นพรีเมียม v2 (ทั้งหน้าสมาชิก) ================= */
+:root{--pm-bg:#05080F;--pm-card:#0A111E;--pm-card2:#0D1626;--pm-line:rgba(150,180,230,.10);--pm-line2:rgba(150,180,230,.18);--pm-gold:#E8C46A;--pm-gold2:#B98A2E}
+body[data-view="dashView"]{background:
+  radial-gradient(1200px 520px at 78% -8%,rgba(59,148,255,.10),transparent 62%),
+  radial-gradient(900px 480px at 8% -4%,rgba(232,196,106,.07),transparent 60%),var(--pm-bg)}
+#dashView.wrap{max-width:1380px;padding-left:120px;padding-right:32px}
+/* การ์ด: พื้นเรียบ ขอบบาง เงานุ่ม ไม่มีเส้นแดง-น้ำเงิน */
+#dashView .card{background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.006)),var(--pm-card);border:1px solid var(--pm-line);border-radius:20px;
+  box-shadow:0 24px 60px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
+#dashView .card::before,#dashView .card::after{display:none}
+#dashView .card-label{font-size:12.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#9AA8C2}
+#dashView .card-label::before{width:6px;height:6px;border-radius:2px;transform:rotate(45deg);background:linear-gradient(135deg,var(--pm-gold),var(--pm-gold2));box-shadow:0 0 10px rgba(232,196,106,.5)}
+/* หัวหน้า */
+#dashView .page-head h1{font-size:30px;letter-spacing:-.01em;font-weight:600}
+#dashView .page-head p{font-size:13.5px;color:#7F8CA3}
+/* ตัวเลขสรุป */
+#dashView .kpi,#secOverview .ov-big,#secOverview .ov-metrics .tile{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--pm-card)!important;border:1px solid var(--pm-line)!important;border-radius:18px!important}
+#dashView .kpi.hl,#tToday{background:linear-gradient(180deg,rgba(47,191,138,.12),rgba(47,191,138,.02) 70%),var(--pm-card)!important;border-color:rgba(47,191,138,.28)!important}
+#dashView .kpi.hl.bad,#tToday.down{background:linear-gradient(180deg,rgba(229,40,61,.12),rgba(229,40,61,.02) 70%),var(--pm-card)!important;border-color:rgba(229,40,61,.3)!important}
+#dashView .kpi span,#secOverview .ov-big .ov-k,#secOverview .ov-metrics .tile > span{font-size:12px!important;letter-spacing:.06em!important;text-transform:uppercase;color:#8592AA!important}
+/* แถบสถานะ EA */
+#secOverview > .ov-conn{background:linear-gradient(90deg,rgba(47,191,138,.06),transparent 40%),var(--pm-card)!important;border:1px solid var(--pm-line)!important;border-radius:16px!important;padding:11px 16px!important}
+#secOverview > .card-foot{display:none}
+/* แถบสลับพอร์ต */
+.ptab{border-radius:14px;padding:9px 14px;background:rgba(255,255,255,.02);border-color:var(--pm-line)}
+.ptab.on{background:linear-gradient(180deg,rgba(59,148,255,.16),rgba(59,148,255,.06));border-color:rgba(59,148,255,.5);box-shadow:0 8px 24px -14px rgba(59,148,255,.7)}
+/* แจ้งเตือน: เบาลง */
+#dashView .digit-notice,#dashView .upd-notice{border-radius:16px;padding:10px 14px;font-size:13.5px}
+#dashView .digit-notice{background:linear-gradient(90deg,rgba(229,40,61,.10),rgba(229,40,61,.03));border:1px solid rgba(229,40,61,.32)}
+/* เมนูซ้าย */
+.rail{background:rgba(8,13,24,.92);border:1px solid var(--pm-line);border-radius:22px;box-shadow:0 20px 50px -30px rgba(0,0,0,.9)}
+.rail a.active{background:linear-gradient(180deg,rgba(232,196,106,.18),rgba(232,196,106,.05));box-shadow:inset 0 0 0 1px rgba(232,196,106,.45);color:#FFF1CF}
+.rail a.active svg{color:var(--pm-gold)}
+/* แถบบน */
+.bar{border-bottom:1px solid var(--pm-line)!important}
+/* ปุ่ม LINE: เล็กลง ไม่บังการ์ด */
+@media (min-width:761px){.fab-line{padding:0;width:52px;height:52px;justify-content:center;border-radius:50%}.fab-line span{display:none}}
+/* กราฟสด */
+#secLive .live-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--pm-line)}
+#secLive .live-legend{font-size:11.5px}
+/* การ์ดตะกร้า */
+.bk{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.008)),var(--pm-card2);border-radius:16px}
+/* ตาราง/รายการพอร์ต */
+.prow.cur{background:linear-gradient(90deg,rgba(232,196,106,.08),transparent 60%);box-shadow:inset 3px 0 0 var(--pm-gold)}
+@media (max-width:760px){#dashView.wrap{padding-left:16px;padding-right:16px}#dashView .page-head h1{font-size:26px}
+  #dashView .digit-notice,#dashView .upd-notice{font-size:12.5px;gap:8px 10px;padding:9px 12px}
+  #dashView .upd-notice .un-t small{display:none}
+  #dashView .upd-notice .un-ico,#dashView .digit-notice .dn-ico{width:24px;height:24px;font-size:12px}
+  #dashView .digit-notice .btn,#dashView .upd-notice .btn{padding:5px 10px;font-size:12px;min-height:0}
+  .fab-line{width:46px!important;height:46px!important}.fab-line svg{width:24px!important;height:24px!important}}
 </style>
 </head>
 <body>
@@ -1638,7 +1689,7 @@ body{top:0!important}
       <span><i class="dash" style="border-color:#FFE7A3"></i>ทุนเฉลี่ย</span><span><i class="dash" style="border-color:#7CC4FF"></i>จุดปิดกำไร</span><span><i class="dash" style="border-color:#8E9AB3"></i>แก้ไม้ถัดไป</span>
     </div>
     <div class="live-sum" id="liveSum"></div>
-    <p class="pnote" id="liveNote">ราคาจากโบรกของพอร์ตนี้ · เปิดหน้านี้ค้างไว้ EA จะส่งข้อมูลถี่ขึ้นเป็นทุก 10 วินาที (EA 2.30+)</p>
+    <p class="pnote" id="liveNote">ราคาจากโบรกของพอร์ตนี้ · EA 2.31 ขึ้นไปส่งราคาและกำไรแบบเรียลไทม์ทุก 1–2 วินาทีตอนเปิดหน้านี้</p>
   </section>
 
   <section class="card chart-card" id="secChart" data-pages="port">
@@ -4610,7 +4661,7 @@ async function renderLive() {
     $("liveSum").innerHTML = ""; return;
   }
   const fresh = S.online && Date.now() - S.time < 90000;
-  badge.classList.toggle("off", !fresh); badge.lastElementChild.textContent = fresh ? `สด · ${ago(S.time)}` : "ออฟไลน์";
+  badge.classList.toggle("off", !fresh); badge.lastElementChild.textContent = fbTickAt && Date.now() - fbTickAt < 10000 ? "เรียลไทม์" : fresh ? `สด · ${ago(S.time)}` : "ออฟไลน์";
   try { await loadLWC(); } catch (e) { empty.hidden = false; empty.textContent = "โหลดกราฟไม่ได้ ลองรีเฟรชอีกครั้ง"; return; }
   empty.hidden = true;
   const dg = L.digits || 2, box = $("liveChart");
@@ -4662,12 +4713,16 @@ setInterval(async () => {
   if (document.hidden || curPage !== "port" || livePollBusy || !session || !session.token) return;
   const S = dashData && dashData.snapshot, L = dashData && dashData.license;
   if (!S || !S.live || !L) return;
-  if (!API_URL) { renderLive(); renderBaskets(); renderHdrPx(); return; }                      // โหมดตัวอย่าง
+  if (!API_URL) { return; }                                    // โหมดตัวอย่าง: ใช้ตัวจำลองราคาสดด้านล่าง
+  // มีราคาสดจาก Firebase แล้ว → ping แค่นาทีละครั้ง (ให้ EA รู้ว่ายังมีคนดู) ประหยัดโควต้า Vercel
+  if (fbTickAt && Date.now() - fbTickAt < 15000 && Date.now() - livePingAt < 60000) return;
+  livePingAt = Date.now();
   livePollBusy = true;
   try {
     const r = await api("live_ping", { token: session.token, code: L.code });
     if (r && r.ok && r.snapshot && dashData && dashData.license && dashData.license.code === L.code) {
       Object.assign(dashData.snapshot, r.snapshot);
+      if (fbLastTick && Date.now() - fbTickAt < 15000) applyTick(fbLastTick, true);   // ราคาจาก Firebase ใหม่กว่า
       renderLive(); renderBaskets(); renderHdrPx();
     }
   } catch (e) {} finally { livePollBusy = false; }
@@ -4798,6 +4853,67 @@ function renderHdrPx() {
   if (first) { const ch = bid - first[1], pc = ch / first[1] * 100; d.className = "d " + cls(ch); d.innerHTML = `${ch >= 0 ? "▲" : "▼"}<span class="da"> ${Math.abs(ch).toFixed(2)}</span> <span class="dp">${pc >= 0 ? "+" : ""}${pc.toFixed(2)}%</span>`; d.title = "เทียบราคาเปิดวันนี้ (เวลาไทย)"; }
   else d.textContent = "";
 }
+
+/* ============ ราคาสดเรียลไทม์จาก Firebase (EA 2.31+) ============ */
+// EA ส่ง {t,bid,ask,sp,bal,eq,pos} ทุก 2 วิ เข้า /live/<กุญแจของพอร์ต> · หน้าเว็บฟังผ่าน EventSource (ไม่ต้องโหลดไลบรารี)
+let fbES = null, fbESKey = "", fbTickAt = 0, fbLastTick = null, livePingAt = 0, fbRaf = 0;
+function applyTick(d, quiet) {
+  const S = dashData && dashData.snapshot; if (!S || !d || !d.bid) return;
+  const L = S.live = S.live || { bars: [], pos: [] };
+  L.bid = +d.bid; L.ask = +d.ask; if (Array.isArray(d.pos)) L.pos = d.pos; else if (d.pos === undefined && !quiet) L.pos = L.pos || [];
+  if (d.sp != null) S.spread = d.sp;
+  if (d.bal) S.balance = +d.bal; if (d.eq) S.equity = +d.eq;
+  if (S.balance) S.dd = Math.max(0, (S.balance - S.equity) / S.balance * 100);
+  const sum = (sd, f) => (L.pos || []).filter(o => o.s === sd).reduce((a, o) => a + f(o), 0);
+  S.buyCount = (L.pos || []).filter(o => o.s > 0).length; S.sellCount = (L.pos || []).filter(o => o.s < 0).length;
+  S.buyLots = sum(1, o => +o.v); S.sellLots = sum(-1, o => +o.v); S.buyPL = sum(1, o => +o.pl); S.sellPL = sum(-1, o => +o.pl);
+  const t = +d.t || Math.floor(Date.now() / 1000), px = L.bid;
+  [["bars", 300], ["h1", 3600]].forEach(([k, sec]) => {
+    const B = L[k]; if (!B || !B.length) return;
+    const bk = Math.floor(t / sec) * sec, last = B[B.length - 1];
+    if (last[0] === bk) { last[2] = Math.max(last[2], px); last[3] = Math.min(last[3], px); last[4] = px; }
+    else if (bk > last[0]) { B.push([bk, last[4], Math.max(last[4], px), Math.min(last[4], px), px]); if (B.length > 400) B.shift(); }
+  });
+  S.time = Date.now(); S.online = true;
+  if (quiet) return;
+  fbTickAt = Date.now(); fbLastTick = d;
+  cancelAnimationFrame(fbRaf);
+  fbRaf = requestAnimationFrame(() => {
+    if (curPage !== "port") return;
+    renderLive(); renderBaskets(); renderHdrPx();
+    // ตัวเลขด้านบนอัปเดตตาม (ไม่ render ทั้งหน้า)
+    const fl = S.equity - S.balance;
+    $("dBal").textContent = fmt(S.balance); $("dEq").textContent = fmt(S.equity);
+    $("dFlt").textContent = signed(fl); $("dFlt").className = "num " + cls(fl);
+    $("dFltSub").textContent = (S.buyCount ? `Buy ${signed(S.buyPL)}` : "") + (S.buyCount && S.sellCount ? " · " : "") + (S.sellCount ? `Sell ${signed(S.sellPL)}` : "") || "ไม่มี Order ค้าง";
+  });
+}
+function fbSync() {
+  const L = dashData && dashData.license;
+  const want = API_URL && curPage === "port" && !document.hidden && L && L.fbUrl && L.fbKey ? L.fbKey : "";
+  if (want === fbESKey) return;
+  if (fbES) { fbES.close(); fbES = null; }
+  fbESKey = want; fbTickAt = 0; fbLastTick = null;
+  if (!want || !window.EventSource) return;
+  const url = L.fbUrl.replace(/\/?$/, "/") + "live/" + want + ".json";
+  fbES = new EventSource(url);
+  const on = ev => { try { const m = JSON.parse(ev.data); if (m && m.path === "/" && m.data) applyTick(m.data); else if (m && m.data && m.path) { const k = m.path.replace(/^\//, ""); if (fbLastTick) applyTick(Object.assign({}, fbLastTick, { [k]: m.data })); } } catch (e) {} };
+  fbES.addEventListener("put", on); fbES.addEventListener("patch", on);
+  fbES.addEventListener("cancel", () => { fbES && fbES.close(); fbES = null; });   // กฎ Firebase ไม่ให้อ่าน
+  fbES.onerror = () => {};                                                         // EventSource ต่อใหม่เอง
+}
+setInterval(fbSync, 2000);
+document.addEventListener("visibilitychange", fbSync);
+
+// โหมดตัวอย่าง: จำลองราคาสดทุกวินาที ให้เห็นการเคลื่อนไหวแบบเรียลไทม์
+setInterval(() => {
+  if (API_URL || curPage !== "port" || document.hidden) return;
+  const S = dashData && dashData.snapshot, L = S && S.live; if (!L || !L.bid) return;
+  const px = +(L.bid + (Math.random() - .5) * 0.6).toFixed(2), ask = +(px + 0.16).toFixed(2);
+  const pos = (L.pos || []).map(o => Object.assign({}, o, { pl: +((o.s > 0 ? px - o.p : o.p - ask) * o.v * 100).toFixed(2) }));
+  const fl = pos.reduce((a, o) => a + o.pl, 0);
+  applyTick({ t: Math.floor(Date.now() / 1000), bid: px, ask, sp: 16, bal: S.balance, eq: +(S.balance + fl).toFixed(2), pos });
+}, 1000);
 </script>
 </body>
 </html>
