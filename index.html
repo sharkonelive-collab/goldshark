@@ -1155,6 +1155,7 @@ body{top:0!important}
 .bp-item{display:flex;gap:10px;padding:9px 8px;border-radius:10px}
 .bp-item.new{background:rgba(59,148,255,.08)}
 .bp-ico{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;font-size:14px;background:rgba(255,255,255,.05)}
+.bp-ico{color:#9CC8FF}.bp-ico svg{width:15px;height:15px;display:block}.bp-ico.admin{color:#F2D27F}.bp-ico.pay{color:#3DDC97}.bp-ico.ea{color:#FF6B78}
 .bp-ico.admin{background:rgba(242,210,127,.12)}.bp-ico.pay{background:rgba(61,220,151,.12)}.bp-ico.ea{background:rgba(229,40,61,.12)}
 .bp-txt{min-width:0;flex:1;font-size:13px;line-height:1.45}
 .bp-txt small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
@@ -2819,8 +2820,26 @@ function switchPort(code) {
 }
 
 /* ============ กระดิ่งแจ้งเตือน (ประวัติการทำรายการ) ============ */
-const ACT_ICO = { admin: "👤", pay: "💳", pay_submit: "💳", ea_toggle: "⏻", user_settings: "⚙", user_preset: "⚙", user_balanced: "⚙", user_lot: "⚙",
-  port_add: "＋", port_close: "✕", port_rename: "✎", port_order: "⇄", login: "🔑", google_login: "🔑", google_link: "🔗", register: "★", change_password: "🔒", host_set: "☁", host_stop: "☁", user_port: "⚙", claim_code: "＋" };
+// ไอคอนเป็น SVG (อีโมจิ/สัญลักษณ์บางตัวไม่ขึ้นใน Android บางรุ่น)
+const ICO_P = {
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+  card: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
+  power: '<path d="M12 3v9"/><path d="M6.3 7.2a8 8 0 1 0 11.4 0"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
+  swap: '<path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 20l4-4-4-4"/><path d="M21 16H7"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  cloud: '<path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 18z"/>',
+  dot: '<circle cx="12" cy="12" r="3" fill="currentColor"/>'
+};
+const ACT_ICO = { admin: "user", pay: "card", pay_submit: "card", ea_toggle: "power", user_settings: "gear", user_preset: "gear", user_balanced: "gear", user_lot: "gear",
+  port_add: "plus", port_close: "x", port_rename: "pen", port_order: "swap", login: "key", google_login: "key", google_link: "link", register: "star", change_password: "lock", host_set: "cloud", host_stop: "cloud", user_port: "gear", claim_code: "plus" };
+const actIco = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO_P[ACT_ICO[k]] || ICO_P.dot}</svg>`;
 const actSeenKey = () => "gs_act_seen_" + String(session.token || "").slice(-10);
 function renderBell() {
   const acts = (dashData && dashData.activity) || [];
@@ -2830,7 +2849,7 @@ function renderBell() {
   $("bellDot").hidden = !unread; $("bellDot").textContent = unread > 9 ? "9+" : unread;
   $("bpCount").textContent = acts.length ? `ล่าสุด ${acts.length} รายการ` : "";
   $("bpList").innerHTML = acts.length ? acts.map(a => `<div class="bp-item ${a.t > seen ? "new" : ""}">
-      <span class="bp-ico ${a.kind === "admin" ? "admin" : a.kind === "pay" || a.kind === "pay_submit" ? "pay" : a.kind === "ea_toggle" ? "ea" : ""}">${ACT_ICO[a.kind] || "•"}</span>
+      <span class="bp-ico ${a.kind === "admin" ? "admin" : a.kind === "pay" || a.kind === "pay_submit" ? "pay" : a.kind === "ea_toggle" ? "ea" : ""}">${actIco(a.kind)}</span>
       <span class="bp-txt">${esc(a.text)}<small>${a.port ? esc(a.port) + " · " : ""}${ago(a.t)}</small></span></div>`).join("")
     : `<div class="bp-empty">ยังไม่มีรายการ ทุกอย่างที่ทำในบัญชี เช่น บันทึกการตั้งค่า เปิด/ปิด EA ชำระเงิน จะแสดงที่นี่</div>`;
   const g = (dashData && dashData.google) || {};
