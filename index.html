@@ -15,6 +15,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="apple-touch-icon" href="https://goldshark.vercel.app/icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GoldShark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1619,6 +1624,34 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   .pp-table .hide-m{display:none}
   .pp-table td,.pp-table th{padding:7px 5px}
 }
+/* ===== ติดตั้งลงหน้าจอมือถือ (PWA) ===== */
+.inst-bar{display:none;align-items:center;gap:12px;margin:10px 12px 0;padding:10px 12px;border-radius:16px;
+  background:linear-gradient(120deg,rgba(59,148,255,.16),rgba(232,184,74,.12));border:1px solid rgba(255,255,255,.10);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.inst-bar.on{display:flex}
+.inst-bar img{width:40px;height:40px;border-radius:11px;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.inst-bar .it{flex:1;min-width:0;line-height:1.25}
+.inst-bar .it b{display:block;font-size:14px;font-weight:600;color:#fff}
+.inst-bar .it small{font-size:11.5px;color:var(--muted)}
+.inst-bar .inst-go{flex:none;height:34px;padding:0 14px;border:0;border-radius:11px;font:inherit;font-size:13px;font-weight:600;color:#1a1204;cursor:pointer;
+  background:linear-gradient(180deg,#F6D27A,#D9A441);box-shadow:0 4px 14px rgba(232,184,74,.35);display:inline-flex;align-items:center;gap:6px}
+.inst-bar .inst-go svg{width:15px;height:15px}
+.inst-bar .inst-x{flex:none;width:28px;height:28px;border:0;border-radius:9px;background:rgba(255,255,255,.06);color:var(--muted);font-size:16px;cursor:pointer;line-height:1}
+.inst-sheet{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55)}
+.inst-sheet[hidden]{display:none}
+.inst-sheet .box{width:100%;max-width:460px;margin:0 10px 12px;padding:20px 18px 16px;border-radius:22px;background:rgba(12,18,30,.97);border:1px solid rgba(255,255,255,.10);box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.inst-sheet h3{margin:0 0 4px;font-size:17px;color:#fff;display:flex;align-items:center;gap:10px}
+.inst-sheet h3 img{width:34px;height:34px;border-radius:9px}
+.inst-sheet p.sub{margin:0 0 14px;font-size:13px;color:var(--muted)}
+.inst-sheet ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.inst-sheet li{counter-increment:s;display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);font-size:14px;color:var(--text)}
+.inst-sheet li::before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:rgba(59,148,255,.18);color:#9CC8FF}
+.inst-sheet li b{color:#fff}
+.inst-sheet .ico{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.08);vertical-align:middle;margin:0 2px}
+.inst-sheet .ico svg{width:15px;height:15px}
+.inst-sheet .note{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:rgba(232,184,74,.10);color:#F2D48A;font-size:12.5px}
+.inst-sheet .ok{width:100%;margin-top:14px;height:42px;border:0;border-radius:13px;font:inherit;font-size:14px;font-weight:600;background:rgba(255,255,255,.08);color:#fff;cursor:pointer}
+@media (min-width:761px){.inst-bar{display:none!important}}
 </style>
 </head>
 <body>
@@ -1645,6 +1678,18 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   <span class="pill-btn" id="whoami"></span>
   <button class="btn small" id="logoutBtn" hidden>ออกจากระบบ</button>
 </header>
+<div class="inst-bar" id="instBar" role="region" aria-label="ติดตั้งแอป">
+  <img src="icon.png" alt="">
+  <div class="it"><b>ติดตั้ง GoldShark ลงหน้าจอ</b><small>เปิดเร็ว เต็มจอ เหมือนแอป</small></div>
+  <button type="button" class="inst-go" id="instGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>ติดตั้ง</button>
+  <button type="button" class="inst-x" id="instX" aria-label="ปิด">✕</button>
+</div>
+<div class="inst-sheet" id="instSheet" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="instTitle">
+  <h3 id="instTitle"><img src="icon.png" alt="">เพิ่ม GoldShark ลงหน้าจอ</h3>
+  <p class="sub">ทำครั้งเดียว ต่อไปกดไอคอนบนหน้าจอเข้าได้เลย</p>
+  <div id="instSteps"></div>
+  <button type="button" class="ok" id="instOk">เพิ่มแล้ว ไม่ต้องโชว์อีก</button>
+</div></div>
 <div class="bell-panel" id="bellPanel" hidden role="dialog" aria-label="การแจ้งเตือน">
   <div class="bp-head"><b>การแจ้งเตือน</b><span class="muted" id="bpCount"></span></div>
   <div class="bp-list" id="bpList"></div>
@@ -5233,6 +5278,48 @@ function renderPerp() {
         <td>${o.t === "limit" ? "Limit" : "Stop"}</td><td>${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td>${Math.abs(+o.p - bid).toFixed(2)}</td></tr>`).join("")}</tbody></table>`;
   }
 }
+</script>
+<script>
+/* ===== ติดตั้งลงหน้าจอมือถือ ===== */
+(function () {
+  const bar = document.getElementById("instBar"), sheet = document.getElementById("instSheet");
+  if (!bar) return;
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const inApp = /Line\/|FBAN|FBAV|Instagram|TikTok|musical_ly/i.test(ua);
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const KEY = "gs_inst_hide", DONE = "gs_installed";
+  const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} };
+  if (standalone) ls(DONE, "1");                                  // เปิดจากไอคอนบนหน้าจอ = ติดตั้งแล้ว
+  let installed = ls(DONE) === "1";
+  let hidden = +ls(KEY) || 0;
+  let deferred = null;
+  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+  const show = () => { if (!standalone && !installed && Date.now() > hidden) bar.classList.add("on"); };
+  const markInstalled = () => { installed = true; ls(DONE, "1"); bar.classList.remove("on"); deferred = null; };
+  // Android: Chrome ส่ง beforeinstallprompt มาเฉพาะเครื่องที่ยังไม่ได้ติดตั้ง → ติดตั้งแล้วจะไม่โชว์แถบ
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; installed = false; show(); });
+  window.addEventListener("appinstalled", markInstalled);
+  if (navigator.getInstalledRelatedApps) navigator.getInstalledRelatedApps().then(a => { if (a && a.length) markInstalled(); }).catch(() => {});
+  // iPhone / แอปแชท: เช็กจากเบราว์เซอร์ไม่ได้ → โชว์จนกว่าจะกด "เพิ่มแล้ว" หรือ ✕
+  if (isIOS || inApp || location.protocol === "file:") show();
+  const share = '<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 12v8h14v-8"/></svg></span>';
+  const plus = '<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span>';
+  const dots = '<span class="ico"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span>';
+  function steps() {
+    if (inApp) return `<ol><li>กด ${dots} หรือ <b>…</b> มุมขวาบน</li><li>เลือก <b>เปิดในเบราว์เซอร์</b> (${isIOS ? "Safari" : "Chrome"})</li><li>แล้วกด <b>ติดตั้ง</b> ที่แถบด้านบนอีกครั้ง</li></ol>
+      <p class="note">เปิดผ่าน LINE / Facebook / TikTok จะเพิ่มลงหน้าจอไม่ได้ ต้องเปิดในเบราว์เซอร์ก่อน</p>`;
+    if (isIOS) return `<ol><li>กดปุ่มแชร์ ${share} แถบล่างของ Safari</li><li>เลื่อนลงแล้วเลือก ${plus} <b>เพิ่มไปยังหน้าจอโฮม</b></li><li>กด <b>เพิ่ม</b> มุมขวาบน</li></ol>`;
+    return `<ol><li>กด ${dots} มุมขวาบนของ Chrome</li><li>เลือก <b>ติดตั้งแอป</b> หรือ <b>เพิ่มลงในหน้าจอหลัก</b></li><li>กด <b>ติดตั้ง</b></li></ol>`;
+  }
+  document.getElementById("instGo").onclick = async () => {
+    if (deferred) { deferred.prompt(); const r = await deferred.userChoice.catch(() => ({})); deferred = null; if (r && r.outcome === "accepted") markInstalled(); return; }
+    document.getElementById("instSteps").innerHTML = steps().replace(/<li>([\s\S]*?)<\/li>/g, "<li><span>$1</span></li>"); document.getElementById("instOk").textContent = inApp ? "เข้าใจแล้ว" : "เพิ่มแล้ว ไม่ต้องโชว์อีก"; sheet.hidden = false;
+  };
+  document.getElementById("instOk").onclick = () => { sheet.hidden = true; if (!inApp) markInstalled(); };
+  sheet.onclick = e => { if (e.target === sheet) sheet.hidden = true; };
+  document.getElementById("instX").onclick = () => { bar.classList.remove("on"); try { localStorage.setItem(KEY, Date.now() + 7 * 86400000); } catch (e) {} };
+})();
 </script>
 </body>
 </html>
