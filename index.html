@@ -1510,6 +1510,10 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3v9'/%3E%3Cpath d='M6.3 7.3a8 8 0 1 0 11.4 0'/%3E%3C/svg%3E") center/contain no-repeat;
             mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3v9'/%3E%3Cpath d='M6.3 7.3a8 8 0 1 0 11.4 0'/%3E%3C/svg%3E") center/contain no-repeat}
   .bar .bell,.bar .lang-btn,.bar #logoutBtn{width:40px!important;height:40px!important;border-radius:14px!important}
+  /* ปุ่มภาษา: โชว์แค่ TH/EN อยู่กลางช่องสี่เหลี่ยม */
+  .bar .lang-btn{padding:0!important;gap:0!important;justify-content:center!important;text-align:center}
+  .bar .lang-btn svg{display:none!important}
+  .bar .lang-btn .lang-cur{display:block!important;margin:0 auto;line-height:1}
   /* ไอคอนอยู่กึ่งกลางปุ่มเสมอ (ไม่ขึ้นกับข้อความที่ซ่อนอยู่ในปุ่ม) */
   .bar #logoutBtn{position:relative;display:inline-block!important;overflow:hidden;color:transparent!important;font-size:0!important;line-height:0!important;padding:0!important}
   .bar #logoutBtn[hidden]{display:none!important}
