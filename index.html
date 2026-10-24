@@ -1301,7 +1301,7 @@ body{top:0!important}
 #dashView:not([data-pg="port"]) > #secBasketOld{display:none!important}
 #liveSum{display:none}
 /* สถานะ MT5 → แถบตัวเลข 5 ช่อง */
-#dashView[data-pg="port"] > #secOverview{background:none;border:0;box-shadow:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;overflow:visible}
+#dashView[data-pg="port"] > #secOverview{background:none;border:0;box-shadow:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;overflow:visible}
 #dashView[data-pg="port"] > #secOverview::before,#dashView[data-pg="port"] > #secOverview::after{display:none}
 #secOverview > .card-label{display:none}
 #secOverview > .ov-conn,#secOverview > .port-warn,#secOverview > .ea-off-note,#secOverview > .hedge-bar,#secOverview > .card-foot{grid-column:1 / -1;margin:0}
@@ -1314,7 +1314,7 @@ body{top:0!important}
 #secOverview .ov-big.ov-eq .ov-cur{-webkit-text-fill-color:var(--muted)}
 #secOverview .ov-big .ov-cur{font-size:12px}
 #secOverview .ov-big .ov-sub,#secOverview .ov-metrics .tile > small{font-size:12px}
-#secOverview .ov-big:nth-child(1){order:1} #secOverview .ov-big.ov-eq{order:2} #tFlt{order:3} #tToday{order:4} #tDD{order:5} #tOpen{display:none!important}
+#secOverview .ov-big:nth-child(1){order:1} #secOverview .ov-big.ov-eq{order:2} #tFlt{order:3} #tToday{order:4} #tDD{order:5} #tTotal{order:6} #tOpen{display:none!important}
 #secOverview > .ov-conn{order:0} #secOverview > .port-warn,#secOverview > .ea-off-note{order:0}
 #secOverview > .hedge-bar,#secOverview > .card-foot{order:9}
 #secOverview > .card-foot{font-size:13px;color:var(--muted)}
@@ -1518,7 +1518,6 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
   #secOverview .ov-big,#secOverview .ov-metrics .tile{flex:none!important;min-width:0;padding:12px 14px!important}
   #secOverview .ov-big > b,#secOverview .ov-metrics .tile > b{font-size:20px!important}
   #secOverview .ov-big .ov-cur{font-size:11px}
-  #tDD{grid-column:1 / -1}
   /* แถบสถานะ EA + สวิตช์เปิด/ปิด ต้องเห็นบนมือถือด้วย */
   #dashView[data-pg="port"] > #secOverview > .ov-conn{display:flex!important;grid-column:1 / -1;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px!important;font-size:13px}
   #secOverview > .ov-conn #dAcct{display:none}
@@ -1813,6 +1812,7 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
       <div class="tile today" id="tToday"><span>กำไรวันนี้</span><b class="num" id="dToday">–</b><small id="dTodayPct">–</small></div>
       <div class="tile dd-today" id="tDD"><span>DD วันนี้ (สูงสุด)</span><b class="num" id="dDDToday">–</b>
         <small id="dDDAll">–</small><div class="dd-meter" aria-hidden="true"><i id="ddBarMax"></i><i id="ddBarNow"></i></div></div>
+      <div class="tile" id="tTotal"><span>กำไรรวมทั้งหมด</span><b class="num" id="dTotal">–</b><small id="dTotalSub">&nbsp;</small></div>
       <div class="tile" id="tFlt"><span>กำไร/ขาดทุนลอย</span><b class="num" id="dFlt">–</b><small id="dFltSub">&nbsp;</small></div>
       <div class="tile" id="tOpen"><span>Open Orders</span><b class="num" id="dOpen">–</b><small id="dOpenSub">&nbsp;</small></div>
     </div>
@@ -2879,7 +2879,7 @@ function renderDash() {
     renderHedge(S, fl);
   } else {
     $("hedgeBar").hidden = true;
-    $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today"; renderDDToday(null);
+    $("dToday").textContent = "–"; $("dToday").className = "num"; $("dTodayPct").textContent = "–"; $("dTodayPct").className = ""; $("tToday").className = "tile today"; renderDDToday(null); renderTotal(null);
     ["dBalCur", "dEqCur"].forEach(id => $(id).textContent = ""); ["dBalSub", "dEqSub", "dFltSub", "dOpenSub"].forEach(id => $(id).textContent = "\u00a0");
     ["dBal", "dEq", "dFlt", "dOpen", "bPL", "sPL", "bCount", "sCount", "bLots", "sLots", "lDD", "lSpread", "lTrade"].forEach(id => $(id).textContent = "–");
     $("dFlt").className = "num"; $("bPL").className = "num"; $("sPL").className = "num";
@@ -2956,9 +2956,21 @@ function renderToday(S) {
   $("dTodayPct").textContent = `${arrow} ${pct > 0 ? "+" : ""}${pct.toFixed(2)}% วันนี้`;
   $("dTodayPct").className = c;
   $("tToday").className = "tile today" + (today > 0 ? " up" : today < 0 ? " down" : "");
-  renderDDToday(S);
+  renderDDToday(S); renderTotal(S);
 }
 // DD สูงสุดของวันนี้ (หลังบ้านเก็บค่าสูงสุดตั้งแต่เที่ยงคืนเวลาไทย)
+// กำไรรวมทั้งหมด = ผลรวมกำไรที่ปิดแล้วทุกวันที่ระบบบันทึกไว้
+function renderTotal(S) {
+  const b = $("dTotal"), sub = $("dTotalSub"); if (!b) return;
+  const dm = S ? dailyMap() : new Map();
+  if (!dm.size) { b.textContent = "–"; b.className = "num"; sub.innerHTML = "&nbsp;"; return; }
+  let t = 0, first = Infinity, n = 0; dm.forEach((v, d) => { t += v; if (v) n++; if (d < first) first = d; });
+  b.textContent = signed(t); b.className = "num " + cls(t);
+  const since = new Date(first * 86400000).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit", timeZone: "UTC" });
+  const pct = S && S.balance - t > 0 ? t / (S.balance - t) * 100 : null;
+  sub.innerHTML = (pct !== null ? `<b class="${cls(t)}">${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%</b> · ` : "") + "ตั้งแต่ " + since;
+  $("tTotal").title = `กำไรที่ปิดแล้ว ${n} วันเทรด ตั้งแต่ ${since}`;
+}
 function renderDDToday(S) {
   const dayIdx = Math.floor((Date.now() + 7 * 3600000) / 86400000);
   const same = S && +S.ddDay === dayIdx;
