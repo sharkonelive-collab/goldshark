@@ -1748,6 +1748,13 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
   #dashView .prow .pr-empty{grid-column:1 / -1;font-size:13px;color:var(--muted)}
   #dashView .foot-note{text-align:center;line-height:1.7;padding:0 8px;font-size:12px}
 }
+.pr-t small.pr-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;white-space:normal;overflow:visible}
+.pr-meta .pm-plan{font-size:12px;color:var(--muted)}
+.mpill{display:inline-flex;align-items:center;font-size:11px;line-height:1;padding:4px 8px;border-radius:999px;border:1px solid rgba(150,180,230,.28);background:rgba(150,180,230,.08);color:#B9C6DA;white-space:nowrap}
+.mpill.ok{border-color:rgba(47,191,138,.45);background:rgba(47,191,138,.12);color:#5FE0A8}
+.mpill.warn{border-color:rgba(242,184,75,.45);background:rgba(242,184,75,.15);color:#F2C45A}
+.mpill.bad{border-color:rgba(229,40,61,.45);background:rgba(229,40,61,.14);color:#FF8A98}
+.mpill.acc{border-color:rgba(59,148,255,.4);background:rgba(59,148,255,.12);color:#9CC8FF;font-variant-numeric:tabular-nums;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -4135,7 +4142,10 @@ function renderPorts() {
     return `<div class="prow ${p.code === cur ? "cur" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}" role="button" tabindex="0"`}>
       <span class="pr-name">${mv}<span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span>
         <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}${eaOld(p.version) ? `<span class="pill upd" title="EA เวอร์ชัน ${esc(p.version)} · ล่าสุด ${EA_LATEST}">อัปเดต EA</span>` : ""}
-          <small>${esc(PLAN_LABEL[p.plan] || p.plan)} · ${left}${p.coveredBy ? " · แพ็กเกจร่วม" : ""}${none && ci.paid ? ' · <span class="neg">ต้องชำระเพิ่ม</span>' : ""}${p.account ? " · " + esc(p.account) : ""}</small></span></span>
+          <small class="pr-meta">${(() => { const pl = PLAN_LABEL[p.plan] || p.plan, lc = p.status !== "active" || left === "หมดอายุ" ? "bad" : none ? "warn" : (dl > 0 && dl <= 7) ? "warn" : "ok";
+            return (pl && pl !== left ? `<span class="pm-plan">${esc(pl)}</span>` : "") + `<span class="mpill ${lc}">${esc(left)}</span>`
+              + (p.coveredBy ? '<span class="mpill">แพ็กเกจร่วม</span>' : "") + (none && ci.paid ? '<span class="mpill bad">ต้องชำระเพิ่ม</span>' : "")
+              + (p.account ? `<span class="mpill acc">#${esc(p.account)}</span>` : ""); })()}</small></span></span>
       ${nodata ? `<span class="pr-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
       <span class="pr-c"><i>Balance</i><b class="num">${fmt(p.balance)}</b><small>${esc(unit)}</small></span>
       <span class="pr-c"><i>Equity</i><b class="num">${fmt(p.equity)}</b><small>${esc(unit)}</small></span>
