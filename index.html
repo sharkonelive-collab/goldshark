@@ -1130,8 +1130,9 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .lang-menu button{display:flex;width:100%;align-items:center;gap:10px;padding:9px 12px;border:0;border-radius:9px;background:none;color:var(--text);font:inherit;font-size:14px;cursor:pointer;text-align:left}
 .lang-menu button:hover{background:rgba(59,148,255,.12)}
 .lang-menu button[aria-checked="true"]{background:rgba(59,148,255,.18);color:#DCEBFF}
-.lang-menu button[aria-checked="true"]::after{content:"✓";margin-left:auto;color:#7CC4FF}
-.lang-menu small{display:block;padding:6px 12px 4px;font-size:11px;color:var(--muted)}
+.lang-menu button[aria-checked="true"]::after{content:"✓";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#7CC4FF}
+.lang-menu small{display:block;padding:6px 12px 4px;font-size:11px;color:var(--muted);text-align:center}
+.lang-menu button{position:relative;justify-content:center;text-align:center}
 /* ซ่อนแถบของ Google แปลภาษา */
 iframe.skiptranslate,.goog-te-banner-frame,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf{display:none!important}
 body{top:0!important}
