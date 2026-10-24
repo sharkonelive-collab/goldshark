@@ -1652,6 +1652,85 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 .inst-sheet .note{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:rgba(232,184,74,.10);color:#F2D48A;font-size:12.5px}
 .inst-sheet .ok{width:100%;margin-top:14px;height:42px;border:0;border-radius:13px;font:inherit;font-size:14px;font-weight:600;background:rgba(255,255,255,.08);color:#fff;cursor:pointer}
 @media (min-width:761px){.inst-bar{display:none!important}}
+/* ===== หน้าเข้าสู่ระบบ สไตล์ Perp DEX ===== */
+html:has(body[data-view="loginView"]){background:#05080F}
+body[data-view="loginView"]{background:#05080F;--px-g:#1FD18B;--px-r:#F0475C;--px-line:rgba(150,180,230,.10);--px-line2:rgba(150,180,230,.18);--px-mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace}
+body[data-view="loginView"] .auth{background:
+  radial-gradient(900px 500px at 15% -10%,rgba(59,148,255,.10),transparent 60%),
+  radial-gradient(700px 500px at 100% 110%,rgba(31,209,139,.07),transparent 60%),#05080F}
+body[data-view="loginView"] .auth-brand{background:none!important;border-right:1px solid var(--px-line)!important;padding:28px 48px 28px!important;gap:22px!important}
+body[data-view="loginView"] .auth-brand::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--px-line) 1px,transparent 1px),linear-gradient(90deg,var(--px-line) 1px,transparent 1px);background-size:48px 48px;
+  -webkit-mask:radial-gradient(ellipse at 30% 40%,#000 0%,transparent 75%);mask:radial-gradient(ellipse at 30% 40%,#000 0%,transparent 75%);opacity:.6}
+body[data-view="loginView"] .auth-brand > *{position:relative}
+.px-mkt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border:1px solid var(--px-line2);border-radius:12px;background:rgba(10,17,30,.7)}
+.px-pair{display:flex;align-items:center;gap:10px}
+.px-coin{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;color:#2a1c02;background:linear-gradient(145deg,#FBE29A,#C9932E);box-shadow:0 0 0 2px rgba(232,196,106,.18)}
+.px-pair b{font-family:var(--px-mono);font-size:15px;letter-spacing:.02em;color:#fff}
+.px-pair em{font-style:normal;font-size:11px;color:#9FB3D1;padding:2px 8px;border-radius:6px;background:rgba(150,180,230,.10)}
+.px-live{display:inline-flex;align-items:center;gap:7px;font-family:var(--px-mono);font-size:11px;letter-spacing:.12em;color:var(--px-g)}
+.px-live i{width:7px;height:7px;border-radius:50%;background:var(--px-g);box-shadow:0 0 0 0 rgba(31,209,139,.6);animation:pxPulse 1.8s infinite}
+@keyframes pxPulse{0%{box-shadow:0 0 0 0 rgba(31,209,139,.55)}70%{box-shadow:0 0 0 8px rgba(31,209,139,0)}100%{box-shadow:0 0 0 0 rgba(31,209,139,0)}}
+body[data-view="loginView"] .eyebrow{font-size:13px!important;letter-spacing:.02em;color:#7FA6D9!important}
+body[data-view="loginView"] .auth-copy h1{font-size:clamp(30px,3vw,42px)!important;letter-spacing:-.01em;margin:0 0 12px!important}
+body[data-view="loginView"] .auth-copy>p{font-size:15px!important;margin:0!important;color:#8C9BB3}
+body[data-view="loginView"] .feat,body[data-view="loginView"] .auth-curve{display:none!important}
+.px-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--px-line2);border-radius:12px;background:rgba(10,17,30,.7);overflow:hidden}
+.px-stats div{padding:12px 14px;border-left:1px solid var(--px-line)}
+.px-stats div:first-child{border-left:0}
+.px-stats span{display:block;font-size:11px;color:#7D8BA3;margin-bottom:3px}
+.px-stats b{font-size:14px;font-weight:600;color:#E8ECF2;white-space:nowrap}
+.px-stats b.up{color:var(--px-g)}
+.px-chart{flex:1;min-height:180px;border:1px solid var(--px-line2);border-radius:12px;background:rgba(7,12,22,.75);overflow:hidden;position:relative}
+.px-chart svg{position:absolute;inset:0;width:100%;height:100%}
+.px-chart .tag{position:absolute;right:12px;bottom:8px;font-family:var(--px-mono);font-size:11px;color:#7D8BA3;letter-spacing:.06em}
+body[data-view="loginView"] .auth-risk{font-size:11.5px!important;color:#6F7D95!important}
+/* การ์ดฝั่งขวา */
+body[data-view="loginView"] .auth-panel{background:rgba(7,11,20,.55)}
+body[data-view="loginView"] .auth-card{padding:24px 22px!important;border-radius:16px!important;background:#0A111E!important;border:1px solid var(--px-line2)!important;
+  box-shadow:0 30px 80px -40px rgba(0,0,0,.9)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body[data-view="loginView"] .trial-badge{font-size:12px!important;color:var(--px-g)!important;background:rgba(31,209,139,.10)!important;border:1px solid rgba(31,209,139,.25);border-radius:6px!important;padding:4px 10px!important}
+body[data-view="loginView"] .auth-card h2{font-size:24px!important;margin:12px 0 4px!important}
+body[data-view="loginView"] .auth-card .sub{font-size:13.5px;margin:0 0 18px!important;color:#7D8BA3}
+body[data-view="loginView"] .auth .tabs{border-radius:10px!important;padding:3px!important;background:#060B15!important;border:1px solid var(--px-line2)!important;margin-bottom:18px!important}
+body[data-view="loginView"] .auth .tab{border-radius:8px!important;padding:9px!important;font-weight:600;color:#7D8BA3;box-shadow:none!important}
+body[data-view="loginView"] .auth .tab[aria-selected="true"]{background:#15213A!important;color:#fff!important;box-shadow:inset 0 0 0 1px var(--px-line2)!important}
+body[data-view="loginView"] .auth form label,body[data-view="loginView"] .auth-card label{font-size:12px;color:#7D8BA3;letter-spacing:.02em}
+body[data-view="loginView"] .auth .field{height:46px;background:#060B15!important;border:1px solid var(--px-line2)!important;border-radius:10px!important;font-size:15px;color:#fff}
+body[data-view="loginView"] .auth .field:focus{outline:none;border-color:rgba(31,209,139,.6)!important;box-shadow:0 0 0 3px rgba(31,209,139,.12)!important}
+body[data-view="loginView"] .auth .btn.primary{height:48px;border-radius:10px!important;border:0!important;font-weight:700;font-size:15px;color:#fff!important;
+  background:linear-gradient(180deg,#F5566B,#D42A42)!important;box-shadow:0 10px 30px -12px rgba(240,71,92,.75)!important;text-shadow:none!important}
+body[data-view="loginView"] .auth .btn.primary:hover{filter:brightness(1.06)}
+body[data-view="loginView"] .auth-foot{margin-top:22px!important}
+@media (max-width:900px){
+  body[data-view="loginView"] .auth-brand{border-right:0!important;border-bottom:1px solid var(--px-line)!important;padding:16px 16px 18px!important;gap:14px!important}
+  .px-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .px-stats div:nth-child(3){border-left:0}
+  .px-stats div:nth-child(n+3){border-top:1px solid var(--px-line)}
+  .px-chart{min-height:96px;flex:none;height:96px}
+  body[data-view="loginView"] .auth-copy>p,body[data-view="loginView"] .eyebrow{display:none!important}
+}
+@media (max-width:560px){
+  body[data-view="loginView"] .auth{position:relative}
+  body[data-view="loginView"] .auth-panel{position:static!important;padding:14px 12px 28px!important}
+  body[data-view="loginView"] .lang-float{top:18px!important;right:14px!important;height:36px!important;padding:0 10px!important;border-radius:10px!important}
+  body[data-view="loginView"] .auth-brand .mark-img{max-height:34px}
+  body[data-view="loginView"] .auth-copy h1{font-size:21px!important;line-height:1.3!important;margin:0!important}
+  .px-mkt{padding:8px 12px}
+  .px-stats{display:none}
+  .px-chart{height:56px;min-height:56px}
+  body[data-view="loginView"] .auth-brand{gap:10px!important;padding:12px 14px 14px!important}
+  body[data-view="loginView"] .auth-copy h1{font-size:19px!important}
+  body[data-view="loginView"] .auth-copy h1 br{display:none}
+  body[data-view="loginView"] .auth .tabs{margin-bottom:12px!important}
+  body[data-view="loginView"] .auth-card form{gap:10px!important}
+  body[data-view="loginView"] .auth-card{padding:18px 16px!important}
+  body[data-view="loginView"] .auth-card h2{font-size:20px!important;margin:10px 0 14px!important}
+  body[data-view="loginView"] #authSub{display:none}
+  body[data-view="loginView"] .auth .field{height:48px;font-size:16px}
+  body[data-view="loginView"] .auth-card .g-or{margin:12px 0!important}
+  body[data-view="loginView"] .auth-foot{font-size:12px;gap:10px;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -1709,6 +1788,10 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 <main id="loginView" class="auth">
   <section class="auth-brand">
     <div class="brand"><span class="brand-tile"><img src="logo-mark.png" alt="" class="mark-img"></span><div><b class="brand-name notranslate" translate="no"><span class="bn-gold">GOLD</span><span class="bn-sky">SHARK</span></b><small>GOLD EA · MT5</small></div></div>
+    <div class="px-mkt" aria-hidden="true">
+      <span class="px-pair"><i class="px-coin">Au</i><b>XAUUSD</b><em>EA · MT5</em></span>
+      <span class="px-live"><i></i>LIVE</span>
+    </div>
     <div class="auth-copy">
       <span class="eyebrow">EA เทรดทอง XAUUSD สำหรับ MetaTrader 5</span>
       <h1>เทรดทองอัตโนมัติ<br>ที่คุณดูได้ทุกวินาที</h1>
@@ -1719,6 +1802,13 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>ตั้งเวลาเทรดได้เอง<span>เลือกวันและช่วงเวลาที่ให้ EA ทำงาน บันทึกแล้วมีผลภายใน 1 นาที</span></li>
       </ul>
     </div>
+    <div class="px-stats">
+      <div><span>สินทรัพย์</span><b>XAUUSD</b></div>
+      <div><span>แพลตฟอร์ม</span><b>MetaTrader 5</b></div>
+      <div><span>อัปเดตพอร์ต</span><b class="up">ทุก 2 วิ</b></div>
+      <div><span>หลบข่าวแรง</span><b>อัตโนมัติ</b></div>
+    </div>
+    <div class="px-chart" id="pxChart" aria-hidden="true"></div>
     <div class="auth-curve" aria-hidden="true">
       <svg viewBox="0 0 600 110" preserveAspectRatio="none">
         <path d="M0 92 L40 86 L70 90 L110 74 L150 78 L190 62 L220 70 L260 52 L300 58 L340 44 L370 50 L410 34 L450 40 L490 26 L530 30 L570 16 L600 12 L600 110 L0 110 Z" fill="rgba(59,148,255,.10)"/>
@@ -1732,7 +1822,7 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
     <button type="button" class="lang-btn lang-float notranslate" data-lang-open aria-label="เลือกภาษา" translate="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span class="lang-cur">TH</span></button>
     <div class="auth-card">
       <div id="memberAuth">
-        <span class="trial-badge">ทดลองใช้ฟรี 15 วัน ไม่ต้องใช้บัตร</span>
+        <span class="trial-badge">ทดลองใช้ฟรี 15 วัน</span>
         <h2 id="authTitle">ยินดีต้อนรับกลับ</h2>
         <p class="sub" id="authSub">เข้าสู่ระบบเพื่อดูพอร์ตและจัดการแพ็กเกจ</p>
         <div class="tabs" role="tablist">
@@ -5319,6 +5409,30 @@ function renderPerp() {
   document.getElementById("instOk").onclick = () => { sheet.hidden = true; if (!inApp) markInstalled(); };
   sheet.onclick = e => { if (e.target === sheet) sheet.hidden = true; };
   document.getElementById("instX").onclick = () => { bar.classList.remove("on"); try { localStorage.setItem(KEY, Date.now() + 7 * 86400000); } catch (e) {} };
+})();
+</script>
+<script>
+/* กราฟแท่งเทียนตกแต่งหน้าเข้าสู่ระบบ (ภาพประกอบ ไม่ใช่ราคาจริง) */
+(function () {
+  const box = document.getElementById("pxChart"); if (!box) return;
+  const N = 64, W = 640, H = 200, c = [];
+  let p = 100;
+  for (let i = 0; i < N; i++) {
+    const r1 = Math.sin(i * 12.9898) * 43758.5453 % 1, r2 = Math.sin(i * 78.233) * 12345.678 % 1;
+    const o = p, cl = o + (r1 * 2.2) + 0.32, hi = Math.max(o, cl) + Math.abs(r2) * 1.4, lo = Math.min(o, cl) - Math.abs(r1) * 1.4;
+    c.push([o, hi, lo, cl]); p = cl;
+  }
+  const mx = Math.max(...c.map(x => x[1])), mn = Math.min(...c.map(x => x[2])), y = v => 14 + (mx - v) / (mx - mn) * (H - 28);
+  const bw = W / N; let g = "";
+  for (let k = 1; k < 4; k++) g += `<line x1="0" x2="${W}" y1="${H * k / 4}" y2="${H * k / 4}" stroke="rgba(150,180,230,.07)"/>`;
+  c.forEach(([o, h, l, cl], i) => {
+    const x = i * bw + bw / 2, up = cl >= o, col = up ? "#1FD18B" : "#F0475C";
+    g += `<line x1="${x}" x2="${x}" y1="${y(h)}" y2="${y(l)}" stroke="${col}" stroke-width="1"/>`;
+    g += `<rect x="${x - bw * .32}" y="${y(Math.max(o, cl))}" width="${bw * .64}" height="${Math.max(1, Math.abs(y(o) - y(cl)))}" fill="${col}" rx="1"/>`;
+  });
+  const last = y(c[N - 1][3]);
+  g += `<line x1="0" x2="${W}" y1="${last}" y2="${last}" stroke="#1FD18B" stroke-dasharray="3 4" stroke-opacity=".6"/>`;
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}</svg>`;
 })();
 </script>
 </body>
