@@ -4141,11 +4141,11 @@ function renderPorts() {
     const nodata = p.equity == null;
     return `<div class="prow ${p.code === cur ? "cur" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}" role="button" tabindex="0"`}>
       <span class="pr-name">${mv}<span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span>
-        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}${eaOld(p.version) ? `<span class="pill upd" title="EA เวอร์ชัน ${esc(p.version)} · ล่าสุด ${EA_LATEST}">อัปเดต EA</span>` : ""}
+        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${eaOld(p.version) ? `<span class="pill upd" title="EA เวอร์ชัน ${esc(p.version)} · ล่าสุด ${EA_LATEST}">อัปเดต EA</span>` : ""}
           <small class="pr-meta">${(() => { const pl = PLAN_LABEL[p.plan] || p.plan, lc = p.status !== "active" || left === "หมดอายุ" ? "bad" : none ? "warn" : (dl > 0 && dl <= 7) ? "warn" : "ok";
             return (pl && pl !== left ? `<span class="pm-plan">${esc(pl)}</span>` : "") + `<span class="mpill ${lc}">${esc(left)}</span>`
               + (p.coveredBy ? '<span class="mpill">แพ็กเกจร่วม</span>' : "") + (none && ci.paid ? '<span class="mpill bad">ต้องชำระเพิ่ม</span>' : "")
-              + (p.account ? `<span class="mpill acc">#${esc(p.account)}</span>` : ""); })()}</small></span></span>
+              + (p.account ? `<span class="mpill acc">#${esc(p.account)}</span>` : "") + (p.eaOff ? '<span class="mpill bad">EA ปิด</span>' : ""); })()}</small></span></span>
       ${nodata ? `<span class="pr-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
       <span class="pr-c"><i>Balance</i><b class="num">${fmt(p.balance)}</b><small>${esc(unit)}</small></span>
       <span class="pr-c"><i>Equity</i><b class="num">${fmt(p.equity)}</b><small>${esc(unit)}</small></span>
