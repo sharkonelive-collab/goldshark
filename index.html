@@ -1732,6 +1732,22 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
   body[data-view="loginView"] .auth-card .g-or{margin:12px 0!important}
   body[data-view="loginView"] .auth-foot{font-size:12px;gap:10px;justify-content:center}
 }
+/* ===== All Ports มือถือ: จัดแนวให้ตรง ===== */
+@media (max-width:760px){
+  #dashView .prow:not(.head):not(.add){align-items:start;row-gap:12px;column-gap:8px;padding:14px 14px 13px!important;grid-template-columns:1.3fr 1fr 1fr 1fr!important}
+  #dashView .prow .pr-name{grid-column:1 / -1;align-items:flex-start;gap:10px;padding-right:24px}
+  #dashView .prow .pr-name > .dot{margin-top:7px}
+  #dashView .prow .pr-t{gap:6px 8px}
+  #dashView .prow .pr-t small{margin-top:2px}
+  #dashView .prow .pr-c{align-self:start;display:flex;flex-direction:column;gap:3px;min-width:0}
+  #dashView .prow .pr-c i{font-size:11.5px;line-height:1.2;margin:0}
+  #dashView .prow .pr-c b{font-size:14.5px;line-height:1.25;overflow:visible;text-overflow:clip;letter-spacing:-.01em}
+  #dashView .prow .pr-c small{font-size:11px;line-height:1.2;min-height:13px;margin:0}
+  #dashView .prow .pr-go{position:absolute;right:14px;top:16px}
+  #dashView .prow .pr-c:nth-of-type(2){display:none!important}
+  #dashView .prow .pr-empty{grid-column:1 / -1;font-size:13px;color:var(--muted)}
+  #dashView .foot-note{text-align:center;line-height:1.7;padding:0 8px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -4123,9 +4139,9 @@ function renderPorts() {
       ${nodata ? `<span class="pr-empty">${p.account ? "รอข้อมูลจาก EA" : "ยังไม่เชื่อม EA · ติดตั้ง EA แล้วใส่โค้ดของพอร์ตนี้"}</span>` : `
       <span class="pr-c"><i>Balance</i><b class="num">${fmt(p.balance)}</b><small>${esc(unit)}</small></span>
       <span class="pr-c"><i>Equity</i><b class="num">${fmt(p.equity)}</b><small>${esc(unit)}</small></span>
-      <span class="pr-c"><i>ลอย</i><b class="num ${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b></span>
-      <span class="pr-c"><i>วันนี้</i><b class="num ${cls(pr ? pr.today : 0)}">${pr ? signed(pr.today) : "–"}</b>${tp != null && isFinite(tp) ? `<small class="${cls(tp)}">${tp > 0 ? "+" : ""}${tp.toFixed(2)}%</small>` : ""}</span>
-      <span class="pr-c"><i>7 วัน</i><b class="num ${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b></span>`}
+      <span class="pr-c"><i>ลอย</i><b class="num ${cls(fl || 0)}">${fl != null ? signed(fl) : "–"}</b><small>&nbsp;</small></span>
+      <span class="pr-c"><i>วันนี้</i><b class="num ${cls(pr ? pr.today : 0)}">${pr ? signed(pr.today) : "–"}</b>${tp != null && isFinite(tp) ? `<small class="${cls(tp)}">${tp > 0 ? "+" : ""}${tp.toFixed(2)}%</small>` : "<small>&nbsp;</small>"}</span>
+      <span class="pr-c"><i>7 วัน</i><b class="num ${cls(pr ? pr.week : 0)}">${pr ? signed(pr.week) : "–"}</b><small>&nbsp;</small></span>`}
       ${portArr ? "" : '<span class="pr-go" aria-hidden="true">›</span>'}</div>`;
   };
   const head = ports.length ? `<div class="prow head"><span class="pr-name">พอร์ต</span><span class="pr-c">Balance</span><span class="pr-c">Equity</span><span class="pr-c">ลอย</span><span class="pr-c">วันนี้</span><span class="pr-c">7 วัน</span><span class="pr-go"></span></div>` : "";
