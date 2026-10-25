@@ -1760,7 +1760,7 @@ body[data-adm-role="slip"] [data-perm="manager"],body:not([data-adm-role="owner"
 body[data-adm-role="slip"] #licBody [data-act]:not([data-act="copy"]){display:none!important}
 body[data-adm-role="slip"] .admin-top{grid-template-columns:minmax(0,1fr)!important}
 body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
-.role-pill{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap}
+.role-pill{margin:0!important;display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap}
 .role-pill.owner{color:#F2D27F;border-color:rgba(242,210,127,.45);background:rgba(242,210,127,.12)}
 .role-pill.manager{color:#9CC8FF;border-color:rgba(59,148,255,.45);background:rgba(59,148,255,.12)}
 .role-pill.slip{color:#5FE0A8;border-color:rgba(47,191,138,.45);background:rgba(47,191,138,.12)}
@@ -1770,7 +1770,14 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
 .role-help div{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
 .role-help .role-pill{flex:none;min-width:70px;justify-content:center}
 .team-form{display:grid;grid-template-columns:1.1fr 1fr .8fr 1.1fr auto;gap:10px;align-items:end;margin-bottom:16px}
-.team-form .btn{height:42px;white-space:nowrap}
+.team-form .btn{height:46px!important;margin:0!important;white-space:nowrap;padding:0 20px!important}
+.team-form > div{display:flex;flex-direction:column;gap:6px;margin:0!important}
+.team-form label{margin:0!important;line-height:1.3}
+.team-form .field{height:46px!important;margin:0!important;box-sizing:border-box}
+.role-help > div{margin:0!important;padding:0!important;height:auto!important;min-height:28px}
+.role-help > div + div{padding-top:8px!important;border-top:1px solid rgba(150,180,230,.08)}
+.role-help{gap:8px!important}
+.team-table .actions .btn{min-width:64px}
 .team-table td{vertical-align:middle}
 .team-table .tm-n b{display:block}.team-table .tm-n small{color:var(--muted);font-size:12px}
 .team-table select{height:32px;padding:0 8px;width:auto}
