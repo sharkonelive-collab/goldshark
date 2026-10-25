@@ -1684,6 +1684,7 @@ body[data-view="loginView"] .feat,body[data-view="loginView"] .auth-curve{displa
 .px-stats b.up{color:var(--px-g)}
 .px-chart{flex:1;min-height:180px;border:1px solid var(--px-line2);border-radius:12px;background:rgba(7,12,22,.75);overflow:hidden;position:relative}
 .px-chart svg{position:absolute;inset:0;width:100%;height:100%}
+.px-chart .px-cap{position:absolute;left:12px;bottom:8px;font-size:10.5px;color:#6F7D95;letter-spacing:.02em;pointer-events:none}
 .px-chart .tag{position:absolute;right:12px;bottom:8px;font-family:var(--px-mono);font-size:11px;color:#7D8BA3;letter-spacing:.06em}
 body[data-view="loginView"] .auth-risk{font-size:11.5px!important;color:#6F7D95!important}
 /* การ์ดฝั่งขวา */
@@ -1719,7 +1720,8 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
   body[data-view="loginView"] .auth-copy h1{font-size:21px!important;line-height:1.3!important;margin:0!important}
   .px-mkt{padding:8px 12px}
   .px-stats{display:none}
-  .px-chart{height:56px;min-height:56px}
+  .px-chart{height:88px;min-height:88px}
+  .px-chart .px-cap{font-size:9px;bottom:auto;top:4px;left:8px}
   body[data-view="loginView"] .auth-brand{gap:10px!important;padding:12px 14px 14px!important}
   body[data-view="loginView"] .auth-copy h1{font-size:19px!important}
   body[data-view="loginView"] .auth-copy h1 br{display:none}
@@ -5719,27 +5721,79 @@ function renderPerp() {
 })();
 </script>
 <script>
-/* กราฟแท่งเทียนตกแต่งหน้าเข้าสู่ระบบ (ภาพประกอบ ไม่ใช่ราคาจริง) */
+/* กราฟหน้าเข้าสู่ระบบ: ภาพจำลองการทำงานของ EA (ไม่ใช่ราคา/ผลเทรดจริง)
+   ราคาวิ่งสวน → EA เปิดไม้ตามระยะกริด → ราคาเฉลี่ยของตะกร้าขยับตาม → ราคากลับถึง TP ของตะกร้า → ปิดรวบทุกไม้พร้อมกัน */
 (function () {
   const box = document.getElementById("pxChart"); if (!box) return;
-  const N = 64, W = 640, H = 200, c = [];
-  let p = 100;
-  for (let i = 0; i < N; i++) {
-    const r1 = Math.sin(i * 12.9898) * 43758.5453 % 1, r2 = Math.sin(i * 78.233) * 12345.678 % 1;
-    const o = p, cl = o + (r1 * 2.2) + 0.32, hi = Math.max(o, cl) + Math.abs(r2) * 1.4, lo = Math.min(o, cl) - Math.abs(r1) * 1.4;
-    c.push([o, hi, lo, cl]); p = cl;
+  const N = 56, c = [];
+  let W = 640, H = 200;
+  let seed = 11, p = 100, id = 0;
+  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  for (let i = 0; i < N; i++) { const o = p, cl = o + (rnd() - .5) * 1.6; c.push({ id: id++, o, h: Math.max(o, cl) + rnd() * .8, l: Math.min(o, cl) - rnd() * .8, c: cl }); p = cl; }
+  const STEP = 2.2, TPD = 1.4, LOTS = ["0.01", "0.02", "0.04", "0.08"];
+  let side = 1, orders = [], maxOrd = 3, phase = "against", flash = 0, flashN = 0, mx = 0, mn = 0, ticks = 0;
+  const avg = () => { let w = 0, s = 0; orders.forEach((o, i) => { const k = 2 ** i; w += k; s += o.price * k; }); return w ? s / w : 0; };
+  const tp = () => avg() + side * TPD;
+  function start() { orders = [{ id: c[N - 1].id, price: c[N - 1].c }]; maxOrd = 2 + Math.floor(rnd() * 3); phase = "against"; }
+  start();
+  function draw() {
+    W = Math.round(box.clientWidth) || 640; H = Math.round(box.clientHeight) || 200;
+    const small = H < 120, LW = small ? 0 : 64;
+    const last = c[N - 1], A = avg(), T = tp();
+    let tmx = Math.max(...c.map(x => x.h)), tmn = Math.min(...c.map(x => x.l));
+    if (orders.length) { tmx = Math.max(tmx, A, T, ...orders.map(o => o.price)); tmn = Math.min(tmn, A, T, ...orders.map(o => o.price)); }
+    tmx += .6; tmn -= .6;
+    // ขยายแกนทันทีเมื่อราคาวิ่งเกินขอบ (ไม่ให้แท่งตกจอ) แล้วค่อยๆ หดกลับ
+    mx = !mx || tmx > mx ? tmx : mx + (tmx - mx) * .15; mn = !mn || tmn < mn ? tmn : mn + (tmn - mn) * .15;
+    const span = Math.max(mx - mn, 1), pad = small ? 4 : 12, y = v => pad + (mx - v) / span * (H - pad * 2), bw = (W - LW - 8) / N, X = cid => (cid - c[0].id) * bw + bw / 2;
+    let g = "";
+    for (let k = 1; k < 4; k++) g += `<line x1="0" x2="${W}" y1="${H * k / 4}" y2="${H * k / 4}" stroke="rgba(150,180,230,.07)"/>`;
+    c.forEach(k => {
+      const x = X(k.id), col = k.c >= k.o ? "#1FD18B" : "#F0475C";
+      g += `<line x1="${x}" x2="${x}" y1="${y(k.h)}" y2="${y(k.l)}" stroke="${col}" stroke-width="1"/>`;
+      g += `<rect x="${x - bw * .32}" y="${y(Math.max(k.o, k.c))}" width="${bw * .64}" height="${Math.max(1, Math.abs(y(k.o) - y(k.c)))}" fill="${col}" rx="1"/>`;
+    });
+    const lab = (yy, txt, col) => small ? "" : `<rect x="${W - 62}" y="${yy - 8}" width="60" height="16" rx="4" fill="${col}" fill-opacity=".18" stroke="${col}" stroke-opacity=".6"/><text x="${W - 32}" y="${yy + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="${col}">${txt}</text>`;
+    if (orders.length && !flash) {
+      const ya = y(A), yt = y(T);
+      g += `<line x1="0" x2="${W - LW}" y1="${yt}" y2="${yt}" stroke="#1FD18B" stroke-dasharray="6 4" stroke-width="1.4"/>` + lab(yt, "TP ตะกร้า", "#1FD18B");
+      if (orders.length > 1) g += `<line x1="0" x2="${W - LW}" y1="${ya}" y2="${ya}" stroke="#7CB8FF" stroke-dasharray="2 4" stroke-width="1.2"/>` + lab(ya, "ราคาเฉลี่ย", "#7CB8FF");
+      orders.forEach((o, i) => {
+        const x = Math.max(6, X(o.id)), yy = y(o.price), col = side > 0 ? "#1FD18B" : "#F0475C";
+        g += `<line x1="${x}" x2="${W - LW}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-opacity=".25"/>`;
+        g += side > 0 ? `<path d="M${x} ${yy + 2} l-5 8 h10 z" fill="${col}"/>` : `<path d="M${x} ${yy - 2} l-5 -8 h10 z" fill="${col}"/>`;
+        if (!small) g += `<text x="${x + 8}" y="${yy + (side > 0 ? 14 : -6)}" font-size="9.5" fill="${col}" font-weight="600">${side > 0 ? "Buy" : "Sell"} #${i + 1} · ${LOTS[i] || ""}</text>`;
+      });
+    }
+    const ly = y(last.c), lc = last.c >= last.o ? "#1FD18B" : "#F0475C";
+    g += `<line x1="0" x2="${W - LW}" y1="${ly}" y2="${ly}" stroke="${lc}" stroke-opacity=".5" stroke-dasharray="1 3"/>`;
+    g += `<circle cx="${X(last.id)}" cy="${ly}" r="3" fill="${lc}"><animate attributeName="r" values="3;6;3" dur="1.6s" repeatCount="indefinite"/></circle>`;
+    if (flash) {
+      const op = Math.min(1, flash / 4);
+      g += small ? `<g opacity="${op}"><rect x="${W / 2 - 110}" y="${H / 2 - 13}" width="220" height="26" rx="8" fill="rgba(6,24,16,.9)" stroke="#1FD18B"/>
+        <text x="${W / 2}" y="${H / 2 + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="#5FF0B0">✓ ถึง TP · ปิดรวบ ${flashN} ไม้</text></g>`
+        : `<g opacity="${op}"><rect x="${W / 2 - 150}" y="${H / 2 - 24}" width="300" height="48" rx="12" fill="rgba(6,24,16,.88)" stroke="#1FD18B"/>
+        <text x="${W / 2}" y="${H / 2 - 2}" text-anchor="middle" font-size="15" font-weight="700" fill="#5FF0B0">✓ ถึง TP · ปิดรวบตะกร้า ${flashN} ไม้</text>
+        <text x="${W / 2}" y="${H / 2 + 15}" text-anchor="middle" font-size="10.5" fill="#9FD9BF">ทุกไม้ปิดพร้อมกันที่ราคาเฉลี่ย + ระยะ TP</text></g>`;
+    }
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}">${g}</svg><span class="px-cap">ภาพจำลองการทำงานของ EA · ไม่ใช่ผลเทรดจริง</span>`;
   }
-  const mx = Math.max(...c.map(x => x[1])), mn = Math.min(...c.map(x => x[2])), y = v => 14 + (mx - v) / (mx - mn) * (H - 28);
-  const bw = W / N; let g = "";
-  for (let k = 1; k < 4; k++) g += `<line x1="0" x2="${W}" y1="${H * k / 4}" y2="${H * k / 4}" stroke="rgba(150,180,230,.07)"/>`;
-  c.forEach(([o, h, l, cl], i) => {
-    const x = i * bw + bw / 2, up = cl >= o, col = up ? "#1FD18B" : "#F0475C";
-    g += `<line x1="${x}" x2="${x}" y1="${y(h)}" y2="${y(l)}" stroke="${col}" stroke-width="1"/>`;
-    g += `<rect x="${x - bw * .32}" y="${y(Math.max(o, cl))}" width="${bw * .64}" height="${Math.max(1, Math.abs(y(o) - y(cl)))}" fill="${col}" rx="1"/>`;
-  });
-  const last = y(c[N - 1][3]);
-  g += `<line x1="0" x2="${W}" y1="${last}" y2="${last}" stroke="#1FD18B" stroke-dasharray="3 4" stroke-opacity=".6"/>`;
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}</svg>`;
+  function step() {
+    const last = c[N - 1];
+    if (flash) { if (--flash === 0) { side = -side; start(); } }
+    else {
+      const bias = phase === "against" ? -side * .12 : side * .15;
+      last.c += bias + (rnd() - .5) * .38; last.h = Math.max(last.h, last.c); last.l = Math.min(last.l, last.c);
+      const lastOrd = orders[orders.length - 1];
+      if (phase === "against" && side * (lastOrd.price - last.c) >= STEP) { orders.push({ id: last.id, price: last.c }); if (orders.length >= maxOrd) phase = "back"; }
+      if (side * (last.c - tp()) >= 0) { flashN = orders.length; flash = 9; }
+    }
+    if (++ticks >= 5) { ticks = 0; c.shift(); const o = c[N - 2].c; c.push({ id: id++, o, h: o, l: o, c: o }); }
+    draw();
+  }
+  draw();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  setInterval(() => { if (!document.hidden && document.body.dataset.view === "loginView") step(); }, 380);
 })();
 </script>
 </body>
