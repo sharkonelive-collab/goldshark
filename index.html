@@ -1755,6 +1755,32 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
 .mpill.warn{border-color:rgba(242,184,75,.45);background:rgba(242,184,75,.15);color:#F2C45A}
 .mpill.bad{border-color:rgba(229,40,61,.45);background:rgba(229,40,61,.14);color:#FF8A98}
 .mpill.acc{border-color:rgba(59,148,255,.4);background:rgba(59,148,255,.12);color:#9CC8FF;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+/* ===== ทีมงานแอดมิน / สิทธิ์ ===== */
+body[data-adm-role="slip"] [data-perm="manager"],body:not([data-adm-role="owner"]) [data-perm="owner"]{display:none!important}
+body[data-adm-role="slip"] #licBody [data-act]:not([data-act="copy"]){display:none!important}
+body[data-adm-role="slip"] .admin-top{grid-template-columns:minmax(0,1fr)!important}
+body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
+.role-pill{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap}
+.role-pill.owner{color:#F2D27F;border-color:rgba(242,210,127,.45);background:rgba(242,210,127,.12)}
+.role-pill.manager{color:#9CC8FF;border-color:rgba(59,148,255,.45);background:rgba(59,148,255,.12)}
+.role-pill.slip{color:#5FE0A8;border-color:rgba(47,191,138,.45);background:rgba(47,191,138,.12)}
+.role-pill.off{color:#FF8A98;border-color:rgba(229,40,61,.45);background:rgba(229,40,61,.12)}
+.team-card{max-width:980px}
+.role-help{display:grid;gap:8px;margin:4px 0 16px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(150,180,230,.12)}
+.role-help div{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.role-help .role-pill{flex:none;min-width:70px;justify-content:center}
+.team-form{display:grid;grid-template-columns:1.1fr 1fr .8fr 1.1fr auto;gap:10px;align-items:end;margin-bottom:16px}
+.team-form .btn{height:42px;white-space:nowrap}
+.team-table td{vertical-align:middle}
+.team-table .tm-n b{display:block}.team-table .tm-n small{color:var(--muted);font-size:12px}
+.team-table select{height:32px;padding:0 8px;width:auto}
+.team-table .btn.danger{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
+.team-table .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.audit-table td{font-size:13px;vertical-align:middle}
+.audit-table .ad-d{color:var(--muted);font-size:12px;max-width:340px;word-break:break-word}
+.audit-table .ad-a{font-weight:600}
+.adm-who{display:inline-flex;align-items:center;gap:8px}
+@media (max-width:760px){.team-form{grid-template-columns:1fr 1fr}.team-form .btn{grid-column:1 / -1}.role-help div{grid-template-columns:1fr;gap:4px}.role-help .role-pill{justify-self:start}}
 </style>
 </head>
 <body>
@@ -1879,6 +1905,7 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
         <h2>แผงควบคุมแอดมิน</h2>
         <p class="sub">สำหรับผู้ดูแลระบบเท่านั้น <span class="admin-badge">ADMIN</span></p>
         <form id="adminForm">
+          <div><label for="admUser">ชื่อผู้ใช้ทีมงาน <span class="muted" style="font-weight:400">(เจ้าของร้านเว้นว่าง)</span></label><input id="admUser" class="field" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="เว้นว่าง = เจ้าของร้าน"></div>
           <div><label for="passIn">รหัสแอดมิน</label><div class="pw"><input id="passIn" class="field" type="password" autocomplete="current-password" required><button type="button" class="pw-eye" aria-label="แสดงรหัสผ่าน">แสดง</button></div></div>
           <button class="btn primary" type="submit">เข้าแผงแอดมิน</button>
         </form>
@@ -2155,11 +2182,13 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
     <button data-atab="codes" aria-pressed="true">โค้ด / สมาชิก</button>
     <button data-atab="pays" aria-pressed="false">การชำระเงิน<span class="badge" id="payBadge" hidden></span></button>
     <button data-atab="news" aria-pressed="false">ข่าว</button>
-    <button data-atab="shop" aria-pressed="false">ตั้งค่าร้าน</button>
+    <button data-atab="shop" aria-pressed="false" data-perm="owner">ตั้งค่าร้าน</button>
+    <button data-atab="team" aria-pressed="false" data-perm="owner">ทีมงาน</button>
+    <button data-atab="audit" aria-pressed="false" data-perm="manager">ประวัติแอดมิน</button>
   </nav>
   <div id="atab-codes">
   <div class="admin-top">
-    <section class="card">
+    <section class="card" data-perm="manager">
       <h3>ออกโค้ดใหม่</h3>
       <form id="createForm" class="form-grid">
         <div><label for="cName">ชื่อลูกค้า</label><input id="cName" class="field" required></div>
@@ -2229,6 +2258,44 @@ body[data-view="loginView"] .auth-foot{margin-top:22px!important}
       <div id="nsNext" style="margin-top:14px"></div>
     </section>
 
+  </div>
+
+  <div id="atab-team" hidden>
+    <section class="card team-card">
+      <h3>ทีมงานแอดมิน</h3>
+      <div class="role-help">
+        <div><b class="role-pill owner">เจ้าของ</b><span>ทำได้ทุกอย่าง · ใช้รหัสหลักของร้าน (เว้นช่องชื่อผู้ใช้ตอนเข้าสู่ระบบ)</span></div>
+        <div><b class="role-pill manager">ผู้ดูแล</b><span>ออกโค้ด ต่ออายุ ระงับ แก้พอร์ต รีเซ็ตรหัสสมาชิก อนุมัติสลิป ดูประวัติแอดมิน · <u>ลบโค้ด/ตั้งค่าร้าน/จัดการทีมไม่ได้</u></span></div>
+        <div><b class="role-pill slip">ตรวจสลิป</b><span>ดูรายชื่อสมาชิก และอนุมัติ/ปฏิเสธสลิปเท่านั้น</span></div>
+      </div>
+      <form id="teamForm" class="team-form" autocomplete="off">
+        <div><label for="tmUser">ชื่อผู้ใช้ (ใช้เข้าสู่ระบบ)</label><input id="tmUser" class="field" placeholder="เช่น somchai" autocapitalize="none" spellcheck="false" required pattern="[A-Za-z0-9._\-]{3,20}"></div>
+        <div><label for="tmName">ชื่อที่โชว์</label><input id="tmName" class="field" placeholder="เช่น สมชาย"></div>
+        <div><label for="tmRole">สิทธิ์</label><select id="tmRole" class="field"><option value="slip">ตรวจสลิป</option><option value="manager">ผู้ดูแล</option></select></div>
+        <div><label for="tmPass">รหัสผ่าน (8 ตัวขึ้นไป)</label><input id="tmPass" class="field" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn primary" type="submit">+ เพิ่มทีมงาน</button>
+      </form>
+      <div class="table-wrap">
+        <table class="team-table">
+          <thead><tr><th>ทีมงาน</th><th>สิทธิ์</th><th>สถานะ</th><th>เข้าล่าสุด</th><th></th></tr></thead>
+          <tbody id="teamBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="atab-audit" hidden>
+    <section class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h3 style="margin:0">ประวัติการทำรายการของแอดมิน</h3><span style="flex:1"></span>
+        <select id="auditWho" class="field" style="width:auto;height:34px;padding:0 10px"><option value="">ทุกคน</option></select>
+        <button class="btn small" id="auditRefresh">รีเฟรช</button></div>
+      <div class="table-wrap">
+        <table class="audit-table">
+          <thead><tr><th>เวลา</th><th>ใคร</th><th>ทำอะไร</th><th>โค้ด/รายการ</th><th>รายละเอียด</th></tr></thead>
+          <tbody id="auditBody"></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 
   <div id="atab-shop" hidden>
@@ -2597,12 +2664,57 @@ function demoApi(action, d) {
       }
     }
     if (action === "admin_breaking") {
-      if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง" });
+      if (d.pass !== "demo" && !String(d.pass || "").startsWith("adm1.demo.")) return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง" });
       return res({ ok: true, status: { ok: true, time: d.refresh ? Date.now() : Date.now() - 600000, info: "หลัก HTTP 200", count: 34 }, calendar: 4, next: [{ t: Date.now() + 3600e3, title: "Core PCE Price Index m/m", impact: "High" }, { t: Date.now() + 86400e3, title: "Unemployment Claims", impact: "Medium" }] });
     }
     if (action === "pay_qr") return res(demo.qrImg ? { ok: true, image: demo.qrImg } : { ok: false, error: "ยังไม่มีรูป QR" });
     if (action.startsWith("admin_")) {
-      if (d.pass !== "demo") return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
+      if (!demo.team) {
+        demo.team = [{ user: "somchai", name: "สมชาย", role: "manager", status: "active", created: Date.now() - 20 * 864e5, lastLogin: Date.now() - 3 * 3600e3, createdBy: "เจ้าของ", v: 0 },
+          { user: "nid", name: "นิด", role: "slip", status: "active", created: Date.now() - 5 * 864e5, lastLogin: Date.now() - 26 * 3600e3, createdBy: "เจ้าของ", v: 0 }];
+        demo.alog = [{ t: Date.now() - 2 * 3600e3, user: "nid", name: "นิด", role: "ตรวจสลิป", action: "pay_decide", target: "PAY-1042", detail: "approve=true" },
+          { t: Date.now() - 5 * 3600e3, user: "somchai", name: "สมชาย", role: "ผู้ดูแล", action: "update", target: "GS-7KQ2-M9XA", detail: "addDays=30" },
+          { t: Date.now() - 26 * 3600e3, user: "somchai", name: "สมชาย", role: "ผู้ดูแล", action: "create", target: "GS-P4TW-2HDN", detail: "name=คุณเอ plan=month days=30" },
+          { t: Date.now() - 50 * 3600e3, user: "owner", name: "เจ้าของ", role: "เจ้าของ", action: "team_save", target: "nid", detail: "user=nid name=นิด role=slip (ตั้งรหัสใหม่)" }];
+      }
+      const LV = { slip: 1, manager: 2, owner: 3 }, TH = { owner: "เจ้าของ", manager: "ผู้ดูแล", slip: "ตรวจสลิป" };
+      let who = null;
+      if (String(d.pass || "").startsWith("adm1.demo.")) {
+        const m = demo.team.find(x => "adm1.demo." + x.user + "." + x.v === d.pass && x.status === "active");
+        if (!m) return res({ ok: false, error: "รหัสแอดมินหมดอายุหรือถูกยกเลิก กรุณาเข้าสู่ระบบใหม่" });
+        who = { user: m.user, name: m.name, role: m.role };
+      } else if (d.user && action === "admin_login") {
+        const m = demo.team.find(x => x.user === String(d.user).trim().toLowerCase());
+        if (!m || d.pass !== "demo" || m.status !== "active") return res({ ok: false, error: "ชื่อผู้ใช้หรือรหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่าง: somchai หรือ nid รหัส demo)" });
+        who = { user: m.user, name: m.name, role: m.role, token: "adm1.demo." + m.user + "." + m.v };
+      } else if (d.pass === "demo") who = { user: "owner", name: "เจ้าของ", role: "owner" };
+      else return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
+      const PERM = { admin_login: "slip", admin_list: "slip", admin_payments: "slip", admin_slip: "slip", admin_pay_decide: "slip", admin_create: "manager", admin_update: "manager", admin_link: "manager", admin_reset_pw: "manager", admin_audit: "manager" };
+      if (LV[who.role] < LV[PERM[action] || "owner"]) return res({ ok: false, error: `สิทธิ์ของคุณ (${TH[who.role]}) ทำรายการนี้ไม่ได้`, denied: true });
+      const res0 = res;
+      res = o => {
+        if (o && o.ok) {
+          o.adm = { user: who.user, name: who.name, role: who.role, roleTh: TH[who.role] }; if (who.token) o.token = who.token;
+          if (/^admin_(create|update|delete|link|reset_pw|pay_decide|config_set|qr_|team_)/.test(action))
+            demo.alog.unshift({ t: Date.now(), user: who.user, name: who.name, role: TH[who.role], action: action.replace(/^admin_/, ""), target: d.code || d.id || (action.includes("team") ? d.user : "") || "", detail: Object.keys(d).filter(k => !["pass", "action", "image", "config", "password", "newPassword", "settings"].includes(k) && d[k] !== "" && d[k] != null && !(k === "user" && !action.includes("team"))).map(k => k + "=" + String(d[k]).slice(0, 30)).join(" ") + (d.password || d.newPassword ? " (ตั้งรหัสใหม่)" : "") });
+        }
+        return res0(o);
+      };
+      const teamPub = () => demo.team.map(x => ({ user: x.user, name: x.name, role: x.role, status: x.status, created: x.created, lastLogin: x.lastLogin, createdBy: x.createdBy }));
+      if (action === "admin_team") return res({ ok: true, team: teamPub() });
+      if (action === "admin_audit") return res({ ok: true, log: demo.alog.slice(0, 300) });
+      if (action === "admin_team_delete") { const i = demo.team.findIndex(x => x.user === d.user); if (i < 0) return res({ ok: false, error: "ไม่พบทีมงาน" }); demo.team.splice(i, 1); return res({ ok: true, team: teamPub() }); }
+      if (action === "admin_team_save") {
+        const u = String(d.user || "").trim().toLowerCase();
+        if (!/^[a-z0-9._-]{3,20}$/.test(u) || u === "owner") return res({ ok: false, error: "ชื่อผู้ใช้ใช้ a-z 0-9 . _ - ยาว 3–20 ตัว (ห้ามใช้ owner)" });
+        let m = demo.team.find(x => x.user === u);
+        if (!m) { if (String(d.password || "").length < 8) return res({ ok: false, error: "รหัสผ่านทีมงานอย่างน้อย 8 ตัว" }); m = { user: u, status: "active", created: Date.now(), lastLogin: 0, createdBy: who.name, v: 0, role: "slip" }; demo.team.push(m); }
+        else if (d.password && String(d.password).length < 8) return res({ ok: false, error: "รหัสผ่านทีมงานอย่างน้อย 8 ตัว" });
+        else if (d.password || d.kick || d.status && d.status !== m.status || d.role && d.role !== m.role) m.v++;
+        if (d.name) m.name = d.name; if (!m.name) m.name = u;
+        if (d.role) m.role = d.role; if (d.status) m.status = d.status;
+        return res({ ok: true, team: teamPub() });
+      }
       if (action === "admin_login") return res({ ok: true });
       if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; else l.purgeAt = 0; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
       if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
@@ -2723,11 +2835,14 @@ $("regForm").addEventListener("submit", async e => {
 
 $("adminForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const pass = $("passIn").value;
-  const r = await api("admin_login", { pass });
+  const pass = $("passIn").value, user = $("admUser").value.trim();
+  const r = await api("admin_login", user ? { user, pass } : { pass });
   if (!r.ok) { $("loginErr").textContent = r.error; return; }
-  session = { mode: "admin", pass };
-  store.set("gs_admin", pass);
+  const key = r.token || pass;              // ทีมงานใช้ token (ไม่เก็บรหัสจริงในเครื่อง)
+  session = { mode: "admin", pass: key };
+  store.set("gs_admin", key);
+  $("passIn").value = "";
+  applyAdm(r.adm);
   openAdmin();
 });
 
@@ -2735,7 +2850,7 @@ function logout(msg) {
   clearInterval(fastTimer);
   clearInterval(timer);
   try { Object.keys(localStorage).filter(k => k.startsWith("gs_me_")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
-  store.del("gs_token"); store.del("gs_admin"); store.del("gs_code"); store.del("gs_port"); store.del("gs_adm_list"); store.del("gs_adm_pays");
+  store.del("gs_token"); store.del("gs_admin"); store.del("gs_adm_me"); delete document.body.dataset.admRole; store.del("gs_code"); store.del("gs_port"); store.del("gs_adm_list"); store.del("gs_adm_pays");
   session = { mode: null };
   $("whoami").textContent = "";
   $("bellBtn").hidden = true; $("bellPanel").hidden = true;
@@ -4414,7 +4529,7 @@ async function openAdmin() {
       $("syncing").hidden = false;
     }
   } catch (e) {}
-  $("whoami").textContent = "แอดมิน";
+  if (!session.adm) $("whoami").textContent = "แอดมิน";
   show("adminView");
   ntfRender();
   hideSplash();
@@ -4478,6 +4593,7 @@ async function loadLics() {
   const r = await api("admin_list", { pass: session.pass });
   $("syncing").hidden = true;
   if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else if (!r.busy) toast(r.error); return false; }
+  if (r.adm) applyAdm(r.adm);
   admHydrate(r);
   if (r.planLabels) Object.assign(PLAN_LABEL, r.planLabels);
   if (r.packages) fillPlanSelect(r.packages);
@@ -4738,11 +4854,104 @@ $("setupBox").addEventListener("toggle", () => { setupTouched = true; });
 let pays = [], payFilter = "pending";
 document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".adm-tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  ["codes", "pays", "news", "shop"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  ["codes", "pays", "news", "shop", "team", "audit"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  if (b.dataset.atab === "team") loadTeam();
+  if (b.dataset.atab === "audit") loadAudit();
   if (b.dataset.atab === "pays") loadPays();
   if (b.dataset.atab === "news") loadBreaking();
   if (b.dataset.atab === "shop") loadShop();
 }));
+
+const ADM_ROLE_TH = { owner: "เจ้าของ", manager: "ผู้ดูแล", slip: "ตรวจสลิป" };
+function applyAdm(a) {
+  if (!a || !a.role) return;
+  session.adm = a;
+  document.body.dataset.admRole = a.role;
+  try { store.set("gs_adm_me", JSON.stringify(a)); } catch (e) {}
+  $("whoami").innerHTML = `<span class="adm-who">${a.role === "owner" ? "" : esc(a.name || "แอดมิน")}<span class="role-pill ${esc(a.role)}">${esc(ADM_ROLE_TH[a.role] || a.role)}</span></span>`;
+  // แท็บที่เปิดอยู่ถูกซ่อนเพราะสิทธิ์ไม่พอ → กลับไปหน้าโค้ด
+  const on = document.querySelector('.adm-tabs button[aria-pressed="true"]');
+  if (on && getComputedStyle(on).display === "none") document.querySelector('.adm-tabs button[data-atab="codes"]').click();
+}
+let team = [];
+async function loadTeam() {
+  const r = await api("admin_team", { pass: session.pass });
+  if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else toast(r.error); return; }
+  team = r.team || []; renderTeam();
+}
+function renderTeam() {
+  $("teamBody").innerHTML = team.length ? team.map(t => {
+    const off = t.status !== "active";
+    return `<tr data-u="${esc(t.user)}">
+      <td class="tm-n"><b>${esc(t.name || t.user)}</b><small>@${esc(t.user)}${t.createdBy ? " · เพิ่มโดย " + esc(t.createdBy) : ""}</small></td>
+      <td><select class="field" data-tm="role"><option value="manager" ${t.role === "manager" ? "selected" : ""}>ผู้ดูแล</option><option value="slip" ${t.role === "slip" ? "selected" : ""}>ตรวจสลิป</option></select></td>
+      <td>${off ? '<span class="role-pill off">ระงับ</span>' : '<span class="role-pill slip">ใช้งาน</span>'}</td>
+      <td class="muted" style="font-size:13px">${t.lastLogin ? ago(t.lastLogin) : "ยังไม่เคยเข้า"}</td>
+      <td><div class="actions">
+        <button class="btn small" data-tm="pw">ตั้งรหัสใหม่</button>
+        <button class="btn small" data-tm="${off ? "on" : "off"}">${off ? "เปิดใช้" : "ระงับ"}</button>
+        <button class="btn small" data-tm="kick" title="ให้ออกจากระบบทุกเครื่องทันที">เตะออก</button>
+        <button class="btn small danger" data-tm="del">ลบ</button>
+      </div></td></tr>`;
+  }).join("") : `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">ยังไม่มีทีมงาน เพิ่มคนแรกจากฟอร์มด้านบน</td></tr>`;
+}
+async function teamSave(body, msg) {
+  const r = await api("admin_team_save", Object.assign({ pass: session.pass }, body));
+  if (!r.ok) { toast(r.error); return false; }
+  team = r.team || []; renderTeam(); if (msg) toast(msg); return true;
+}
+$("teamForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const ok = await teamSave({ user: $("tmUser").value.trim(), name: $("tmName").value.trim(), role: $("tmRole").value, password: $("tmPass").value }, "เพิ่มทีมงานแล้ว ส่งชื่อผู้ใช้และรหัสให้ทีมงานได้เลย");
+  if (ok) $("teamForm").reset();
+});
+$("teamBody").addEventListener("change", e => {
+  const sel = e.target.closest('[data-tm="role"]'); if (!sel) return;
+  const u = sel.closest("tr").dataset.u;
+  teamSave({ user: u, role: sel.value }, "เปลี่ยนสิทธิ์แล้ว (ทีมงานต้องเข้าสู่ระบบใหม่)");
+});
+$("teamBody").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-tm]"); if (!b) return;
+  const u = b.closest("tr").dataset.u, t = team.find(x => x.user === u) || {}, nm = t.name || u;
+  if (b.dataset.tm === "pw") { const pw = prompt(`ตั้งรหัสใหม่ให้ ${nm} (8 ตัวขึ้นไป)`); if (pw) teamSave({ user: u, password: pw }, "ตั้งรหัสใหม่แล้ว"); }
+  if (b.dataset.tm === "off") { if (confirm(`ระงับ ${nm}? จะออกจากระบบทันทีและเข้าไม่ได้จนกว่าจะเปิดใช้`)) teamSave({ user: u, status: "disabled" }, "ระงับแล้ว"); }
+  if (b.dataset.tm === "on") teamSave({ user: u, status: "active" }, "เปิดใช้แล้ว");
+  if (b.dataset.tm === "kick") { if (confirm(`ให้ ${nm} ออกจากระบบทุกเครื่องตอนนี้?`)) teamSave({ user: u, kick: true }, "เตะออกแล้ว"); }
+  if (b.dataset.tm === "del") {
+    if (!confirm(`ลบ ${nm} ออกจากทีมถาวร?`)) return;
+    const r = await api("admin_team_delete", { pass: session.pass, user: u });
+    if (!r.ok) { toast(r.error); return; } team = r.team || []; renderTeam(); toast("ลบแล้ว");
+  }
+});
+const AUDIT_TH = { create: "ออกโค้ด", update: "แก้ไขโค้ด", delete: "ลบโค้ด", link: "ผูกสมาชิก", reset_pw: "รีเซ็ตรหัสสมาชิก", pay_decide: "ตัดสินสลิป",
+  config_set: "ตั้งค่าร้าน", qr_upload: "อัปโหลด QR", qr_delete: "ลบ QR", host: "เครื่องรัน EA", team_save: "แก้ทีมงาน", team_delete: "ลบทีมงาน" };
+let auditLog = [];
+function auditDetail(x) {
+  let t = x.detail || "";
+  if (x.action === "pay_decide") t = /approve=true/.test(t) ? "อนุมัติ" : "ปฏิเสธ" + (t.match(/note=(.*)$/) ? " · " + t.match(/note=(.*)$/)[1] : "");
+  return t.replace(/addDays=(\d+)/, "+$1 วัน").replace(/status=suspended/, "ระงับ").replace(/status=active/, "เปิดใช้").replace(/resetAccount=true/, "ปลดบัญชี MT5");
+}
+function renderAudit() {
+  const w = $("auditWho").value, rows = auditLog.filter(x => !w || x.user === w);
+  $("auditBody").innerHTML = rows.length ? rows.map(x => `<tr>
+    <td class="muted" style="white-space:nowrap">${new Date(x.t).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+    <td style="white-space:nowrap">${esc(x.name || x.user)} <span class="role-pill ${x.role === "เจ้าของ" ? "owner" : x.role === "ผู้ดูแล" ? "manager" : "slip"}">${esc(x.role)}</span></td>
+    <td class="ad-a">${esc(AUDIT_TH[x.action] || x.action)}</td>
+    <td class="num">${esc(x.target || "–")}</td>
+    <td class="ad-d">${esc(auditDetail(x))}</td></tr>`).join("")
+    : `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">ยังไม่มีประวัติ</td></tr>`;
+}
+async function loadAudit() {
+  const r = await api("admin_audit", { pass: session.pass });
+  if (!r.ok) { if (/รหัสแอดมิน/.test(r.error || "")) logout(r.error); else toast(r.error); return; }
+  auditLog = r.log || [];
+  const who = [...new Map(auditLog.map(x => [x.user, x.name || x.user])).entries()], cur = $("auditWho").value;
+  $("auditWho").innerHTML = '<option value="">ทุกคน</option>' + who.map(([u, n]) => `<option value="${esc(u)}">${esc(n)}</option>`).join("");
+  $("auditWho").value = who.some(([u]) => u === cur) ? cur : "";
+  renderAudit();
+}
+$("auditWho").addEventListener("change", renderAudit);
+$("auditRefresh").addEventListener("click", loadAudit);
 
 async function loadPays(quiet) {
   if (!pays.length) { try { const c = JSON.parse(store.get("gs_adm_pays") || "null"); if (c) { pays = c; renderPays(); } } catch (e) {} }
@@ -4981,7 +5190,7 @@ setTimeout(async () => {
   try {
     if (IS_ADMIN) {
       const a = store.get("gs_admin");
-      if (a) { session = { mode: "admin", pass: a }; await openAdmin(); return; }   // รหัสผิดจะถูกเด้งกลับหน้าเข้าสู่ระบบเอง
+      if (a) { session = { mode: "admin", pass: a }; try { applyAdm(JSON.parse(store.get("gs_adm_me") || "null")); } catch (e) {} await openAdmin(); return; }   // รหัสผิดจะถูกเด้งกลับหน้าเข้าสู่ระบบเอง
       show("loginView"); return;
     }
     const t = store.get("gs_token");
