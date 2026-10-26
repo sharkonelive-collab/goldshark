@@ -1940,6 +1940,28 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 .host-tab .host-tab-actions{display:flex;gap:10px;align-items:center;margin-top:16px}
 .host-tab .host-tab-actions .btn.primary{flex:1;max-width:320px}
 #shopHostBrokers{color:#F2F5FA!important;-webkit-text-fill-color:#F2F5FA!important;opacity:1!important;font-size:14px!important;line-height:1.7!important;background:#060B15!important;border-color:rgba(150,180,230,.22)!important}
+/* ===== แท็บแอดมิน: มือถือเป็นเมนูไอคอน 4 คอลัมน์ ===== */
+.adm-tabs .at-ico,.adm-tabs .at-s{display:none}
+@media (max-width:760px){
+  .adm-tabs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:8px!important;border-radius:20px!important;
+    background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.01)),rgba(8,12,22,.8)!important;border:1px solid rgba(150,180,230,.14)!important;margin-bottom:16px!important}
+  .adm-tabs button{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 2px 8px!important;
+    border-radius:14px!important;font-size:12px!important;line-height:1.2;min-height:62px;text-align:center;white-space:nowrap!important;overflow:hidden}
+  .adm-tabs button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(59,148,255,.28),rgba(59,148,255,.10))!important;box-shadow:inset 0 0 0 1px rgba(59,148,255,.45)!important;color:#fff!important}
+  .adm-tabs .at-ico{display:block;width:22px;height:22px;font-style:normal}
+  .adm-tabs .at-ico svg{width:22px;height:22px;display:block}
+  .adm-tabs .at-l{display:none}
+  .adm-tabs .at-s{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .adm-tabs .badge{position:absolute;top:5px;right:calc(50% - 22px);margin:0!important}
+  #adminView .stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px!important;margin:4px 0 12px!important}
+  #adminView .stats div{text-align:center;padding:10px 4px;border-radius:14px;border:1px solid rgba(150,180,230,.12);background:rgba(255,255,255,.03);font-size:11px;line-height:1.3}
+  #adminView .stats b{font-size:22px!important;margin-bottom:2px}
+  #createForm{gap:12px!important}
+  #createForm .field{height:46px}
+  #adminView .admin-top > .card{padding:18px 16px!important}
+  #dayChips{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  #dayChips .chip{padding:8px 0!important;text-align:center;font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -2368,13 +2390,13 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 <!-- ================= ADMIN ================= -->
 <main id="adminView" class="wrap" hidden>
   <nav class="adm-tabs">
-    <button data-atab="codes" aria-pressed="true">โค้ด / สมาชิก</button>
-    <button data-atab="pays" aria-pressed="false">การชำระเงิน<span class="badge" id="payBadge" hidden></span></button>
-    <button data-atab="news" aria-pressed="false">ข่าว</button>
-    <button data-atab="shop" aria-pressed="false" data-perm="owner">ตั้งค่าร้าน</button>
-    <button data-atab="host" aria-pressed="false" data-perm="owner">เครื่องรัน</button>
-    <button data-atab="team" aria-pressed="false" data-perm="owner">ทีมงาน</button>
-    <button data-atab="audit" aria-pressed="false" data-perm="manager">ประวัติแอดมิน</button>
+    <button data-atab="codes" aria-pressed="true"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h4M7 13h10M7 16h6"/></svg></i><span class="at-l">โค้ด / สมาชิก</span><span class="at-s">โค้ด</span></button>
+    <button data-atab="pays" aria-pressed="false"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg></i><span class="at-l">การชำระเงิน</span><span class="at-s">ชำระเงิน</span><span class="badge" id="payBadge" hidden></span></button>
+    <button data-atab="news" aria-pressed="false"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/></svg></i><span class="at-l">ข่าว</span><span class="at-s">ข่าว</span></button>
+    <button data-atab="shop" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l1.5-5h13L20 10"/><path d="M5 10v9h14v-9"/><path d="M4 10h16"/><path d="M10 19v-5h4v5"/></svg></i><span class="at-l">ตั้งค่าร้าน</span><span class="at-s">ร้าน</span></button>
+    <button data-atab="host" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="7" rx="1.5"/><rect x="4" y="13" width="16" height="7" rx="1.5"/><path d="M8 7.5h.01M8 16.5h.01"/></svg></i><span class="at-l">เครื่องรัน</span><span class="at-s">เครื่องรัน</span></button>
+    <button data-atab="team" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.6 0 4.5 1.8 4.5 4.5"/></svg></i><span class="at-l">ทีมงาน</span><span class="at-s">ทีมงาน</span></button>
+    <button data-atab="audit" aria-pressed="false" data-perm="manager"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></i><span class="at-l">ประวัติแอดมิน</span><span class="at-s">ประวัติ</span></button>
   </nav>
   <div id="atab-codes">
   <div class="admin-top">
@@ -2393,7 +2415,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
             <button type="button" class="chip" data-days="365" aria-pressed="false">1 ปี</button>
           </div>
         </div>
-        <div><label for="cAcct">เลขบัญชี MT5 (เว้นว่าง = ผูกอัตโนมัติตอน EA เชื่อมครั้งแรก)</label><input id="cAcct" class="field" inputmode="numeric"></div>
+        <div><label for="cAcct">เลขบัญชี MT5 <small class="muted" style="font-weight:400">· เว้นว่างได้ ผูกเองตอน EA เชื่อมครั้งแรก</small></label><input id="cAcct" class="field" inputmode="numeric"></div>
         <div><label for="cNote">หมายเหตุ</label><input id="cNote" class="field"></div>
         <button class="btn primary" type="submit" id="createBtn">ออกโค้ด</button>
       </form>
