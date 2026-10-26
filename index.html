@@ -2154,7 +2154,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
     <form id="hostForm" autocomplete="off" hidden>
       <div class="hc-grid">
         <label class="fld"><span>โบรกเกอร์</span><select class="field" id="hostBroker"></select></label>
-        <label class="fld"><span>สัญลักษณ์ทองในบัญชีนี้</span><input class="field" id="hostSymbol" placeholder="เช่น XAUUSDc"></label>
+        <label class="fld"><span>สัญลักษณ์ทองในบัญชีนี้</span><select class="field" id="hostSymbol"></select></label>
         <label class="fld"><span>เลขบัญชี MT5</span><input class="field" id="hostLogin" inputmode="numeric" placeholder="เช่น 183981853"></label>
         <label class="fld"><span>ชื่อเซิร์ฟเวอร์ <small class="muted">(ดูในอีเมลเปิดบัญชี)</small></span><input class="field" id="hostServer" placeholder="เช่น Exness-MT5Real8"></label>
         <label class="fld hc-full"><span>รหัสผ่านเทรด MT5 <small class="muted" id="hostPassHint"></small></span><span class="hc-pw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input class="field" id="hostPass" type="password" autocomplete="new-password" placeholder="รหัสเทรด (ไม่ใช่รหัสเข้าเว็บโบรก)"></span></label>
@@ -4285,7 +4285,7 @@ function fillHostForm() {
   if (h) $("hostBroker").value = h.broker;
   $("hostLogin").value = h ? h.login : (dashData.license && dashData.license.account) || "";
   $("hostServer").value = h ? h.server : ((dashData.snapshot || {}).server || "");
-  $("hostSymbol").value = h ? h.symbol : hostSymbolFor($("hostBroker").value);
+  fillHostSymbols(h ? h.symbol : hostSymbolFor($("hostBroker").value));
   $("hostPass").value = "";
   $("hostPassHint").textContent = h ? "(เว้นว่างถ้าไม่เปลี่ยน)" : "";
   $("hostConsent").checked = !!h;
@@ -4293,7 +4293,17 @@ function fillHostForm() {
   $("hostErr").textContent = "";
   $("hostForm").dataset.filled = "1";
 }
-$("hostBroker").addEventListener("change", () => { $("hostSymbol").value = hostSymbolFor($("hostBroker").value); });
+// สัญลักษณ์ทอง: ให้เลือกจากรายการของโบรก (ตั้งไว้ที่หน้าแอดมิน) ไม่ต้องพิมพ์เอง
+function fillHostSymbols(want) {
+  const b = ((dashData.host || {}).brokers || []).find(x => x.key === $("hostBroker").value) || {};
+  const opts = [];
+  if (b.cent) opts.push([b.cent, `${b.cent} · บัญชี Cent (USC)`]);
+  if (b.usd && b.usd !== b.cent) opts.push([b.usd, `${b.usd} · บัญชี USD`]);
+  if (want && !opts.some(o => o[0] === want)) opts.push([want, want]);   // ค่าเดิมที่ไม่อยู่ในรายการแล้ว
+  $("hostSymbol").innerHTML = opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("") || '<option value="">– ร้านยังไม่ได้ตั้งสัญลักษณ์ของโบรกนี้ –</option>';
+  if (want && opts.some(o => o[0] === want)) $("hostSymbol").value = want;
+}
+$("hostBroker").addEventListener("change", () => fillHostSymbols(hostSymbolFor($("hostBroker").value)));
 // เข้ารหัสรหัสผ่านในเบราว์เซอร์ด้วยกุญแจสาธารณะของเครื่องรัน (RSA-OAEP SHA-256)
 async function encryptForHost(text, pem) {
   const b64 = pem.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
