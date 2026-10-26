@@ -1789,6 +1789,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 .team-table td{vertical-align:middle}
 .team-table .tm-n b{display:block}.team-table .tm-n small{color:var(--muted);font-size:12px}
 .team-table select{height:32px;padding:0 8px;width:auto}
+#licBody .del-btn{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
 .team-table .btn.danger{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
 .team-table .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .audit-table td{font-size:13px;vertical-align:middle}
@@ -1910,7 +1911,8 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
   #adminView tbody tr td:last-child{grid-column:1 / -1}
   #adminView tbody tr td[colspan]{grid-column:1 / -1;text-align:center!important}
   #adminView tbody tr td[colspan]::before{display:none}
-  #adminView #licBody .actions,#adminView .team-table .actions{flex-direction:row;flex-wrap:wrap!important;justify-content:flex-start}
+  #adminView #licBody .actions,#adminView .team-table .actions{flex-direction:row;flex-wrap:wrap!important;justify-content:flex-start;max-width:none!important;margin-left:0}
+  #adminView #licBody .actions .btn{flex:1 1 0;min-width:0}
   #adminView #licBody .actions .btn,#adminView .team-table .actions .btn{flex:1 1 auto}
   #adminView .audit-table .ad-d{max-width:none}
 }
@@ -4843,6 +4845,7 @@ function renderLics() {
         <button class="btn small" data-act="add30" data-code="${esc(l.code)}">+30 วัน</button>
         <button class="btn small" data-act="${l.status === "active" ? "suspend" : "activate"}" data-code="${esc(l.code)}">${l.status === "active" ? "ระงับ" : "เปิดใช้"}</button>
         <button class="btn small" data-act="settings" data-code="${esc(l.code)}">ตั้งค่า</button>
+        <button class="btn small del-btn" data-act="delete" data-code="${esc(l.code)}">ลบ</button>
       </div></td></tr>`;
   }).join("") : `<tr><td colspan="9" class="muted" style="text-align:center;padding:28px">${q ? "ไม่พบโค้ดที่ตรงกับคำค้นหา" : "ยังไม่มีโค้ด ออกโค้ดแรกจากฟอร์มด้านซ้าย"}</td></tr>`;
 }
@@ -4916,7 +4919,15 @@ async function runAct(act, code) {
   if (act === "suspend") { if (!confirm(`ระงับ ${code}? EA จะหยุดเปิดไม้ใหม่ แต่ยังดูแลไม้ที่เปิดอยู่`)) return; r = await api("admin_update", { ...P, status: "suspended" }); }
   if (act === "activate") r = await api("admin_update", { ...P, status: "active" });
   if (act === "reset") { if (!confirm(`ปลดบัญชีออกจาก ${code}? บัญชี MT5 ถัดไปที่เชื่อมจะถูกผูกแทน`)) return; r = await api("admin_update", { ...P, resetAccount: true }); }
-  if (act === "delete") { if (!confirm(`ลบ ${code} ถาวร? กู้คืนไม่ได้`)) return; r = await api("admin_delete", P); }
+  if (act === "delete") {
+    const L = lics.find(x => x.code === code) || {};
+    const warn = [L.online ? "• EA ของโค้ดนี้ยังออนไลน์อยู่ จะหยุดเปิดไม้ใหม่ทันที" : "",
+      L.account ? "• ผูกบัญชี MT5 " + L.account + " อยู่" : "",
+      L.login ? "• เป็นพอร์ตของสมาชิก " + L.login + " (จะหายจากหน้าสมาชิก)" : "",
+      L.plan && L.plan !== "none" && L.plan !== "trial" && licState(L)[0] === "active" ? "• แพ็กเกจ " + (PLAN_LABEL[L.plan] || L.plan) + " ยังไม่หมดอายุ" : ""].filter(Boolean).join("\n");
+    if (!confirm(`ลบโค้ด ${code}${L.name ? " (" + L.name + ")" : ""} ถาวร?\n${warn ? "\n" + warn + "\n" : ""}\nลบแล้วกู้คืนไม่ได้`)) return;
+    r = await api("admin_delete", P);
+  }
   if (!r) return;
   if (!r.ok) { toast(r.error); return; }
   toast({ add30: "ต่ออายุ 30 วันแล้ว", suspend: "ระงับแล้ว", activate: "เปิดใช้แล้ว", reset: "ย้ายบัญชีได้แล้ว", delete: "ลบแล้ว" }[act]);
