@@ -1902,8 +1902,13 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 #adminView #licBody .actions{flex-direction:row;flex-wrap:wrap!important;justify-content:flex-end;gap:5px;max-width:178px;margin-left:auto}
 #adminView #licBody .actions .btn{white-space:nowrap;padding:5px 10px}
 #adminView #licBody td.num{white-space:nowrap}
+@media (min-width:761px){#adminView #licBody td:last-child{min-width:146px;width:146px}#adminView #licBody .actions{max-width:146px!important}#adminView #licBody .actions .btn{padding:4px 9px!important;font-size:12.5px}#adminView #licBody td{padding:10px 6px}#adminView #licBody .code-copy{padding:5px 8px;font-size:13px}}
 #adminView #licBody .pill,#adminView #licBody td:nth-child(4),#adminView #licBody .port-tag{white-space:nowrap}
-@media (max-width:1280px) and (min-width:761px){.admin-top{grid-template-columns:minmax(0,1fr)!important}}
+@media (max-width:1860px) and (min-width:761px){.admin-top{grid-template-columns:minmax(0,1fr)!important}
+  .admin-top > section.card{display:block}
+  #createForm{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px!important;align-items:end}
+  #createForm > div:nth-child(3){grid-column:1 / -1}
+  #createForm > .btn{grid-column:1 / -1}}
 @media (max-width:760px){
   #adminView .table-wrap{border:0!important;background:none!important}
   #adminView table,#adminView thead,#adminView tbody,#adminView tr,#adminView td{display:block;width:100%}
@@ -1936,6 +1941,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 .host-lock svg{width:26px;height:26px;flex:none;color:#F2C45A}
 .host-lock div{flex:1;min-width:0}.host-lock b{display:block;color:#F7D27A}.host-lock small{color:var(--muted);font-size:12.5px}
 @media (max-width:560px){.host-lock{flex-wrap:wrap}.host-lock .btn{width:100%}}
+.adm-search-row .search{flex:1;min-width:160px}
 /* แท็บเครื่องรัน */
 .host-tab .host-tab-actions{display:flex;gap:10px;align-items:center;margin-top:16px}
 .host-tab .host-tab-actions .btn.primary{flex:1;max-width:320px}
@@ -2431,14 +2437,14 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 
     <section>
       <div class="stats" id="stats"></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center">
+      <div class="adm-search-row" style="display:flex;gap:10px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
         <input class="field search" id="search" placeholder="ค้นหาโค้ด ชื่อ หรือเลขบัญชี">
         <span class="spacer" style="flex:1"></span>
         <button class="btn small" id="refreshBtn">รีเฟรช</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>โค้ด</th><th>ลูกค้า</th><th>บัญชี</th><th>แพ็กเกจ</th><th>เหลือ</th><th>สถานะ</th><th>EA</th><th>Equity</th><th></th></tr></thead>
+          <thead><tr><th>โค้ด</th><th>ลูกค้า</th><th>บัญชี</th><th>แพ็กเกจ</th><th>เหลือ</th><th>สถานะ / EA</th><th>Equity</th><th>กำไรตั้งแต่รัน</th><th></th></tr></thead>
           <tbody id="licBody"></tbody>
         </table>
       </div>
@@ -2950,7 +2956,8 @@ function demoApi(action, d) {
         return res({ ok: true, team: teamPub() });
       }
       if (action === "admin_login") return res({ ok: true });
-      if (action === "admin_list") { L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; else l.purgeAt = 0; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
+      if (action === "admin_list") { L.forEach(l => { if (l.equity != null && !l.profit) { const k = l.code.charCodeAt(4) % 7; l.profit = { today: +(l.equity * (0.002 + k * 0.0007)).toFixed(2), week: +(l.equity * (0.012 + k * 0.003)).toFixed(2), total: +(l.equity * (0.05 + k * 0.02)).toFixed(2), since: 0 }; } });
+      L.forEach(l => { if (!l.account && (l.plan === "trial" || l.plan === "none")) l.purgeAt = Date.now() + 2 * 86400000 - 3600000; else l.purgeAt = 0; }); return res({ ok: true, licenses: L, pending: demo.pays.filter(x => x.status === "pending").length, packages: demo.config.packages, planLabels: demoLabels() }); }
       if (action === "admin_payments") return res({ ok: true, payments: demo.pays });
       if (action === "admin_slip") { const x = demo.pays.find(p => p.id === d.id); return res({ ok: true, image: (x && x.slip) || "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="45%" font-size="22" text-anchor="middle" fill="#333">ตัวอย่างสลิป</text><text x="50%" y="55%" font-size="30" text-anchor="middle" fill="#0a7">9,900.00 บาท</text></svg>') }); }
       if (action === "admin_pay_decide") {
@@ -4906,9 +4913,9 @@ function renderLics() {
       <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">แพ็กเกจร่วม</span>` : ""}${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
       <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
-      <td><span class="pill ${st}">${stTxt}</span></td>
-      <td><span class="dot ${l.online ? "on" : ""}" style="display:inline-block" title="${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
+      <td style="white-space:nowrap"><span class="pill ${st}">${stTxt}</span> <span class="dot ${l.online ? "on" : ""}" style="display:inline-block;vertical-align:middle;margin-left:6px" title="EA ${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
       <td class="num">${l.equity != null ? fmt(l.equity) : '<span class="muted">–</span>'}</td>
+      <td class="num">${l.profit ? `<b class="${cls(l.profit.total)}" title="กำไรที่ปิดแล้วรวม${l.profit.since ? " ตั้งแต่ " + new Date(l.profit.since * 864e5).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit", timeZone: "UTC" }) : ""}">${signed(l.profit.total)}</b>` : '<span class="muted">–</span>'}</td>
       <td><div class="actions">
         <button class="btn small" data-act="add30" data-code="${esc(l.code)}">+30 วัน</button>
         <button class="btn small" data-act="${l.status === "active" ? "suspend" : "activate"}" data-code="${esc(l.code)}">${l.status === "active" ? "ระงับ" : "เปิดใช้"}</button>
@@ -4919,6 +4926,7 @@ function renderLics() {
 }
 
 $("search").addEventListener("input", renderLics);
+
 let admPackages = [];
 function fillPlanSelect(pk) {
   admPackages = pk || [];
