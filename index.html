@@ -1789,7 +1789,12 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 .team-table td{vertical-align:middle}
 .team-table .tm-n b{display:block}.team-table .tm-n small{color:var(--muted);font-size:12px}
 .team-table select{height:32px;padding:0 8px;width:auto}
-#licBody .del-btn{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
+.host-rows{margin-top:12px;display:grid;gap:6px}
+.hr-h{font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.hr-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;border:1px solid rgba(150,180,230,.12);background:rgba(255,255,255,.025)}
+.hr-row .hr-t{flex:1;min-width:0}.hr-row .hr-t small{display:block;color:var(--muted);font-size:12px}
+.hr-row .btn{flex:none}
+.host-rows .del-btn,#licBody .del-btn{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
 .team-table .btn.danger{color:#FF8A98!important;border-color:rgba(229,40,61,.4)!important}
 .team-table .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .audit-table td{font-size:13px;vertical-align:middle}
@@ -2510,6 +2515,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
       <h3>รัน EA บนเซิร์ฟเวอร์ (สมาชิกไม่ต้องมี VPS)</h3>
       <div class="host-admin">
         <div class="host-agent" id="hostAgent">กำลังโหลดสถานะเครื่องรัน…</div>
+        <div class="host-rows" id="hostRows"></div>
         <label class="sw"><input type="checkbox" id="shopHostOn"><span class="track"></span><span>เปิดให้สมาชิกใช้บริการรันบนเซิร์ฟเวอร์</span></label>
         <div class="grid2" style="gap:12px;margin-top:10px">
           <label class="fld"><span>รันพร้อมกันได้สูงสุด (พอร์ต)</span><input class="field num" type="number" min="1" max="500" id="shopHostMax"></label>
@@ -5350,13 +5356,33 @@ $("shopQrDel").addEventListener("click", async () => {
 });
 async function loadHostAdmin(opt) {
   const r = await api("admin_host", Object.assign({ pass: session.pass }, opt || {}));
-  if (!r.ok) { $("hostAgent").textContent = r.error; return; }
+  if (!r.ok) { if (opt && (opt.clearRow || opt.forceStop)) { toast(r.error); return; } $("hostAgent").textContent = r.error; return; }
+  renderHostRows(r.rows);
   $("agentKey").textContent = r.agentKey || "ยังไม่มี กด สร้างใหม่";
   const on = r.lastSeen && Date.now() - r.lastSeen < 5 * 60000;
   $("hostAgent").innerHTML = !r.agentKey ? "ยังไม่ได้ตั้งเครื่องรัน: กด <b>สร้างใหม่</b> เพื่อสร้างรหัสเครื่องรัน แล้วใส่ใน config.json บน VPS"
     : !r.hasPub ? "รอเครื่องรันเชื่อมต่อครั้งแรก (ยังไม่ได้รับกุญแจเข้ารหัสจาก VPS)"
     : `<span class="dot ${on ? "on" : "off"}"></span> เครื่องรัน <b>${esc((r.agent || {}).name || "VPS")}</b> ${on ? "ออนไลน์" : "ออฟไลน์"} · ติดต่อล่าสุด ${r.lastSeen ? ago(r.lastSeen) : "–"} · กำลังรัน <b>${r.running}</b> / ต้องการรัน <b>${r.wantRun}</b> พอร์ต`;
 }
+function renderHostRows(rows) {
+  const box = $("hostRows"); if (!box) return;
+  if (!rows || !rows.length) { box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="hr-h">พอร์ตบนเครื่องรัน (${rows.length})</div>` + rows.map(h => {
+    const busy = ["running", "starting", "draining"].includes(h.state);
+    return `<div class="hr-row">
+      <span class="dot ${h.state === "running" ? "on" : h.state === "error" || h.state === "login_failed" ? "off" : ""}"></span>
+      <span class="hr-t"><b>${esc(h.code)}</b>${h.orphan ? ' <span class="host-tag bad">พอร์ตถูกลบแล้ว</span>' : h.label ? ` <span class="muted">${esc(h.label)}</span>` : ""}
+        <small>บัญชี ${esc(h.login)} · ${esc(h.stateText || h.state)}${h.wanted === "stop" && busy ? " (สั่งหยุดแล้ว รอไม้ปิด)" : ""}</small></span>
+      ${h.wanted === "run" ? `<button type="button" class="btn small" data-hstop="${esc(h.code)}">สั่งหยุด</button>` : ""}
+      ${!busy && h.wanted !== "run" ? `<button type="button" class="btn small del-btn" data-hclear="${esc(h.code)}">ล้างทิ้ง</button>` : ""}
+    </div>`;
+  }).join("");
+}
+$("hostRows").addEventListener("click", async e => {
+  const st = e.target.closest("[data-hstop]"), cl = e.target.closest("[data-hclear]");
+  if (st) { if (!confirm(`สั่งหยุด ${st.dataset.hstop}?\nEA จะหยุดเปิดตะกร้าใหม่ รอไม้ที่เปิดอยู่ปิดหมด แล้วเครื่องรันจะปิด MT5 เอง`)) return; await loadHostAdmin({ code: st.dataset.hstop, forceStop: true }); toast("สั่งหยุดแล้ว"); }
+  if (cl) { await loadHostAdmin({ code: cl.dataset.hclear, clearRow: true }); toast("ล้างแล้ว"); }
+});
 $("agentKeyNew").addEventListener("click", async () => {
   if ($("agentKey").textContent.length > 20 && !confirm("สร้างรหัสเครื่องรันใหม่? เครื่องรันเดิมจะเชื่อมไม่ได้จนกว่าจะใส่รหัสใหม่ใน config.json")) return;
   await loadHostAdmin({ newKey: true }); toast("สร้างรหัสใหม่แล้ว");
