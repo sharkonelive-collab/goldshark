@@ -1932,6 +1932,10 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
   table.days input[type=time]{width:84px!important;min-width:0;padding:6px 4px!important;font-size:13px}
   table.days td.muted{font-size:12px;padding:5px 1px!important}
 }
+/* แท็บเครื่องรัน */
+.host-tab .host-tab-actions{display:flex;gap:10px;align-items:center;margin-top:16px}
+.host-tab .host-tab-actions .btn.primary{flex:1;max-width:320px}
+#shopHostBrokers{color:#F2F5FA!important;-webkit-text-fill-color:#F2F5FA!important;opacity:1!important;font-size:14px!important;line-height:1.7!important;background:#060B15!important;border-color:rgba(150,180,230,.22)!important}
 </style>
 </head>
 <body>
@@ -2359,6 +2363,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
     <button data-atab="pays" aria-pressed="false">การชำระเงิน<span class="badge" id="payBadge" hidden></span></button>
     <button data-atab="news" aria-pressed="false">ข่าว</button>
     <button data-atab="shop" aria-pressed="false" data-perm="owner">ตั้งค่าร้าน</button>
+    <button data-atab="host" aria-pressed="false" data-perm="owner">เครื่องรัน</button>
     <button data-atab="team" aria-pressed="false" data-perm="owner">ทีมงาน</button>
     <button data-atab="audit" aria-pressed="false" data-perm="manager">ประวัติแอดมิน</button>
   </nav>
@@ -2482,6 +2487,30 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
     </section>
   </div>
 
+  <div id="atab-host" hidden>
+    <section class="card shop host-tab" style="max-width:900px">
+      <h3 style="margin-top:0">รัน EA บนเซิร์ฟเวอร์ <span class="muted" style="font-weight:400;font-size:13px">สมาชิกไม่ต้องมี VPS</span></h3>
+      <div class="host-admin">
+        <div class="host-agent" id="hostAgent">กำลังโหลดสถานะเครื่องรัน…</div>
+        <div class="host-rows" id="hostRows"></div>
+        <label class="sw"><input type="checkbox" id="shopHostOn"><span class="track"></span><span>เปิดให้สมาชิกใช้บริการรันบนเซิร์ฟเวอร์</span></label>
+        <div class="grid2" style="gap:12px;margin-top:10px">
+          <label class="fld"><span>รันพร้อมกันได้สูงสุด (พอร์ต)</span><input class="field num" type="number" min="1" max="500" id="shopHostMax"></label>
+          <div class="fld"><span>รหัสเครื่องรัน (ใส่ในไฟล์ config.json บน VPS)</span>
+            <div class="copyrow"><code id="agentKey">–</code><button type="button" class="btn small" id="agentKeyCopy">คัดลอก</button><button type="button" class="btn small" id="agentKeyNew">สร้างใหม่</button></div>
+          </div>
+        </div>
+        <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
+          <textarea class="field" id="shopHostBrokers" rows="4" spellcheck="false" style="font-family:var(--mono,monospace);font-size:13px"></textarea></label>
+      </div>
+
+      <div class="host-tab-actions">
+        <button type="button" class="btn primary" id="hostSaveBtn">บันทึกการตั้งค่าเครื่องรัน</button>
+        <button type="button" class="btn small" id="hostReload">รีเฟรชสถานะ</button>
+      </div>
+    </section>
+  </div>
+
   <div id="atab-shop" hidden>
     <section class="card shop" style="max-width:760px">
       <h3>แพ็กเกจ</h3>
@@ -2510,21 +2539,6 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
           <p class="pnote" style="margin:0;max-width:320px">ใช้รูปที่เห็น QR ชัดทั้งภาพ ครอบเฉพาะส่วน QR ได้จะดีที่สุด</p>
           <p class="pnote" style="margin:0;max-width:320px;color:#8EC1FF">โหลดเร็วที่สุด: ตั้งชื่อรูปว่า <b>pay-qr.png</b> แล้วอัปขึ้น GitHub หน้าแรกของ repo ระบบจะใช้รูปนั้นก่อน <span id="shopQrGh"></span></p>
         </div>
-      </div>
-
-      <h3>รัน EA บนเซิร์ฟเวอร์ (สมาชิกไม่ต้องมี VPS)</h3>
-      <div class="host-admin">
-        <div class="host-agent" id="hostAgent">กำลังโหลดสถานะเครื่องรัน…</div>
-        <div class="host-rows" id="hostRows"></div>
-        <label class="sw"><input type="checkbox" id="shopHostOn"><span class="track"></span><span>เปิดให้สมาชิกใช้บริการรันบนเซิร์ฟเวอร์</span></label>
-        <div class="grid2" style="gap:12px;margin-top:10px">
-          <label class="fld"><span>รันพร้อมกันได้สูงสุด (พอร์ต)</span><input class="field num" type="number" min="1" max="500" id="shopHostMax"></label>
-          <div class="fld"><span>รหัสเครื่องรัน (ใส่ในไฟล์ config.json บน VPS)</span>
-            <div class="copyrow"><code id="agentKey">–</code><button type="button" class="btn small" id="agentKeyCopy">คัดลอก</button><button type="button" class="btn small" id="agentKeyNew">สร้างใหม่</button></div>
-          </div>
-        </div>
-        <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
-          <textarea class="field" id="shopHostBrokers" rows="4" spellcheck="false" style="font-family:var(--mono,monospace);font-size:13px"></textarea></label>
       </div>
 
       <h3>ทดลองฟรี</h3>
@@ -5091,7 +5105,8 @@ $("suPick").addEventListener("click", e => {
 let pays = [], payFilter = "pending";
 document.querySelectorAll(".adm-tabs button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".adm-tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  ["codes", "pays", "news", "shop", "team", "audit"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  ["codes", "pays", "news", "shop", "host", "team", "audit"].forEach(t => $("atab-" + t).hidden = t !== b.dataset.atab);
+  if (b.dataset.atab === "host") loadHostTab();
   if (b.dataset.atab === "team") loadTeam();
   if (b.dataset.atab === "audit") loadAudit();
   if (b.dataset.atab === "pays") loadPays();
@@ -5320,9 +5335,6 @@ async function loadShop() {
   $("shopPP").value = c.promptpay || ""; $("shopName").value = c.payName || "";
   $("shopGcid").value = c.googleClientId || "";
   $("shopTrialReal").checked = c.trialRealOnly !== false;
-  $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
-  $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, b.usd].join(" | ")).join("\n");
-  loadHostAdmin();
   $("shopTPc").value = c.port.cent.basketTP; $("shopTPu").value = c.port.usd.basketTP;
   $("shopCLc").value = c.port.cent.cutLoss; $("shopCLu").value = c.port.usd.cutLoss;
   const U = c.port.usd || {};
@@ -5383,6 +5395,30 @@ $("hostRows").addEventListener("click", async e => {
   if (st) { if (!confirm(`สั่งหยุด ${st.dataset.hstop}?\nEA จะหยุดเปิดตะกร้าใหม่ รอไม้ที่เปิดอยู่ปิดหมด แล้วเครื่องรันจะปิด MT5 เอง`)) return; await loadHostAdmin({ code: st.dataset.hstop, forceStop: true }); toast("สั่งหยุดแล้ว"); }
   if (cl) { await loadHostAdmin({ code: cl.dataset.hclear, clearRow: true }); toast("ล้างแล้ว"); }
 });
+/* แท็บ "เครื่องรัน" (แยกจากตั้งค่าร้าน) */
+async function loadHostTab() {
+  const r = await api("admin_config", { pass: session.pass });
+  if (r.ok) {
+    const c = r.config;
+    $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
+    $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, b.usd].join(" | ")).join("\n");
+  } else toast(r.error);
+  loadHostAdmin();
+}
+$("hostSaveBtn").addEventListener("click", async () => {
+  const config = {
+    hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
+    hostBrokers: $("shopHostBrokers").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
+      .map(a => ({ key: a[0], name: a[1] || a[0], cent: a[2] || "", usd: a[3] || a[2] || "" }))
+  };
+  $("hostSaveBtn").disabled = true;
+  const r = await api("admin_config_set", { pass: session.pass, config });
+  $("hostSaveBtn").disabled = false;
+  toast(r.ok ? "บันทึกการตั้งค่าเครื่องรันแล้ว" : r.error);
+  if (r.ok) loadHostTab();
+});
+$("hostReload").addEventListener("click", () => { loadHostAdmin(); toast("รีเฟรชแล้ว"); });
+setInterval(() => { if (session.mode === "admin" && !document.hidden && $("atab-host") && !$("atab-host").hidden) loadHostAdmin(); }, 20000);
 $("agentKeyNew").addEventListener("click", async () => {
   if ($("agentKey").textContent.length > 20 && !confirm("สร้างรหัสเครื่องรันใหม่? เครื่องรันเดิมจะเชื่อมไม่ได้จนกว่าจะใส่รหัสใหม่ใน config.json")) return;
   await loadHostAdmin({ newKey: true }); toast("สร้างรหัสใหม่แล้ว");
@@ -5397,9 +5433,6 @@ $("shopSave").addEventListener("click", async () => {
     promptpay: $("shopPP").value.trim(), payName: $("shopName").value.trim(),
     googleClientId: $("shopGcid").value.trim(),
     trialRealOnly: $("shopTrialReal").checked,
-    hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
-    hostBrokers: $("shopHostBrokers").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
-                   .map(a => ({ key: a[0], name: a[1] || a[0], cent: a[2] || "", usd: a[3] || a[2] || "" })),
     qrMode: (document.querySelector('input[name="qrMode"]:checked') || {}).value || "auto",
     port: { cent: { basketTP: +$("shopTPc").value, cutLoss: +$("shopCLc").value },
             usd:  { basketTP: +$("shopTPu").value, cutLoss: +$("shopCLu").value,
