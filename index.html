@@ -1182,6 +1182,9 @@ body{top:0!important}
 #dashView[data-pg="profit"] > [data-pages]:not([data-pages~="profit"]){display:none!important}
 #dashView[data-pg="cfg"] > [data-pages]:not([data-pages~="cfg"]){display:none!important}
 #dashView[data-pg="plan"] > [data-pages]:not([data-pages~="plan"]){display:none!important}
+#dashView[data-pg="setup"] > [data-pages]:not([data-pages~="setup"]){display:none!important}
+#dashView[data-pg="setup"] > #secHost{margin-bottom:16px}
+#dashView[data-pg="setup"] > #setupBox{margin-top:0}
 .n-tab,.num{font-variant-numeric:tabular-nums}
 /* ตัวเลขสรุป */
 .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 14px}
@@ -1803,6 +1806,83 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
 #nsNext .nrow.past{opacity:.45}
 #nsNext .nday + .nrow{border-top:0}
 @media (max-width:560px){#nsNext .nrow{grid-template-columns:52px 10px 1fr auto}}
+/* ===== หน้าติดตั้ง ===== */
+.port-setup-note{display:flex;align-items:center;gap:14px;padding:14px 16px!important;margin:0 0 16px}
+.port-setup-note .psn-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:rgba(59,148,255,.14);color:#9CC8FF}
+.port-setup-note .psn-ico svg{width:20px;height:20px}
+.port-setup-note .psn-t{flex:1;min-width:0}
+.port-setup-note .psn-t b{display:block;font-size:15px}
+.port-setup-note .psn-t small{color:var(--muted);font-size:12.5px}
+#dashView[data-pg="port"] > #portSetupNote{order:1}
+@media (max-width:560px){.port-setup-note{flex-wrap:wrap}.port-setup-note .btn{width:100%}}
+/* ===== หน้าติดตั้ง: ดีไซน์ใหม่ ===== */
+.su-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 16px}
+.su-opt{display:flex;align-items:center;gap:14px;text-align:left;padding:16px 18px;border-radius:18px;cursor:pointer;color:var(--text);font:inherit;
+  background:linear-gradient(155deg,rgba(255,255,255,.07),rgba(255,255,255,.015)),rgba(10,16,30,.7);border:1px solid rgba(150,180,230,.16);transition:border-color .2s,transform .2s}
+.su-opt:hover{border-color:rgba(59,148,255,.5);transform:translateY(-1px)}
+.su-opt[hidden]{display:none}
+.su-opt > svg{width:18px;height:18px;flex:none;color:var(--muted)}
+.su-ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex:none;background:rgba(150,180,230,.10);color:#B9C6DA}
+.su-ico.c{background:linear-gradient(145deg,rgba(59,148,255,.35),rgba(59,148,255,.10));color:#CFE4FF;box-shadow:0 8px 24px -10px rgba(59,148,255,.8)}
+.su-ico svg{width:24px;height:24px}
+.su-t{flex:1;min-width:0}.su-t b{display:block;font-size:15.5px;font-weight:600}.su-t small{color:var(--muted);font-size:12.5px}
+.su-tag{flex:none;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;color:#1a1204;background:linear-gradient(180deg,#F6D27A,#D9A441)}
+#secHost.host-card{padding:22px 22px 20px!important;position:relative;overflow:hidden}
+#secHost.host-card::before{content:"";position:absolute;inset:-40% -10% auto auto;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(59,148,255,.18),transparent 65%);pointer-events:none}
+.hc-head{display:flex;align-items:center;gap:14px;position:relative}
+.hc-ico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;flex:none;background:linear-gradient(145deg,#3B94FF,#1D5FD0);color:#fff;box-shadow:0 10px 28px -8px rgba(59,148,255,.8)}
+.hc-ico svg{width:28px;height:28px}
+.hc-t{flex:1;min-width:0}.hc-t b{display:block;font-size:18px;font-weight:700}.hc-t small{color:var(--muted);font-size:13px}
+.hc-head .host-pill{flex:none}
+.hc-flow{list-style:none;margin:18px 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative}
+.hc-flow li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(150,180,230,.10);font-size:13px;color:#C9D4E5;position:relative}
+.hc-flow li i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:12px;font-weight:700;background:rgba(59,148,255,.2);color:#9CC8FF}
+.hc-flow li:not(:last-child)::after{content:"";position:absolute;right:-7px;top:50%;width:6px;height:2px;background:rgba(150,180,230,.3)}
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;position:relative}
+.hc-grid .fld{margin:0}
+.hc-grid .hc-full{grid-column:1 / -1}
+.hc-grid .field{height:48px;border-radius:12px!important}
+.hc-pw{position:relative;display:block}
+.hc-pw svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);pointer-events:none}
+.hc-pw .field{padding-left:42px!important;width:100%}
+.hc-sec{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;padding:12px 14px;border-radius:12px;background:rgba(47,191,138,.08);border:1px solid rgba(47,191,138,.25);font-size:12.5px;color:#BFE9D6;line-height:1.55}
+.hc-sec svg{width:18px;height:18px;flex:none;color:#5FE0A8;margin-top:1px}
+#secHost .consent{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:12px 14px;border-radius:12px;border:1px solid rgba(150,180,230,.14);background:rgba(255,255,255,.025);font-size:13px;line-height:1.55;cursor:pointer}
+#secHost .consent input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:#3B94FF}
+#secHost .host-actions{margin-top:16px;display:flex;gap:10px}
+#secHost #hostErr:empty{display:none}
+#secHost .hc-go{flex:1;height:52px;font-size:16px;font-weight:700;border-radius:14px!important}
+#secHost .pnote{text-align:center;font-size:12px}
+#secHost #hostView{margin-top:16px}
+#setupBox.setup{border-radius:20px!important}
+#setupBox .steps{list-style:none;counter-reset:st;padding:0!important;margin:16px 0 0!important}
+#setupBox .steps li{counter-increment:st;position:relative;padding:0 0 18px 46px;line-height:1.65}
+#setupBox .steps li::before{content:counter(st);position:absolute;left:0;top:-3px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:linear-gradient(145deg,rgba(59,148,255,.35),rgba(59,148,255,.12));color:#CFE4FF;border:1px solid rgba(59,148,255,.45)}
+#setupBox .steps li:not(:last-child)::after{content:"";position:absolute;left:15px;top:34px;bottom:4px;width:2px;background:linear-gradient(rgba(59,148,255,.35),rgba(59,148,255,.05))}
+#setupBox .steps li::marker{content:""}
+#setupBox .copyrow{margin-top:8px;max-width:560px}
+#setupBox .dl-btn{height:52px;border-radius:14px!important;font-size:15.5px}
+@media (max-width:760px){
+  .su-pick{grid-template-columns:1fr 1fr;gap:10px}
+  .su-opt{flex-direction:column;align-items:flex-start;gap:8px;padding:14px;position:relative}
+  .su-opt > svg{display:none}
+  .su-ico{width:40px;height:40px;border-radius:12px}.su-ico svg{width:21px;height:21px}
+  .su-t b{font-size:14px;line-height:1.3}.su-t small{font-size:11.5px;line-height:1.4;display:block;margin-top:2px}
+  .su-tag{position:absolute;top:12px;right:12px}
+  .hc-flow{gap:6px}
+  .hc-flow li{flex-direction:column;text-align:center;gap:6px;padding:10px 6px;font-size:11.5px;line-height:1.3}
+  .hc-flow li:not(:last-child)::after{right:-5px;width:4px}
+  .hc-grid{grid-template-columns:1fr}
+  .hc-head{display:grid;grid-template-columns:44px 1fr;gap:4px 12px;align-items:center}
+  .hc-ico{width:44px;height:44px;border-radius:13px}.hc-ico svg{width:24px;height:24px}
+  .hc-t{display:contents}.hc-t b{grid-column:2;font-size:16px;line-height:1.3}
+  .hc-t small{grid-column:1 / -1;margin-top:6px;line-height:1.5}
+  .hc-head .host-pill{grid-column:2;grid-row:2;justify-self:start;font-size:11px}
+  .hc-ico{grid-row:1 / span 2}
+  .hc-t small{grid-row:3}
+  .hc-head{position:relative;padding-right:0}
+  #secHost.host-card{padding:18px 16px!important}
+}
 </style>
 </head>
 <body>
@@ -1853,7 +1933,7 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
   <a href="#" data-pg="profit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>กำไร</a>
   <a href="#" data-pg="cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>ตั้งค่า</a>
   <a href="#" data-pg="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3-2 10H6z"/></svg>แพ็กเกจ</a>
-  <a href="#" data-pg="port" data-open="setupBox" class="rail-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>ติดตั้ง</a>
+  <a href="#" data-pg="setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>ติดตั้ง</a>
 </nav>
 
 <!-- ================= LOGIN ================= -->
@@ -1989,8 +2069,64 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
 
 
 
-  <details class="setup hl" id="setupBox" data-pages="port">
-    <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 003.4 0"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
+  <div class="card port-setup-note" id="portSetupNote" data-pages="port" hidden>
+    <span class="psn-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span>
+    <div class="psn-t"><b>พอร์ตนี้ยังไม่ได้เชื่อม EA</b><small>เชื่อมบัญชี MT5 ให้รันบนเซิร์ฟเวอร์ หรือดาวน์โหลด EA ไปติดตั้งเอง</small></div>
+    <button type="button" class="btn primary small" data-go-setup>ไปหน้าติดตั้ง</button>
+  </div>
+  <div class="su-pick" id="suPick" data-pages="setup">
+    <button type="button" class="su-opt" data-su="host" id="suOptHost">
+      <span class="su-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 18z"/></svg></span>
+      <span class="su-t"><b>รันบนเซิร์ฟเวอร์ GoldShark</b><small>ไม่ต้องมี VPS · ใส่บัญชี MT5 แล้วรันได้เลย</small></span>
+      <span class="su-tag">แนะนำ</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="su-opt" data-su="self">
+      <span class="su-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+      <span class="su-t"><b>ติดตั้ง EA เอง</b><small>บนคอมหรือ VPS ของคุณ · ใช้เวลาประมาณ 5 นาที</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+  <section class="card host-card" id="secHost" data-pages="setup" hidden>
+    <div class="hc-head">
+      <span class="hc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 18z"/></svg></span>
+      <div class="hc-t"><b>เชื่อมพอร์ต MT5 · รันบนเซิร์ฟเวอร์</b><small>ไม่ต้องมี VPS ไม่ต้องเปิดคอมทิ้งไว้ ระบบเปิด MT5 และ EA ให้บนเซิร์ฟเวอร์ของเรา</small></div>
+      <span class="pill host-pill" id="hostPill">–</span>
+    </div>
+    <ol class="hc-flow" aria-label="ขั้นตอน">
+      <li><i>1</i><span>กรอกบัญชี MT5</span></li>
+      <li><i>2</i><span>ระบบเปิด MT5 + EA ให้</span></li>
+      <li><i>3</i><span>EA ออนไลน์ใน 1–2 นาที</span></li>
+    </ol>
+
+    <div id="hostView" hidden>
+      <div class="host-state"><span class="dot" id="hostDot"></span><b id="hostStateText">–</b><span class="muted" id="hostStateTime"></span></div>
+      <div class="host-info" id="hostInfo"></div>
+      <div class="host-note" id="hostNote" hidden></div>
+      <div class="host-actions">
+        <button class="btn small" id="hostEdit">แก้ข้อมูลบัญชี</button>
+        <button class="btn small" id="hostToggle">หยุดรัน</button>
+      </div>
+    </div>
+
+    <form id="hostForm" autocomplete="off" hidden>
+      <div class="hc-grid">
+        <label class="fld"><span>โบรกเกอร์</span><select class="field" id="hostBroker"></select></label>
+        <label class="fld"><span>สัญลักษณ์ทองในบัญชีนี้</span><input class="field" id="hostSymbol" placeholder="เช่น XAUUSDc"></label>
+        <label class="fld"><span>เลขบัญชี MT5</span><input class="field" id="hostLogin" inputmode="numeric" placeholder="เช่น 183981853"></label>
+        <label class="fld"><span>ชื่อเซิร์ฟเวอร์ <small class="muted">(ดูในอีเมลเปิดบัญชี)</small></span><input class="field" id="hostServer" placeholder="เช่น Exness-MT5Real8"></label>
+        <label class="fld hc-full"><span>รหัสผ่านเทรด MT5 <small class="muted" id="hostPassHint"></small></span><span class="hc-pw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input class="field" id="hostPass" type="password" autocomplete="new-password" placeholder="รหัสเทรด (ไม่ใช่รหัสเข้าเว็บโบรก)"></span></label>
+      </div>
+      <div class="hc-sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>รหัสผ่านถูก<b>เข้ารหัสตั้งแต่ในเครื่องคุณ</b> ถอดได้เฉพาะเครื่องรัน EA ของร้าน เว็บและทีมงานมองไม่เห็น · เปลี่ยนรหัสใน MT5 ได้ทุกเมื่อเพื่อยกเลิก</span></div>
+      <label class="consent"><input type="checkbox" id="hostConsent"> <span>ฉันยินยอมให้ GoldShark ใช้รหัสผ่านเทรดนี้เปิด EA ในบัญชีของฉัน และเข้าใจว่าการเทรดมีความเสี่ยง</span></label>
+      <div class="err" id="hostErr" role="alert"></div>
+      <div class="host-actions">
+        <button class="btn primary hc-go" type="submit" id="hostSubmit">เริ่มรันบนเซิร์ฟเวอร์</button>
+        <button class="btn" type="button" id="hostCancel" hidden>ยกเลิก</button>
+      </div>
+      <p class="pnote" style="margin:10px 0 0">อย่าเปิด EA ตัวนี้บนคอมหรือ VPS ของคุณเองพร้อมกัน เพราะจะเปิดไม้ซ้ำในบัญชีเดียวกัน</p>
+    </form>
+  </section>
+  <details class="setup hl" id="setupBox" data-pages="setup">
+    <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
       <div class="purge-note" id="purgeNote" hidden></div>
       <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
@@ -2049,37 +2185,6 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
     </div>
   </section>
 
-  <section class="card host-card" id="secHost" data-pages="plan" hidden>
-    <div class="card-head"><div class="card-label">รัน EA บนเซิร์ฟเวอร์ GoldShark</div><span class="pill host-pill" id="hostPill">–</span></div>
-    <p class="muted host-lead">ไม่ต้องมี VPS ไม่ต้องเปิดคอมทิ้งไว้ ใส่บัญชี MT5 ของคุณ ระบบจะเปิด MT5 และ EA ให้บนเซิร์ฟเวอร์ของเรา</p>
-
-    <div id="hostView" hidden>
-      <div class="host-state"><span class="dot" id="hostDot"></span><b id="hostStateText">–</b><span class="muted" id="hostStateTime"></span></div>
-      <div class="host-info" id="hostInfo"></div>
-      <div class="host-note" id="hostNote" hidden></div>
-      <div class="host-actions">
-        <button class="btn small" id="hostEdit">แก้ข้อมูลบัญชี</button>
-        <button class="btn small" id="hostToggle">หยุดรัน</button>
-      </div>
-    </div>
-
-    <form id="hostForm" autocomplete="off" hidden>
-      <div class="cfg-grid host-grid">
-        <label class="fld"><span>โบรกเกอร์</span><select class="field" id="hostBroker"></select></label>
-        <label class="fld"><span>เลขบัญชี MT5</span><input class="field" id="hostLogin" inputmode="numeric" placeholder="เช่น 183981853"></label>
-        <label class="fld"><span>รหัสผ่านเทรด MT5 <small class="muted" id="hostPassHint"></small></span><input class="field" id="hostPass" type="password" autocomplete="new-password"></label>
-        <label class="fld"><span>ชื่อเซิร์ฟเวอร์ (ดูในอีเมลเปิดบัญชี)</span><input class="field" id="hostServer" placeholder="เช่น Exness-MT5Real8"></label>
-        <label class="fld"><span>ชื่อสัญลักษณ์ทองในบัญชีนี้</span><input class="field" id="hostSymbol" placeholder="เช่น XAUUSDc"></label>
-      </div>
-      <label class="consent"><input type="checkbox" id="hostConsent"> <span>ฉันยินยอมให้ GoldShark ใช้รหัสผ่านเทรดนี้เพื่อเปิด EA ในบัญชีของฉัน และเข้าใจว่าการเทรดมีความเสี่ยง รหัสผ่านถูกเข้ารหัสตั้งแต่ในเครื่องนี้ ไม่มีใครในทีมเห็นได้ (เปลี่ยนรหัสผ่านใน MT5 ได้ทุกเมื่อเพื่อยกเลิก)</span></label>
-      <div class="err" id="hostErr" role="alert"></div>
-      <div class="host-actions">
-        <button class="btn primary" type="submit" id="hostSubmit">เริ่มรันบนเซิร์ฟเวอร์</button>
-        <button class="btn" type="button" id="hostCancel" hidden>ยกเลิก</button>
-      </div>
-      <p class="pnote" style="margin:10px 0 0">อย่าเปิด EA ตัวนี้บนคอมหรือ VPS ของคุณเองพร้อมกัน เพราะจะเปิดไม้ซ้ำในบัญชีเดียวกัน</p>
-    </form>
-  </section>
 
   <section class="card bk-card" id="secBasket" data-pages="port">
     <div class="bk-head"><div class="card-label">ตะกร้าที่เปิดอยู่</div><span class="muted" id="bkSum"></span></div>
@@ -3230,6 +3335,7 @@ function renderDash() {
   $("purgeNote").hidden = !pLeft;
   if (pLeft) $("purgeNote").innerHTML = `⚠ เชื่อม EA กับบัญชี MT5 ภายใน <b>${purgeLeftText(pLeft)}</b> ถ้ายังไม่เชื่อม โค้ดนี้จะถูกลบอัตโนมัติ`;
   if (!setupTouched) $("setupBox").open = !S;
+  $("portSetupNote").hidden = !!S;
   drawChart();
 }
 
@@ -3971,13 +4077,14 @@ function renderNews() {
 
 
 /* ============ หน้า: ทุกพอร์ต / พอร์ต / กำไร / ตั้งค่า / แพ็กเกจ ============ */
-const PAGES = { all: "All Ports", port: "EA Ports", profit: "กำไร", cfg: "ตั้งค่า EA", plan: "แพ็กเกจ" };
+const PAGES = { all: "All Ports", port: "EA Ports", profit: "กำไร", cfg: "ตั้งค่า EA", plan: "แพ็กเกจ", setup: "ติดตั้ง" };
 const PAGE_SUB = {
   all: "ภาพรวมทุกพอร์ตของคุณ แตะพอร์ตเพื่อดูรายละเอียด",
   port: "กราฟสด ไม้ที่เปิดอยู่ และสถานะ EA ของพอร์ตนี้",
   profit: "กำไรที่ปิดแล้วรายวัน เลือกดูรายสัปดาห์หรือช่วงที่กำหนดได้",
   cfg: "บันทึกแล้ว EA ใช้ค่าใหม่ภายใน 1 นาที ไม่ต้องแก้ใน MT5",
-  plan: "แพ็กเกจ วันหมดอายุ และโค้ดของพอร์ตนี้"
+  plan: "แพ็กเกจ วันหมดอายุ และโค้ดของพอร์ตนี้",
+  setup: "เชื่อมบัญชี MT5 ให้รันบนเซิร์ฟเวอร์ หรือติดตั้ง EA เองบนคอม / VPS"
 };
 let curPage = null;
 function pageTitle() {
@@ -3993,6 +4100,7 @@ function setPage(pg, opts = {}) {
   pageTitle(); renderEaUpd();
   if (opts.open) { const t = $(opts.open); if (t) { if (t.tagName === "DETAILS") t.open = true; setTimeout(() => t.scrollIntoView({ behavior: "smooth", block: "start" }), 30); } }
   else if (!opts.keepScroll) window.scrollTo({ top: 0 });
+  if (pg === "setup" && !setupTouched) $("setupBox").open = !(dashData && dashData.hosting);
   if (pg === "port") { liveSig = ""; setTimeout(() => { if (dashData) renderLive(); }, 60); }
 }
 document.querySelectorAll(".rail a[data-pg]").forEach(a => a.addEventListener("click", e => {
@@ -4083,6 +4191,7 @@ function renderHost() {
   const H = dashData.host || {}, L = dashData.license, h = dashData.hosting;
   const show = !!(H.on && L && L.plan !== "none") || !!h;
   $("secHost").hidden = !show;
+  $("suOptHost").hidden = !show;
   if (!show) return;
   const editing = !h || hostEditing;
   $("hostView").hidden = editing;
@@ -4879,6 +4988,13 @@ $("copyFbSite").addEventListener("click", () => copy($("fbSiteUrl").textContent)
 $("copyMyCode").addEventListener("click", () => copy($("myCode").textContent));
 let setupTouched = false;
 $("setupBox").addEventListener("toggle", () => { setupTouched = true; });
+document.addEventListener("click", e => { if (e.target.closest("[data-go-setup]")) { e.preventDefault(); setPage("setup"); } });
+$("suPick").addEventListener("click", e => {
+  const b = e.target.closest("[data-su]"); if (!b) return;
+  const t = b.dataset.su === "host" ? $("secHost") : $("setupBox");
+  if (t.tagName === "DETAILS") { t.open = true; setupTouched = true; }
+  t.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
 
 /* ============ admin: แท็บ / การชำระเงิน / ตั้งค่าร้าน ============ */
