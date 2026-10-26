@@ -21,6 +21,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GoldShark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://accounts.google.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="qrcode.min.js" defer onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';document.head.appendChild(s)"></script>
@@ -1765,6 +1766,8 @@ body[data-adm-role="slip"] [data-perm="manager"],body:not([data-adm-role="owner"
 body[data-adm-role="slip"] #licBody [data-act]:not([data-act="copy"]){display:none!important}
 body[data-adm-role="slip"] .admin-top{grid-template-columns:minmax(0,1fr)!important}
 body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
+body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
+#setDlg .danger-zone{display:flex;flex-wrap:wrap;gap:8px}
 .role-pill{margin:0!important;display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap}
 .role-pill.owner{color:#F2D27F;border-color:rgba(242,210,127,.45);background:rgba(242,210,127,.12)}
 .role-pill.manager{color:#9CC8FF;border-color:rgba(59,148,255,.45);background:rgba(59,148,255,.12)}
@@ -1882,6 +1885,45 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
   .hc-t small{grid-row:3}
   .hc-head{position:relative;padding-right:0}
   #secHost.host-card{padding:18px 16px!important}
+}
+/* ===== หน้าแอดมิน: ตารางไม่ต้องเลื่อนข้าง ===== */
+#adminView table{min-width:0!important;table-layout:auto}
+#adminView .table-wrap{overflow-x:visible}
+#adminView td,#adminView th{white-space:normal;overflow-wrap:anywhere}
+#adminView th{white-space:nowrap}
+#adminView #licBody td{padding:10px 8px}
+#adminView #licBody .code-cell{white-space:nowrap}
+#adminView #licBody .actions{flex-direction:row;flex-wrap:wrap!important;justify-content:flex-end;gap:5px;max-width:178px;margin-left:auto}
+#adminView #licBody .actions .btn{white-space:nowrap;padding:5px 10px}
+#adminView #licBody td.num{white-space:nowrap}
+#adminView #licBody .pill,#adminView #licBody td:nth-child(4),#adminView #licBody .port-tag{white-space:nowrap}
+@media (max-width:1280px) and (min-width:761px){.admin-top{grid-template-columns:minmax(0,1fr)!important}}
+@media (max-width:760px){
+  #adminView .table-wrap{border:0!important;background:none!important}
+  #adminView table,#adminView thead,#adminView tbody,#adminView tr,#adminView td{display:block;width:100%}
+  #adminView thead{display:none}
+  #adminView tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:0 0 10px;padding:12px 14px;border-radius:14px;
+    border:1px solid rgba(150,180,230,.14);background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.01)),rgba(10,16,30,.75)}
+  #adminView tbody tr td{padding:0!important;border:0!important;background:none!important;min-width:0;font-size:13.5px;text-align:left!important}
+  #adminView tbody tr td[data-label]::before{content:attr(data-label);display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+  #adminView tbody tr td:first-child{grid-column:1 / -1}
+  #adminView tbody tr td:last-child{grid-column:1 / -1}
+  #adminView tbody tr td[colspan]{grid-column:1 / -1;text-align:center!important}
+  #adminView tbody tr td[colspan]::before{display:none}
+  #adminView #licBody .actions,#adminView .team-table .actions{flex-direction:row;flex-wrap:wrap!important;justify-content:flex-start}
+  #adminView #licBody .actions .btn,#adminView .team-table .actions .btn{flex:1 1 auto}
+  #adminView .audit-table .ad-d{max-width:none}
+}
+@media (max-width:760px){
+  .adm-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%;max-width:100%;box-sizing:border-box;overflow:visible!important}
+  .adm-tabs button{white-space:normal!important;padding:9px 4px!important;font-size:13px;line-height:1.25;text-align:center;justify-content:center;min-width:0}
+}
+@media (max-width:560px){
+  table.days{min-width:0!important;width:100%}
+  table.days td{padding:5px 3px!important}
+  table.days td.dname{font-size:13px;white-space:nowrap}
+  table.days input[type=time]{width:84px!important;min-width:0;padding:6px 4px!important;font-size:13px}
+  table.days td.muted{font-size:12px;padding:5px 1px!important}
 }
 </style>
 </head>
@@ -2170,7 +2212,7 @@ body:not([data-adm-role="owner"]) [data-act="delete"]{display:none!important}
   </section>
 
   <section class="card" id="secPlan" data-pages="plan">
-    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button> <button class="linkish" id="closePort" style="color:var(--red)">ปิดพอร์ต</button></div><span class="pill plan" id="planPill">–</span></div>
+    <div class="card-head"><div class="card-label">แพ็กเกจของพอร์ต <b id="planPortName" style="color:var(--text);font-weight:500"></b> <button class="linkish" id="renamePort">แก้ชื่อ</button> <button class="linkish" id="closePort" style="color:var(--red)">ลบพอร์ต</button></div><span class="pill plan" id="planPill">–</span></div>
     <div class="tiles t3">
       <div class="tile"><span>สถานะ</span><b id="lDays">–</b></div>
       <div class="tile"><span>หมดอายุ</span><b class="pos" id="lExp">–</b></div>
@@ -3144,13 +3186,23 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("bellPa
 /* ============ เข้าสู่ระบบ / ผูกบัญชีด้วย Google ============ */
 let gCfg = null, gReady = null, gMode = "login";
 const G_ICON = '<svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.2 44 33 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
-function gLoad(cid) {
-  if (gReady) return gReady;
-  gReady = new Promise((ok, bad) => {
+// Client ID ของปุ่ม Google ไม่ใช่ความลับ → จำไว้ในเครื่อง ปุ่มขึ้นทันทีไม่ต้องรอหลังบ้าน (หลังบ้านช้า/ยุ่ง ปุ่มเคยไม่ขึ้น ต้องรีเฟรชหลายรอบ)
+const G_CID_DEFAULT = "644954657730-mugo4gm49rb59jif4rkiuvegtnod5m2e.apps.googleusercontent.com";
+function gLoadScript(tries) {
+  return new Promise((ok, bad) => {
+    if (window.google && google.accounts && google.accounts.id) return ok();
     const sc = document.createElement("script"); sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
-    sc.onload = () => { try { google.accounts.id.initialize({ client_id: cid, callback: gCallback, ux_mode: "popup", auto_select: false }); ok(); } catch (e) { bad(e); } };
-    sc.onerror = bad; document.head.appendChild(sc);
+    sc.onload = () => ok();
+    sc.onerror = () => { sc.remove(); tries > 0 ? setTimeout(() => gLoadScript(tries - 1).then(ok, bad), 1500) : bad(new Error("gsi")); };
+    document.head.appendChild(sc);
   });
+}
+let gInitCid = "";
+function gLoad(cid) {
+  if (gReady && gInitCid === cid) return gReady;
+  gInitCid = cid;
+  gReady = gLoadScript(2).then(() => { google.accounts.id.initialize({ client_id: cid, callback: gCallback, ux_mode: "popup", auto_select: false }); });
+  gReady.catch(() => { gReady = null; });
   return gReady;
 }
 async function gCallback(resp) {
@@ -3184,10 +3236,21 @@ function gRender(el, mode) {
   }).catch(() => { el.innerHTML = '<span class="muted" style="font-size:12px">โหลดปุ่ม Google ไม่ได้ ลองรีเฟรชหน้า</span>'; });
 }
 (async () => {
+  // 1) แสดงปุ่มทันทีด้วย Client ID ที่จำไว้ (หรือค่าเริ่มต้นของร้าน)
+  const saved = store.get("gs_gcid");
+  gCfg = saved === null ? G_CID_DEFAULT : saved;
+  if (gCfg || !API_URL) { $("gWrap").hidden = false; gRender($("gBtn"), "login"); }
+  // 2) เช็กกับหลังบ้านเบื้องหลัง: แอดมินเปลี่ยน/ปิดปุ่ม Google → อัปเดตตาม (ถ้าหลังบ้านยุ่ง ใช้ค่าที่จำไว้ต่อ)
   try {
     const r = await api("auth_cfg", {});
-    gCfg = r && r.ok ? r.googleClientId : "";
-    if (gCfg || !API_URL) { $("gWrap").hidden = false; gRender($("gBtn"), "login"); }
+    if (!r || !r.ok) return;
+    const cid = r.googleClientId || "";
+    store.set("gs_gcid", cid);
+    if (cid !== gCfg) {
+      gCfg = cid;
+      $("gWrap").hidden = !(cid || !API_URL);
+      if (cid) gRender($("gBtn"), "login");
+    }
   } catch (e) {}
 })();
 
@@ -4156,11 +4219,11 @@ $("closePort").addEventListener("click", async () => {
   const L = dashData.license; if (!L) return;
   const P = (dashData.ports || []).find(x => x.code === L.code) || {};
   const dl = daysLeft(L.expires), paid = L.plan && L.plan !== "none" && L.plan !== "trial" && (L.plan === "life" || dl > 0);
-  let msg = `ปิดพอร์ต "${L.label || L.code}" (${L.code})?\n\n• พอร์ตจะหายจากหน้าสมาชิก และ EA ที่ใช้โค้ดนี้จะหยุดเปิดไม้ใหม่`;
+  let msg = `ลบพอร์ต "${L.label || L.code}" (${L.code}) ถาวร?\n\n• พอร์ตและโค้ดนี้จะถูกลบออกจากระบบทันที EA ที่ใช้โค้ดนี้จะหยุดเปิดไม้ใหม่`;
   if (P.online) msg += "\n• EA ของพอร์ตนี้ยังออนไลน์อยู่ ควรปิดไม้และถอด EA ออกจากกราฟก่อน";
   if (paid) msg += `\n• แพ็กเกจ${PLAN_LABEL[L.plan]}ที่เหลือ${L.plan === "life" ? " (ถาวร)" : " " + dl + " วัน"} จะใช้ไม่ได้อีก และไม่คืนเงิน`;
   if (L.plan === "trial") msg += "\n• สิทธิ์ทดลองฟรีจะถือว่าใช้ไปแล้ว";
-  msg += "\n\nถ้าต้องการเปิดพอร์ตนี้กลับมา ต้องติดต่อแอดมิน";
+  msg += "\n\nลบแล้วกู้คืนไม่ได้ ถ้าจะใช้อีกต้องเปิดพอร์ตใหม่";
   if (!confirm(msg)) return;
   $("closePort").disabled = true;
   const r = await api("port_close", { token: session.token, code: L.code });
@@ -4169,7 +4232,7 @@ $("closePort").addEventListener("click", async () => {
   try { localStorage.removeItem(meCacheKey(L.code)); } catch (e) {}
   session.port = r.license ? r.license.code : ""; store.set("gs_port", session.port);
   dashData = r; renderPorts(); renderDash();
-  toast("ปิดพอร์ตแล้ว");
+  toast("ลบพอร์ตแล้ว");
 });
 $("renamePort").addEventListener("click", async () => {
   const L = dashData.license; if (!L) return;
@@ -5100,6 +5163,19 @@ async function loadAudit() {
 $("auditWho").addEventListener("change", renderAudit);
 $("auditRefresh").addEventListener("click", loadAudit);
 
+
+/* ตารางหน้าแอดมิน: ใส่ชื่อคอลัมน์ให้ทุกช่อง (มือถือแสดงเป็นการ์ด ไม่ต้องเลื่อนข้าง) */
+(function () {
+  const lab = tb => {
+    const t = tb.closest("table"); if (!t) return;
+    const hs = [...t.querySelectorAll("thead th")].map(th => th.textContent.trim());
+    tb.querySelectorAll("tr").forEach(tr => [...tr.children].forEach((td, i) => { if (hs[i] && !td.hasAttribute("colspan")) td.setAttribute("data-label", hs[i]); }));
+  };
+  const root = document.getElementById("adminView"); if (!root) return;
+  root.querySelectorAll("tbody").forEach(lab);
+  new MutationObserver(ms => { const seen = new Set(); ms.forEach(m => { const tb = m.target.closest ? m.target.closest("tbody") : null; if (tb && !seen.has(tb)) { seen.add(tb); lab(tb); } }); })
+    .observe(root, { childList: true, subtree: true });
+})();
 async function loadPays(quiet) {
   if (!pays.length) { try { const c = JSON.parse(store.get("gs_adm_pays") || "null"); if (c) { pays = c; renderPays(); } } catch (e) {} }
   if (!quiet) $("syncing").hidden = false;
