@@ -1932,6 +1932,10 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
   table.days input[type=time]{width:84px!important;min-width:0;padding:6px 4px!important;font-size:13px}
   table.days td.muted{font-size:12px;padding:5px 1px!important}
 }
+.host-lock{display:flex;align-items:center;gap:14px;margin-top:16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(242,184,75,.35);background:rgba(242,184,75,.08)}
+.host-lock svg{width:26px;height:26px;flex:none;color:#F2C45A}
+.host-lock div{flex:1;min-width:0}.host-lock b{display:block;color:#F7D27A}.host-lock small{color:var(--muted);font-size:12.5px}
+@media (max-width:560px){.host-lock{flex-wrap:wrap}.host-lock .btn{width:100%}}
 /* แท็บเครื่องรัน */
 .host-tab .host-tab-actions{display:flex;gap:10px;align-items:center;margin-top:16px}
 .host-tab .host-tab-actions .btn.primary{flex:1;max-width:320px}
@@ -2150,6 +2154,11 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
       <li><i>3</i><span>EA ออนไลน์ใน 1–2 นาที</span></li>
     </ol>
 
+    <div class="host-lock" id="hostLock" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <div><b>ทดลองฟรีใช้บริการรันบนเซิร์ฟเวอร์ไม่ได้</b><small>ระหว่างทดลองฟรี ติดตั้ง EA เองบนคอมหรือ VPS ของคุณได้ (ด้านล่าง) · ซื้อแพ็กเกจเพื่อให้ร้านรัน EA ให้</small></div>
+      <button type="button" class="btn primary small" onclick="setPage('plan')">ดูแพ็กเกจ</button>
+    </div>
     <div id="hostView" hidden>
       <div class="host-state"><span class="dot" id="hostDot"></span><b id="hostStateText">–</b><span class="muted" id="hostStateTime"></span></div>
       <div class="host-info" id="hostInfo"></div>
@@ -4278,6 +4287,10 @@ function renderHost() {
   $("secHost").hidden = !show;
   $("suOptHost").hidden = !show;
   if (!show) return;
+  // ทดลองฟรี: ไม่รวมบริการรันบนเซิร์ฟเวอร์ → โชว์การ์ดแบบล็อก ชวนซื้อแพ็กเกจ
+  const trialLock = L && L.plan === "trial" && !h;
+  $("hostLock").hidden = !trialLock;
+  if (trialLock) { $("hostForm").hidden = true; $("hostView").hidden = true; $("hostPill").textContent = "ทดลองฟรี"; $("hostPill").className = "pill host-pill"; return; }
   const editing = !h || hostEditing;
   $("hostView").hidden = editing;
   $("hostForm").hidden = !editing;
