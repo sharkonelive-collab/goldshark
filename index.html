@@ -2540,7 +2540,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
             <div class="copyrow"><code id="agentKey">–</code><button type="button" class="btn small" id="agentKeyCopy">คัดลอก</button><button type="button" class="btn small" id="agentKeyNew">สร้างใหม่</button></div>
           </div>
         </div>
-        <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
+        <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> — USD มีหลายแบบใส่ต่อท้ายได้ เช่น <code>exness | Exness | XAUUSDc | XAUUSD | XAUUSDm</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
           <textarea class="field" id="shopHostBrokers" rows="4" spellcheck="false" style="font-family:var(--mono,monospace);font-size:13px"></textarea></label>
       </div>
 
@@ -4311,7 +4311,7 @@ const HOST_CLS = { running: "run", starting: "wait", pending: "wait", draining: 
 function hostSymbolFor(brokerKey) {
   const b = ((dashData.host || {}).brokers || []).find(x => x.key === brokerKey);
   const L = dashData.license || {};
-  return b ? ((L.port || "cent") === "usd" ? b.usd : b.cent) || "" : "";
+  return b ? (((L.port || "cent") === "usd" ? b.usd : b.cent) || "").split(",")[0] : "";
 }
 function renderHost() {
   const H = dashData.host || {}, L = dashData.license, h = dashData.hosting;
@@ -4362,8 +4362,9 @@ function fillHostForm() {
 function fillHostSymbols(want) {
   const b = ((dashData.host || {}).brokers || []).find(x => x.key === $("hostBroker").value) || {};
   const opts = [];
-  if (b.cent) opts.push([b.cent, `${b.cent} · บัญชี Cent (USC)`]);
-  if (b.usd && b.usd !== b.cent) opts.push([b.usd, `${b.usd} · บัญชี USD`]);
+  const sl = v => String(v || "").split(",").map(x => x.trim()).filter(Boolean);
+  sl(b.cent).forEach(s => opts.push([s, `${s} · บัญชี Cent (USC)`]));
+  sl(b.usd).forEach(s => { if (!opts.some(o => o[0] === s)) opts.push([s, `${s} · บัญชี USD`]); });
   if (want && !opts.some(o => o[0] === want)) opts.push([want, want]);   // ค่าเดิมที่ไม่อยู่ในรายการแล้ว
   $("hostSymbol").innerHTML = opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("") || '<option value="">– ร้านยังไม่ได้ตั้งสัญลักษณ์ของโบรกนี้ –</option>';
   if (want && opts.some(o => o[0] === want)) $("hostSymbol").value = want;
@@ -5447,7 +5448,7 @@ async function loadHostTab() {
   if (r.ok) {
     const c = r.config;
     $("shopHostOn").checked = !!c.hostOn; $("shopHostMax").value = c.hostMax || 30;
-    $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, b.usd].join(" | ")).join("\n");
+    $("shopHostBrokers").value = (c.hostBrokers || []).map(b => [b.key, b.name, b.cent, ...String(b.usd || "").split(",")].join(" | ")).join("\n");
   } else toast(r.error);
   loadHostAdmin();
 }
@@ -5455,7 +5456,7 @@ $("hostSaveBtn").addEventListener("click", async () => {
   const config = {
     hostOn: $("shopHostOn").checked, hostMax: +$("shopHostMax").value || 30,
     hostBrokers: $("shopHostBrokers").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
-      .map(a => ({ key: a[0], name: a[1] || a[0], cent: a[2] || "", usd: a[3] || a[2] || "" }))
+      .map(a => ({ key: a[0], name: a[1] || a[0], cent: a[2] || "", usd: a.slice(3).join(",") || a[2] || "" }))
   };
   $("hostSaveBtn").disabled = true;
   const r = await api("admin_config_set", { pass: session.pass, config });
