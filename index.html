@@ -1593,6 +1593,10 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 .pp-sym small{display:block;font-size:11px;color:var(--muted);line-height:1.2}
 .pp-px{font-family:var(--display);font-size:24px;font-weight:600;line-height:1}
 .pp-px.up{color:#2FBF8A}.pp-px.dn{color:#E5283D}
+/* ตัวเลขเปลี่ยนแล้วช่องข้างๆ ไม่ขยับ: จองความกว้างไว้ให้ตัวเลขยาวสุด */
+.pp-px{min-width:8.6ch}
+.pp-st.ch b{min-width:13.5ch}.pp-st.hl b{min-width:8.4ch}.pp-st.sp b{min-width:3ch}
+.hdr-px .v{display:inline-block;min-width:8.4ch}
 .pp-st span{display:block;font-size:11px;color:var(--muted);line-height:1.3}
 .pp-st b{display:block;font-size:13.5px;font-weight:500;color:var(--text);line-height:1.3}
 .pp-st b.pos{color:#2FBF8A}.pp-st b.neg{color:#E5283D}
@@ -6005,10 +6009,10 @@ function renderPerp() {
   const Lc = dashData.license || {}, sym = S.symbol || "XAUUSD";
   tk.innerHTML = `<div class="pp-sym"><span class="ic">Au</span><span><b>${esc(sym)}</b><small>${esc(S.broker || "")}${(S.account || Lc.account) ? " · #" + esc(S.account || Lc.account) : ""}</small></span></div>
     <div class="pp-px ${dir}">${f(bid)}</div>
-    <div class="pp-st"><span>24h Change</span><b class="${cls(ch)}">${ref ? `${ch >= 0 ? "+" : ""}${ch.toFixed(2)} (${pc >= 0 ? "+" : ""}${pc.toFixed(2)}%)` : "–"}</b></div>
-    <div class="pp-st"><span>24h High</span><b>${hi ? f(hi) : "–"}</b></div>
-    <div class="pp-st"><span>24h Low</span><b>${lo ? f(lo) : "–"}</b></div>
-    <div class="pp-st"><span>Spread</span><b>${S.spread != null ? esc(S.spread) : "–"}</b></div>
+    <div class="pp-st ch"><span>24h Change</span><b class="${cls(ch)}">${ref ? `${ch >= 0 ? "+" : ""}${ch.toFixed(2)} (${pc >= 0 ? "+" : ""}${pc.toFixed(2)}%)` : "–"}</b></div>
+    <div class="pp-st hl"><span>24h High</span><b>${hi ? f(hi) : "–"}</b></div>
+    <div class="pp-st hl"><span>24h Low</span><b>${lo ? f(lo) : "–"}</b></div>
+    <div class="pp-st sp"><span>Spread</span><b>${S.spread != null ? esc(S.spread) : "–"}</b></div>
     <div class="pp-st"><span>Server</span><b>${esc(S.server || "–")}</b></div>`;
   const pos = (L.pos || []).slice().sort((a, b) => (b.s - a.s) || (b.s > 0 ? b.p - a.p : a.p - b.p)), pend = L.pend || [];
   $("ppNPos").textContent = pos.length; $("ppNOrd").textContent = pend.length;
