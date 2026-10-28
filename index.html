@@ -1908,6 +1908,22 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
 #adminView #licBody td.num{white-space:nowrap}
 @media (min-width:761px){#adminView #licBody td:last-child{min-width:146px;width:146px}#adminView #licBody .actions{max-width:146px!important}#adminView #licBody .actions .btn{padding:4px 9px!important;font-size:12.5px}#adminView #licBody td{padding:10px 6px}#adminView #licBody .code-copy{padding:5px 8px;font-size:13px}}
 #adminView #licBody .pill,#adminView #licBody td:nth-child(4),#adminView #licBody .port-tag{white-space:nowrap}
+/* ตารางโค้ด (คอม): ลูกค้า = ชื่อ + อีเมลบรรทัดเดียว · บัญชี = เลขบัญชี + ป้ายเรียงใต้เลข → คอลัมน์สมดุล ปุ่มไม่หลุดกรอบ */
+#adminView #licBody .acc-n{white-space:nowrap;font-variant-numeric:tabular-nums}
+#adminView #licBody .acc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+#adminView #licBody .acc-tags:empty{display:none}
+#adminView #licBody .acc-tags>*{margin:0!important;white-space:nowrap}
+#adminView #licBody .cu-n{font-weight:500;color:var(--text)}
+#adminView #licBody .cu-n .port-tag{margin-left:2px}
+#adminView #licBody .cu-e{font-size:12px;margin-top:2px}
+@media (min-width:761px){
+  #adminView{max-width:1640px}
+  #adminView #licBody .cu-cell{min-width:170px;max-width:230px}
+  #adminView #licBody .cu-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #adminView #licBody .cu-e{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+  #adminView #licBody .acc-cell{min-width:150px;max-width:220px}
+  #adminView .table-wrap table{width:100%}
+}
 @media (max-width:1860px) and (min-width:761px){.admin-top{grid-template-columns:minmax(0,1fr)!important}
   .admin-top > section.card{display:block}
   #createForm{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px!important;align-items:end}
@@ -4906,17 +4922,20 @@ function licState(l) {
 function renderLics() {
   const q = $("search").value.trim().toLowerCase();
   const rows = lics.filter(l => !q || [l.code, l.name, l.account].some(v => String(v || "").toLowerCase().includes(q)));
-  const act = lics.filter(l => licState(l)[0] === "active").length;
+  // พอร์ตแพ็กเกจร่วม: ใช้แพ็กเกจ/วันหมดอายุของพอร์ตหลัก (ไม่โชว์ "ยังไม่มีแพ็กเกจ · หมดอายุ")
+  const effOf = l => { const m = l.coveredBy && lics.find(x => x.code === l.coveredBy); return m ? Object.assign({}, l, { plan: m.plan, expires: m.expires }) : l; };
+  const act = lics.filter(l => licState(effOf(l))[0] === "active").length;
   const on = lics.filter(l => l.online).length;
-  const soon = lics.filter(l => licState(l)[0] === "active" && daysLeft(l.expires) <= 5).length;
+  const soon = lics.filter(l => { const e = effOf(l); return licState(e)[0] === "active" && e.plan !== "life" && daysLeft(e.expires) <= 5; }).length;
   $("stats").innerHTML = `<div><b>${lics.length}</b>โค้ดทั้งหมด</div><div><b>${act}</b>ใช้งานอยู่</div><div><b>${on}</b>EA ออนไลน์</div><div><b style="color:var(--gold)">${soon}</b>หมดใน 5 วัน</div>`;
-  $("licBody").innerHTML = rows.length ? rows.map(l => {
+  $("licBody").innerHTML = rows.length ? rows.map(l0 => {
+    const l = effOf(l0);
     const [st, stTxt] = licState(l); const dl = daysLeft(l.expires);
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
-      <td>${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}${l.login ? `<div class="muted" style="font-size:12px">${esc(l.login)}</div>` : l.note ? `<div class="muted" style="font-size:12px">${esc(l.note)}</div>` : ""}</td>
-      <td class="num">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">แพ็กเกจร่วม</span>` : ""}${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</td>
-      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
+      <td class="cu-cell"><div class="cu-n">${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}</div>${l.login ? `<div class="cu-e muted" title="${esc(l.login)}">${esc(l.login)}</div>` : l.note ? `<div class="cu-e muted" title="${esc(l.note)}">${esc(l.note)}</div>` : ""}</td>
+      <td class="acc-cell"><div class="acc-n">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</div><div class="acc-tags">${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</div></td>
+      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">ร่วม</span>` : ""}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td style="white-space:nowrap"><span class="pill ${st}">${stTxt}</span> <span class="dot ${l.online ? "on" : ""}" style="display:inline-block;vertical-align:middle;margin-left:6px" title="EA ${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
       <td class="num">${l.equity != null ? fmt(l.equity) : '<span class="muted">–</span>'}</td>
