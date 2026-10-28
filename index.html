@@ -5627,6 +5627,28 @@ function langSet(code) {
 /* ============ กราฟไม้ที่เปิดอยู่ (Lightweight Charts by TradingView) ============ */
 // ข้อมูลจาก EA 2.30+ (snapshot.live): { bid, ask, digits, bars:[[t,o,h,l,c],...M5], pos:[{s:1|-1, k:"m"|"b"|"h"|"r", p, v, pl}], next:{buy:{p,v},sell:{p,v}}, beOff, every }
 let lwcP = null, liveC = null, liveS = null, liveLines = [], liveTF = 5, liveSig = "";
+// เรียลไทม์แบบ TradingView: แท่งล่าสุดค่อยๆ ไหลไปหาราคาใหม่ (ไม่กระโดด) + เส้นราคาไม่กระพริบ
+let liveShown = null, liveLen = 0, liveTw = 0, liveTickAt = 0, liveLinesKey = "";
+function liveFmtPx(v, dg) { return (+v).toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg }); }
+function liveTween(prev, tb, dg) {
+  cancelAnimationFrame(liveTw);
+  const now0 = performance.now();
+  const gap = liveTickAt ? now0 - liveTickAt : 1000; liveTickAt = now0;
+  const dur = Math.max(250, Math.min(1600, gap * 0.85));               // ไหลเกือบเต็มช่วงระหว่าง tick → ดูต่อเนื่อง
+  if (liveShown && liveShown.time < tb.time && prev && prev.time === liveShown.time) liveS.update(prev);   // ปิดแท่งเก่าให้ครบก่อนขึ้นแท่งใหม่
+  const same = liveShown && liveShown.time === tb.time;
+  const from = same ? liveShown.close : tb.open, hi0 = same ? liveShown.high : tb.open, lo0 = same ? liveShown.low : tb.open;
+  const step = t => {
+    const k = Math.min(1, (t - now0) / dur), e = 1 - Math.pow(1 - k, 3), c = from + (tb.close - from) * e;
+    const b = { time: tb.time, open: tb.open, high: Math.max(hi0, c), low: Math.min(lo0, c), close: c };
+    if (k === 1) { b.high = Math.max(tb.high, c); b.low = Math.min(tb.low, c); }
+    try { liveS.update(b); } catch (err) { return; }
+    liveShown = b;
+    const txt = liveFmtPx(c, dg); [$("hdrPxV"), document.querySelector("#ppTicker .pp-px")].forEach(el => { if (el) el.textContent = txt; });   // ตัวเลขราคาไหลตามกราฟ
+    if (k < 1) liveTw = requestAnimationFrame(step);
+  };
+  liveTw = requestAnimationFrame(step);
+}
 function loadLWC() {
   if (window.LightweightCharts) return Promise.resolve();
   if (lwcP) return lwcP;
@@ -5682,12 +5704,19 @@ async function renderLive() {
     liveS = liveC.addCandlestickSeries({ upColor: "#2FBF8A", downColor: "#E5283D", borderVisible: false, wickUpColor: "#2FBF8A", wickDownColor: "#E5283D",
       priceFormat: { type: "price", precision: dg, minMove: 1 / Math.pow(10, dg) } });
   }
-  const bars = liveBars(L.bars, liveTF, L.h1);
-  const sig = liveTF + "|" + bars.length + "|" + (bars[0] && bars[0].time);
-  liveS.setData(bars);
-  if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
-  liveLines.forEach(l => liveS.removePriceLine(l)); liveLines = [];
-  const line = (price, color, title, style = 0, width = 1) => liveLines.push(liveS.createPriceLine({ price, color, lineWidth: width, lineStyle: style, axisLabelVisible: true, title }));
+  const bars = liveBars(L.bars, liveTF, L.h1), tb = bars[bars.length - 1];
+  const sig = liveTF + "|" + ((dashData.license || {}).code || "");
+  // เปลี่ยน TF/พอร์ต หรือข้อมูลชุดใหม่ → วาดใหม่ทั้งหมด · tick ปกติ → อัปเดตเฉพาะแท่งล่าสุดแบบไหลลื่น
+  const smooth = sig === liveSig && liveShown && tb && bars.length >= liveLen && bars.length <= liveLen + 1 && tb.time >= liveShown.time;
+  if (smooth) liveTween(bars[bars.length - 2], tb, dg);
+  else {
+    cancelAnimationFrame(liveTw); liveS.setData(bars); liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;
+    if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
+  }
+  liveLen = bars.length;
+  // เส้นไม้/ออเดอร์: สร้างใหม่เฉพาะตอนชุดเส้นเปลี่ยน · ระหว่างนั้นแก้แค่ป้าย (กำไร/ขาดทุน) → ไม่กระพริบ
+  const specs = [];
+  const line = (price, color, title, style = 0, width = 1) => specs.push({ price: +price, color, lineWidth: width, lineStyle: style, axisLabelVisible: true, title });
   const pos = L.pos || [], C = Object.assign({}, CFG_DEF, dashData.settings || {});
   const GP = 0.01;                                         // 100 จุด = ราคาทองขยับ 1.00
   pos.forEach(o => line(o.p, LIVE_COL[o.k || "m"][o.s > 0 ? 0 : 1], `${LIVE_NAME[o.k || "m"]}${o.s > 0 ? "B" : "S"} ${o.v.toFixed(2)} · ${o.pl > 0 ? "+" : ""}${o.pl.toFixed(2)}`));
@@ -5710,6 +5739,9 @@ async function renderLive() {
       ${tp ? `<div><span>ปิดกำไรที่</span><b>${tp.toFixed(dg)} <small class="muted">(อีก ${Math.abs(tp - cur).toFixed(2)})</small></b></div>` : ""}
       ${nx && nx.p ? `<div><span>แก้ไม้ถัดไป</span><b>${nx.p.toFixed(dg)} · ${nx.v.toFixed(2)} lot <small class="muted">(อีก ${dist.toFixed(2)})</small></b></div>` : `<div><span>แก้ไม้ถัดไป</span><b class="muted">ไม้แก้ครบแล้ว</b></div>`}</div>`);
   });
+  const lk = specs.map(o => o.price + "|" + o.color + "|" + o.lineStyle).join(",");
+  if (lk === liveLinesKey && liveLines.length === specs.length) specs.forEach((o, i) => liveLines[i].applyOptions({ title: o.title }));
+  else { liveLines.forEach(l => liveS.removePriceLine(l)); liveLines = specs.map(o => liveS.createPriceLine(o)); liveLinesKey = lk; }
   const oth = pos.filter(o => (o.k || "m") !== "m");
   if (oth.length) { const pl = oth.reduce((a, o) => a + o.pl, 0); sums.push(`<div class="ls"><div class="h"><span>Hedge / ตะกร้ากู้ · ${oth.length} ไม้</span><span class="${cls(pl)}">${signed(pl)}</span></div><div><span>ล็อตรวม</span><b>${fmt(oth.reduce((a, o) => a + o.v, 0))}</b></div></div>`); }
   $("liveSum").innerHTML = sums.join("") || `<div class="ls">ไม่มี Order ที่เปิดอยู่ · ราคาปัจจุบัน <b>${(+L.bid).toFixed(dg)}</b></div>`;
