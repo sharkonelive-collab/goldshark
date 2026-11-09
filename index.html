@@ -5856,8 +5856,8 @@ function demoLive(C) {
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.34";
-const EA_NEWS = "รันหลายพอร์ตบน VPS ลื่นขึ้น (กิน CPU น้อยลง) · EA ไม่ค้างรอเว็บนาน · ออนไลน์เสถียรขึ้น";
+const EA_LATEST = "2.35";
+const EA_NEWS = "รันบนเซิร์ฟเวอร์เสถียรขึ้น: ถ้า MT5 ต่อเว็บไม่ได้ (1009/5203) ส่งข้อมูลผ่านเครื่องรันแทน · ไม่เด้งเตือนตอน MT5 เพิ่งเปิด";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
