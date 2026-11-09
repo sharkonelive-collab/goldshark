@@ -922,7 +922,9 @@ body[data-view="adminView"] .fab-line,body.admin-mode .fab-line{display:none}
 .host-tag.bad{background:rgba(229,40,61,.15);color:#FF8A98}
 @media (max-width:700px){.host-grid{grid-template-columns:1fr}}
 
-.host-admin{display:grid;gap:6px}
+.host-admin{display:grid;gap:6px;grid-template-columns:minmax(0,1fr)}   /* คอลัมน์ไม่ยืดตามรหัสยาว (มือถือไม่ล้นจอ) */
+.host-admin .copyrow{max-width:100%;box-sizing:border-box;min-width:0}.host-admin .copyrow code{min-width:0}.host-admin .copyrow .btn{flex:none}
+.host-admin .grid2>*{min-width:0}
 .host-agent{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(5,8,16,.5);font-size:14px}
 .host-agent b{font-weight:500}
 .host-agent .dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:4px}
