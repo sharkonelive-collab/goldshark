@@ -2444,7 +2444,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
     <button data-atab="pays" aria-pressed="false"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg></i><span class="at-l">การชำระเงิน</span><span class="at-s">ชำระเงิน</span><span class="badge" id="payBadge" hidden></span></button>
     <button data-atab="news" aria-pressed="false"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/></svg></i><span class="at-l">ข่าว</span><span class="at-s">ข่าว</span></button>
     <button data-atab="shop" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l1.5-5h13L20 10"/><path d="M5 10v9h14v-9"/><path d="M4 10h16"/><path d="M10 19v-5h4v5"/></svg></i><span class="at-l">ตั้งค่าร้าน</span><span class="at-s">ร้าน</span></button>
-    <button data-atab="host" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="7" rx="1.5"/><rect x="4" y="13" width="16" height="7" rx="1.5"/><path d="M8 7.5h.01M8 16.5h.01"/></svg></i><span class="at-l">เครื่องรัน</span><span class="at-s">เครื่องรัน</span></button>
+    <button data-atab="host" aria-pressed="false" data-perm="manager"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="7" rx="1.5"/><rect x="4" y="13" width="16" height="7" rx="1.5"/><path d="M8 7.5h.01M8 16.5h.01"/></svg></i><span class="at-l">เครื่องรัน</span><span class="at-s">เครื่องรัน</span></button>
     <button data-atab="team" aria-pressed="false" data-perm="owner"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.6 0 4.5 1.8 4.5 4.5"/></svg></i><span class="at-l">ทีมงาน</span><span class="at-s">ทีมงาน</span></button>
     <button data-atab="audit" aria-pressed="false" data-perm="manager"><i class="at-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></i><span class="at-l">ประวัติแอดมิน</span><span class="at-s">ประวัติ</span></button>
   </nav>
@@ -2535,7 +2535,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
       <h3>ทีมงานแอดมิน</h3>
       <div class="role-help">
         <div><b class="role-pill owner">เจ้าของ</b><span>ทำได้ทุกอย่าง · ใช้รหัสหลักของร้าน (เว้นช่องชื่อผู้ใช้ตอนเข้าสู่ระบบ)</span></div>
-        <div><b class="role-pill manager">ผู้ดูแล</b><span>ออกโค้ด ต่ออายุ ระงับ แก้พอร์ต รีเซ็ตรหัสสมาชิก อนุมัติสลิป ดูประวัติแอดมิน · <u>ลบโค้ด/ตั้งค่าร้าน/จัดการทีมไม่ได้</u></span></div>
+        <div><b class="role-pill manager">ผู้ดูแล</b><span>ออกโค้ด ต่ออายุ ระงับ แก้พอร์ต รีเซ็ตรหัสสมาชิก อนุมัติสลิป ดูประวัติแอดมิน จัดการพอร์ตบนเครื่องรัน (หยุด/ย้ายเครื่อง) · <u>ลบโค้ด/ตั้งค่าร้าน/รหัสเครื่องรัน/จัดการทีมไม่ได้</u></span></div>
         <div><b class="role-pill slip">ตรวจสลิป</b><span>ดูรายชื่อสมาชิก และอนุมัติ/ปฏิเสธสลิปเท่านั้น</span></div>
       </div>
       <form id="teamForm" class="team-form" autocomplete="off">
@@ -2574,6 +2574,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
       <div class="host-admin">
         <div class="host-agent" id="hostAgent">กำลังโหลดสถานะเครื่องรัน…</div>
         <div class="host-rows" id="hostRows"></div>
+        <div data-perm="owner">
         <label class="sw"><input type="checkbox" id="shopHostOn"><span class="track"></span><span>เปิดให้สมาชิกใช้บริการรันบนเซิร์ฟเวอร์</span></label>
         <div class="grid2" style="gap:12px;margin-top:10px">
           <label class="fld"><span>รันพร้อมกันได้สูงสุด รวมทุกเครื่อง (พอร์ต)</span><input class="field num" type="number" min="1" max="500" id="shopHostMax"></label>
@@ -2583,10 +2584,11 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
         </div>
         <label class="fld" style="margin-top:10px"><span>โบรกที่รองรับ — 1 บรรทัดต่อ 1 โบรก: <code>รหัส | ชื่อที่สมาชิกเห็น | สัญลักษณ์ทอง Cent | สัญลักษณ์ทอง USD</code> — USD มีหลายแบบใส่ต่อท้ายได้ เช่น <code>exness | Exness | XAUUSDc | XAUUSD | XAUUSDm</code> (รหัสต้องตรงชื่อโฟลเดอร์ต้นแบบ MT5 บน VPS)</span>
           <textarea class="field" id="shopHostBrokers" rows="4" spellcheck="false" style="font-family:var(--mono,monospace);font-size:13px"></textarea></label>
+        </div>
       </div>
 
       <div class="host-tab-actions">
-        <button type="button" class="btn primary" id="hostSaveBtn">บันทึกการตั้งค่าเครื่องรัน</button>
+        <button type="button" class="btn primary" id="hostSaveBtn" data-perm="owner">บันทึกการตั้งค่าเครื่องรัน</button>
         <button type="button" class="btn small" id="hostReload">รีเฟรชสถานะ</button>
       </div>
     </section>
@@ -2970,7 +2972,7 @@ function demoApi(action, d) {
         who = { user: m.user, name: m.name, role: m.role, token: "adm1.demo." + m.user + "." + m.v };
       } else if (d.pass === "demo") who = { user: "owner", name: "เจ้าของ", role: "owner" };
       else return res({ ok: false, error: "รหัสแอดมินไม่ถูกต้อง (โหมดตัวอย่างใช้รหัส demo)" });
-      const PERM = { admin_login: "slip", admin_list: "slip", admin_payments: "slip", admin_slip: "slip", admin_pay_decide: "slip", admin_create: "manager", admin_update: "manager", admin_link: "manager", admin_reset_pw: "manager", admin_audit: "manager" };
+      const PERM = { admin_login: "slip", admin_list: "slip", admin_payments: "slip", admin_slip: "slip", admin_pay_decide: "slip", admin_create: "manager", admin_update: "manager", admin_link: "manager", admin_reset_pw: "manager", admin_audit: "manager", admin_host: "manager" };
       if (LV[who.role] < LV[PERM[action] || "owner"]) return res({ ok: false, error: `สิทธิ์ของคุณ (${TH[who.role]}) ทำรายการนี้ไม่ได้`, denied: true });
       const res0 = res;
       res = o => {
@@ -3008,8 +3010,8 @@ function demoApi(action, d) {
         return res({ ok: true, payments: demo.pays.map(p => Object.assign({}, p)), pending: demo.pays.filter(p => p.status === "pending").length });
       }
       if (action === "admin_config") return res({ ok: true, config: demo.config });
-      if (action === "admin_host") { if (d.newKey) demo.agentKey = "demo" + Math.random().toString(36).slice(2, 14); const now = Date.now(), R = (code, label, login, agent, state, moveTo) => ({ code, label, login, agent, moveTo: moveTo || "", wanted: "run", state, stateText: { running: "กำลังรัน", pending: "รอเครื่องรันติดตั้ง", starting: "กำลังเปิด MT5" }[state] });
-        return res({ ok: true, agentKey: demo.agentKey || "demo7f3k29xq1m0z", hasPub: true, agent: { name: "VPS-1" }, lastSeen: now - 40000, running: 8, wantRun: 10, queued: 1,
+      if (action === "admin_host") { if ((d.newKey || d.resetPub) && who.role !== "owner") return res({ ok: false, error: "รหัสเครื่องรันจัดการได้เฉพาะเจ้าของ", denied: true }); if (d.newKey) demo.agentKey = "demo" + Math.random().toString(36).slice(2, 14); const now = Date.now(), R = (code, label, login, agent, state, moveTo) => ({ code, label, login, agent, moveTo: moveTo || "", wanted: "run", state, stateText: { running: "กำลังรัน", pending: "รอเครื่องรันติดตั้ง", starting: "กำลังเปิด MT5" }[state] });
+        return res({ ok: true, agentKey: who.role !== "owner" ? "" : (demo.agentKey || "demo7f3k29xq1m0z"), hasKey: true, hasPub: true, agent: { name: "VPS-1" }, lastSeen: now - 40000, running: 8, wantRun: 10, queued: 1,
           agents: [{ name: "VPS-1", ver: "1.7", max: 5, seen: now - 30000, online: true, count: 5, running: 5 }, { name: "VPS-2", ver: "1.7", max: 5, seen: now - 20000, online: true, count: 4, running: 3 }],
           rows: [R("GS-STFB-X6KJ", "Leo SN", "128946048", "VPS-1", "running"), R("GS-9BXF-5ZW8", "LEO Pradaboy", "128948032", "VPS-1", "running", "VPS-2"),
                  R("GS-XTY5-ZNL6", "Richly8", "128953253", "VPS-2", "running"), R("GS-9LTV-9SY9", "Cent A", "443016525", "VPS-2", "starting"), R("GS-CMQQ-ZQ67", "ใหม่", "257598919", "", "pending")] }); }
@@ -5481,7 +5483,7 @@ async function loadHostAdmin(opt) {
   renderHostRows(r.rows);
   $("agentKey").textContent = r.agentKey || "ยังไม่มี กด สร้างใหม่";
   const on = r.lastSeen && Date.now() - r.lastSeen < 5 * 60000;
-  $("hostAgent").innerHTML = !r.agentKey ? "ยังไม่ได้ตั้งเครื่องรัน: กด <b>สร้างใหม่</b> เพื่อสร้างรหัสเครื่องรัน แล้วใส่ใน config.json บน VPS"
+  $("hostAgent").innerHTML = !(r.agentKey || r.hasKey) ? "ยังไม่ได้ตั้งเครื่องรัน: กด <b>สร้างใหม่</b> เพื่อสร้างรหัสเครื่องรัน แล้วใส่ใน config.json บน VPS"
     : !r.hasPub ? "รอเครื่องรันเชื่อมต่อครั้งแรก (ยังไม่ได้รับกุญแจเข้ารหัสจาก VPS)"
     : `<span class="dot ${on ? "on" : "off"}"></span> เครื่องรัน <b>${hostAgents.length || 1}</b> เครื่อง · ติดต่อล่าสุด ${r.lastSeen ? ago(r.lastSeen) : "–"} · กำลังรัน <b>${r.running}</b> / ต้องการรัน <b>${r.wantRun}</b> พอร์ต${r.queued ? ` · <b style="color:#E0A43A">รอคิว ${r.queued}</b> (ทุกเครื่องเต็ม เพิ่ม VPS หรือเพิ่ม max_instances)` : ""}`
       + (hostAgents.length ? `<div class="ag-list">${hostAgents.map(a => { const pct = Math.min(100, Math.round(a.count / Math.max(1, a.max) * 100));
@@ -5524,6 +5526,7 @@ $("hostRows").addEventListener("click", async e => {
 });
 /* แท็บ "เครื่องรัน" (แยกจากตั้งค่าร้าน) */
 async function loadHostTab() {
+  if (document.body.dataset.admRole !== "owner") { loadHostAdmin(); return; }   // ผู้ดูแล: ดู/จัดการพอร์ตได้ ไม่เห็นตั้งค่าและรหัสเครื่องรัน
   const r = await api("admin_config", { pass: session.pass });
   if (r.ok) {
     const c = r.config;
