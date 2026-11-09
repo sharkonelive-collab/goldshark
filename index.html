@@ -3977,6 +3977,14 @@ function guardWarn(d, s) {
 }
 
 /* ============ คำเตือน Hedging ============ */
+function brakeWarn(d, s) {
+  const out = [];
+  if (d.brakeOn && !s.brakeOn) out.push(`<b>กำลังเปิดระบบเบรค</b> เมื่อไม้แก้ครบหรือตะกร้าติดลบถึง ${Number(d.brakeAmt) > 0 ? fmt(d.brakeAmt, 0) : d.brakePct + "% ของ Balance"} EA จะเปิดไม้ฝั่งตรงข้ามเท่ากับล็อตรวม (100%) <b>ขาดทุนหยุดนิ่งไว้ ไม่ได้หายไป</b> พอราคากลับตัวผ่านจุดเบรค EA จะปิดไม้เบรคใกล้เท่าทุน แล้วให้ไม้ที่ค้างไว้ไปทำกำไรตามปกติ ถ้าราคากลับมาผิดทางอีกจะเบรคใหม่เมื่อเลยจุดเดิมไป${Number(d.brakeGap) > 0 ? " " + d.brakeGap + " points" : "เท่าระยะไม้แก้"} ระหว่างเบรคไม่แก้ไม้และไม่เข้าตะกร้าใหม่ ใช้ Margin เพิ่มเท่าล็อตรวม ถ้าเบรคค้างข้ามคืนเสียค่า swap ทั้งสองฝั่ง ต้องใช้บัญชีแบบ Hedging · ต้องใช้ EA เวอร์ชัน 2.36 ขึ้นไป`);
+  if (d.brakeOn && d.hedgeOn) out.push(`<b>เปิดทั้งระบบเบรคและ Hedging</b> EA จะใช้ระบบเบรค (Hedging จะไม่ทำงาน)`);
+  if (!d.brakeOn && s.brakeOn) out.push(`<b>กำลังปิดระบบเบรค</b> ถ้ามีไม้เบรคค้างอยู่ EA จะดูแลต่อแบบ Hedge เดิม (รอปิดทุกไม้ที่เท่าทุนรวม)`);
+  if (d.brakeOn && d.cutPctOn && Number(d.brakeAmt) <= 0 && Number(d.cutPct) <= Number(d.brakePct)) out.push(`<b>ปิดขาดทุน ${d.cutPct}% ต่ำกว่าหรือเท่าจุดเบรค ${d.brakePct}%</b> ตะกร้าจะถูกตัดขาดทุนก่อนได้เบรค ถ้าต้องการให้เบรคก่อน ตั้งปิดขาดทุนให้มากกว่า`);
+  return out.map(t => `<p>⚠️ ${t}</p>`).join("");
+}
 function hedgeWarn(d, s) {
   const out = [];
   if (d.hedgeOn && !s.hedgeOn) out.push(`<b>กำลังเปิด Hedging</b> เมื่อไม้แก้ครบหรือติดลบถึง ${d.hedgePct}% EA จะเปิดไม้ฝั่งตรงข้าม 70% ของล็อตรวม <b>ขาดทุนไม่ได้หายไป แค่ถูกล็อกไว้</b> ระหว่างล็อก EA จะไม่แก้ไม้และไม่เข้าตะกร้าใหม่ จนกว่ารวมทุกไม้กลับมา${Number(d.hedgeExitPct) > 0 ? "ติดลบไม่เกิน " + d.hedgeExitPct + "%" : "เท่าทุน"} ถ้าล็อกนานจะเสียค่า swap ข้ามคืนทั้งสองฝั่ง และต้องใช้บัญชีแบบ Hedging (Exness เป็นแบบนี้อยู่แล้ว) · ต้องใช้ EA เวอร์ชัน 2.24 ขึ้นไป`);
@@ -4027,8 +4035,13 @@ const CFG_GROUPS = [
     ["ddStopOn", "bool", false, "หยุดฉุกเฉิน : Equity ลดลงเกิน % ที่ตั้ง → ปิดทุกออเดอร์ (รวมไม้ Hedge) แล้วพัก EA"],
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
     ["ddPauseMin", "int", 1440, "พักหลังหยุดฉุกเฉิน (นาที · 1440 = 1 วัน)", 0, 43200, 60]] },
+  { id: "brake", title: "ระบบเบรค", toggle: "brakeOn", warn: brakeWarn, fields: [
+    ["brakeOn", "bool", false, "เปิดระบบเบรค : ตะกร้าติดลบถึงจุดที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 100% ล็อกขาดทุนไว้ · ราคากลับตัวผ่านจุดเบรค → ปิดไม้เบรคใกล้เท่าทุน ไม้ที่ค้างทำกำไรต่อ (EA 2.36+)"],
+    ["brakeAmt", "num", 0, "เบรคเมื่อตะกร้าติดลบถึง (จำนวนเงิน · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง)", 0, 1e8, 1],
+    ["brakePct", "num", 15, "เบรคเมื่อตะกร้าติดลบถึง (% ของ Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 1, 90, 1],
+    ["brakeGap", "num", 0, "เบรคซ้ำได้เมื่อราคาเลยจุดเบรคเดิมไปอีก (points · 0 = เท่าระยะไม้แก้)", 0, 200000, 10]] },
   { id: "hedge", title: "Hedging", toggle: "hedgeOn", warn: hedgeWarn, fields: [
-    ["hedgeOn", "bool", false, "เปิด Hedging : ไม้แก้ครบ หรือติดลบถึง % ที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 70% ล็อกขาดทุนไว้แทนการตัด"],
+    ["hedgeOn", "bool", false, "เปิด Hedging : ไม้แก้ครบ หรือติดลบถึง % ที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 70% ล็อกขาดทุนไว้แทนการตัด (ถ้าเปิดระบบเบรคด้วย จะใช้ระบบเบรค)"],
     ["hedgePct", "num", 15, "เริ่ม Hedge เมื่อตะกร้าติดลบถึง (% ของ Balance)", 1, 90, 1],
     ["hedgeExitPct", "num", 0, "ปลดล็อก: ปิดทุกไม้เมื่อรวมกันติดลบไม่เกิน (% ของ Balance · 0 = รอจนเท่าทุน)", 0, 20, 0.5],
     ["recOn", "bool", true, "ตะกร้ากู้ระหว่างล็อก : เปิดตะกร้าใหม่ตามสัญญาณ (แก้ไม้ได้เท่าตะกร้าปกติ) กำไรที่ได้เอาไปทยอยปิดไม้ที่ติดลบหนักสุด"],
@@ -4193,7 +4206,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "hedge" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "hedge" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -4208,7 +4221,7 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn"].includes(k))) {
+  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap"].includes(k))) {
     const msg = (targetWarn(userForm.draft, cfgSaved()) + riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
     if (msg && !confirm("ยืนยันการเปลี่ยนค่าเป้ารายวัน / ไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
@@ -5856,8 +5869,8 @@ function demoLive(C) {
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.35";
-const EA_NEWS = "รันบนเซิร์ฟเวอร์เสถียรขึ้น: ถ้า MT5 ต่อเว็บไม่ได้ (1009/5203) ส่งข้อมูลผ่านเครื่องรันแทน · ไม่เด้งเตือนตอน MT5 เพิ่งเปิด";
+const EA_LATEST = "2.36";
+const EA_NEWS = "โหมดเบรค: ติดลบถึงจุดที่ตั้ง → ล็อกขาดทุน 100% ราคากลับมา → ปิดไม้เบรคเท่าทุน ไม้ที่ค้างทำกำไรต่อ · ตั้งได้ที่หน้าตั้งค่า > ระบบเบรค";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
