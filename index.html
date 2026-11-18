@@ -4155,7 +4155,9 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   });
   let draft = null;
   const saved = () => Object.assign({}, CFG_DEF, getSaved() || {});
-  const changed = () => Object.keys(types).filter(k => draft && String(draft[k]) !== String(saved()[k]));
+  // ค้างบันทึก = เฉพาะช่องที่ผู้ใช้แก้เอง (ค่าที่เปลี่ยนจากฝั่งเซิร์ฟเวอร์ เช่น ร้านปรับค่าเริ่มต้น ไม่นับ และจะอัปเดตในฟอร์มให้เอง)
+  const dirty = new Set();
+  const changed = () => { if (!draft) return []; const s = saved(); return Object.keys(types).filter(k => dirty.has(k) && String(draft[k]) !== String(s[k])); };
 
   root.innerHTML = groups.map(g => `
     <details class="cfg-group" data-g="${g.id}" ${open ? "open" : ""}>
@@ -4202,6 +4204,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   function onInput(e) {
     const el = e.target.closest("[data-k]"); if (!el || !draft) return;
     const k = el.dataset.k, t = types[k];
+    dirty.add(k);
     if (t === "bool") draft[k] = el.checked;
     else if (t === "time") draft[k] = el.value;
     else if (el.value !== "") draft[k] = Number(el.value);
@@ -4215,9 +4218,12 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   root.addEventListener("input", onInput);
   root.addEventListener("change", onInput);
   function fill(force) {
-    if (!force && draft && changed().length) return status();
-    draft = saved();
+    const keep = !force && draft && changed().length > 0;   // มีช่องที่แก้ค้างอยู่ → เก็บเฉพาะช่องนั้น ช่องอื่นตามค่าล่าสุด
+    const s = saved();
+    if (keep) Object.keys(s).forEach(k => { if (!dirty.has(k)) draft[k] = s[k]; });
+    else { draft = s; dirty.clear(); }
     root.querySelectorAll("[data-k]").forEach(el => {
+      if (keep && (dirty.has(el.dataset.k) || el === document.activeElement)) return;
       const v = draft[el.dataset.k];
       if (el.type === "checkbox") el.checked = !!v;
       else el.value = (el.step === "0.1" && v !== "" && v != null && isFinite(v)) ? Number(v).toFixed(1) : v;   // ช่อง points แสดงเป็น 270.0
