@@ -3981,6 +3981,14 @@ function guardWarn(d, s) {
 }
 
 /* ============ คำเตือน Hedging ============ */
+function snipeWarn(d, s) {
+  const out = [];
+  if (d.snipeOn && !s.snipeOn) out.push(`<b>กำลังเปิดระบบ X</b> เมื่อตะกร้าติดลบถึง ${Number(d.snipeAmt) > 0 ? fmt(d.snipeAmt, 0) : d.snipePct + "% ของ Balance"} EA จะเปิดไม้ฝั่งตรงข้าม<b>ล็อตใหญ่กว่าตะกร้าเดิมหลายเท่า</b> คำนวณให้ราคาวิ่งต่ออีก ${d.snipeDist} points (≈ $${(Number(d.snipeDist) / 100).toFixed(2)}) แล้วรวมทุกไม้ได้กำไร จากนั้นปิดหมด ถ้าราคากลับตัว EA ตัดไม้ X (เริ่มที่ ${d.snipeSL} points แล้วขยับมาเท่าทุนเมื่อราคาวิ่งถูกทาง) ยิงได้สูงสุด ${d.snipeMax} ครั้งต่อตะกร้า <b>ความเสี่ยง:</b> ล็อตใหญ่ใช้ Margin มาก ถ้าราคากระชากหรือสเปรดกว้างตอนข่าว อาจโดนตัดแย่กว่าที่ตั้งได้ ต้องใช้บัญชีแบบ Hedging · ต้องใช้ EA เวอร์ชัน 2.37 ขึ้นไป`);
+  if (d.snipeOn && Number(d.snipeMaxLot) <= 0) out.push(`<b>ยังไม่ได้จำกัด lot สูงสุดของไม้ X</b> EA จะใช้ lot เท่าที่ Margin ไหว แนะนำให้ใส่ lot สูงสุดตามทุน`);
+  if (d.snipeOn && (d.brakeOn || d.hedgeOn)) out.push(`<b>เปิดไม้ X คู่กับ${d.brakeOn ? "ระบบเบรค" : "Hedging"}</b> EA จะลองไม้ X ก่อน ยิงครบ ${d.snipeMax} ครั้งแล้วยังไม่สำเร็จ จึงส่งต่อให้${d.brakeOn ? "ระบบเบรค" : "Hedging"}`);
+  if (d.snipeOn && d.cutPctOn && Number(d.snipeAmt) <= 0 && Number(d.cutPct) <= Number(d.snipePct)) out.push(`<b>ปิดขาดทุน ${d.cutPct}% ต่ำกว่าหรือเท่าจุดยิงไม้ X ${d.snipePct}%</b> ตะกร้าจะถูกตัดขาดทุนก่อนได้ยิง`);
+  return out.map(t => `<p>⚠️ ${t}</p>`).join("");
+}
 function brakeWarn(d, s) {
   const out = [];
   if (d.brakeOn && !s.brakeOn) out.push(`<b>กำลังเปิดระบบเบรค</b> เมื่อไม้แก้ครบหรือตะกร้าติดลบถึง ${Number(d.brakeAmt) > 0 ? fmt(d.brakeAmt, 0) : d.brakePct + "% ของ Balance"} EA จะเปิดไม้ฝั่งตรงข้ามเท่ากับล็อตรวม (100%) <b>ขาดทุนหยุดนิ่งไว้ ไม่ได้หายไป</b> พอราคากลับตัวผ่านจุดเบรค EA จะปิดไม้เบรคใกล้เท่าทุน แล้วให้ไม้ที่ค้างไว้ไปทำกำไรตามปกติ ถ้าราคากลับมาผิดทางอีกจะเบรคใหม่เมื่อเลยจุดเดิมไป${Number(d.brakeGap) > 0 ? " " + d.brakeGap + " points" : "เท่าระยะไม้แก้"} ระหว่างเบรคไม่แก้ไม้และไม่เข้าตะกร้าใหม่ ใช้ Margin เพิ่มเท่าล็อตรวม ถ้าเบรคค้างข้ามคืนเสียค่า swap ทั้งสองฝั่ง ต้องใช้บัญชีแบบ Hedging · ต้องใช้ EA เวอร์ชัน 2.36 ขึ้นไป`);
@@ -4044,6 +4052,15 @@ const CFG_GROUPS = [
     ["brakeAmt", "num", 0, "เบรคเมื่อตะกร้าติดลบถึง (จำนวนเงิน · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง)", 0, 1e8, 1],
     ["brakePct", "num", 15, "เบรคเมื่อตะกร้าติดลบถึง (% ของ Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 1, 90, 1],
     ["brakeGap", "num", 0, "เบรคซ้ำได้เมื่อราคาเลยจุดเบรคเดิมไปอีก (points · 0 = เท่าระยะไม้แก้)", 0, 200000, 10]] },
+  { id: "snipe", title: "ระบบ X", toggle: "snipeOn", warn: snipeWarn, fields: [
+    ["snipeOn", "bool", false, "เปิดระบบ X : ตะกร้าติดลบถึงจุดที่ตั้ง → เปิดฝั่งตรงข้าม lot ใหญ่ ให้ราคาวิ่งต่ออีกไม่กี่จุดแล้วรวมทุกไม้ได้กำไร → ปิดหมด · ราคากลับตัว → ตัดไม้ X ที่เท่าทุน (EA 2.37+)"],
+    ["snipeAmt", "num", 0, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (จำนวนเงิน · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง)", 0, 1e8, 1],
+    ["snipePct", "num", 10, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (% ของ Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 1, 90, 1],
+    ["snipeDist", "num", 500, "ระยะเป้าหมาย (points · 500 = ราคาทองขยับ $5) ราคาวิ่งต่อเท่านี้แล้วรวมทุกไม้ได้กำไร · ยิ่งสั้น lot ยิ่งใหญ่", 50, 20000, 50],
+    ["snipeSL", "num", 100, "ระยะตัดเริ่มต้น (points) · ราคาวิ่งถูกทางเท่าระยะนี้แล้วขยับตัดมาที่เท่าทุน", 10, 5000, 10],
+    ["snipeTarget", "num", 0, "กำไรรวมขั้นต่ำก่อนปิด (จำนวนเงิน · 0 = เกินเท่าทุน)", 0, 1e8, 1],
+    ["snipeMaxLot", "num", 0, "lot สูงสุดของไม้ X (0 = ไม่จำกัด จำกัดตาม Margin)", 0, 100, 0.01],
+    ["snipeMax", "int", 3, "ยิงได้สูงสุดกี่ครั้งต่อตะกร้า (ครบแล้วส่งต่อให้ระบบเบรค / Hedging / ตัดขาดทุน)", 1, 10, 1]] },
   { id: "hedge", title: "Hedging", toggle: "hedgeOn", warn: hedgeWarn, fields: [
     ["hedgeOn", "bool", false, "เปิด Hedging : ไม้แก้ครบ หรือติดลบถึง % ที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 70% ล็อกขาดทุนไว้แทนการตัด (ถ้าเปิดระบบเบรคด้วย จะใช้ระบบเบรค)"],
     ["hedgePct", "num", 15, "เริ่ม Hedge เมื่อตะกร้าติดลบถึง (% ของ Balance)", 1, 90, 1],
@@ -4210,7 +4227,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "hedge" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "snipe" || g.id === "hedge" || g.id === "news" || g.id === "time"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -4225,7 +4242,7 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap"].includes(k))) {
+  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap", "snipeOn", "snipeAmt", "snipePct", "snipeDist", "snipeSL", "snipeTarget", "snipeMaxLot", "snipeMax"].includes(k))) {
     const msg = (targetWarn(userForm.draft, cfgSaved()) + riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
     if (msg && !confirm("ยืนยันการเปลี่ยนค่าเป้ารายวัน / ไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
