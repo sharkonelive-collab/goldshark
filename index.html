@@ -4038,7 +4038,9 @@ const CFG_GROUPS = [
     ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
     ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
     ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
-    ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
+    ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50],
+    ["closeGapOn", "bool", false, "รวบไม้เสร็จแล้วพักก่อนเข้าไม้ใหม่ (EA 2.39+)"],
+    ["closeGapSec", "int", 60, "พักกี่วินาทีหลังรวบไม้ (ปิดตะกร้า) ก่อนเปิดไม้ใหม่", 0, 3600, 5]] },
   { id: "cutmoney", title: "ตัดขาดทุนทั้งตะกร้า (เงิน)", toggle: "cutLossOn", fields: [
     ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า : ติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
     ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01]] },
@@ -4073,9 +4075,9 @@ const CFG_GROUPS = [
     ["snipeOn", "bool", false, "เปิดระบบ X : ตะกร้าติดลบถึงจุดที่ตั้ง → เปิดฝั่งตรงข้าม lot ใหญ่ ให้ราคาวิ่งต่ออีกไม่กี่จุดแล้วรวมทุกไม้ได้กำไร → ปิดหมด · ราคากลับตัว → ตัดไม้ X ที่เท่าทุน (EA 2.37+)"],
     ["snipeAmt", "num", 0, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (จำนวนเงิน · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง)", 0, 1e8, 1],
     ["snipePct", "num", 10, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (% ของ Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 1, 90, 1],
-    ["snipeDist", "num", 300, "ระยะเป้าหมาย (points · 500 = ราคาทองขยับ $5) ราคาวิ่งต่อเท่านี้แล้วรวมทุกไม้ได้กำไร · ยิ่งสั้น lot ยิ่งใหญ่", 50, 20000, 50],
+    ["snipeDist", "num", 200, "ระยะเป้าหมาย (points · 500 = ราคาทองขยับ $5) ราคาวิ่งต่อเท่านี้แล้วรวมทุกไม้ได้กำไร · ยิ่งสั้น lot ยิ่งใหญ่", 50, 20000, 50],
     ["snipeSL", "num", 0, "ระยะตัดขาดทุนเริ่มต้นของไม้ X (points · 0 = ไม่ตั้งตัดขาดทุน ใช้กันหน้าทุนอย่างเดียว)", 0, 5000, 10],
-    ["snipeBE", "num", 200, "กันหน้าทุน : ราคาวิ่งถูกทางกี่ points แล้วขยับ SL ของไม้ X มาที่ราคาเปิด (เท่าทุน)", 10, 5000, 10],
+    ["snipeBE", "num", 100, "กันหน้าทุน : ราคาวิ่งถูกทางกี่ points แล้วขยับ SL ของไม้ X มาที่ราคาเปิด (เท่าทุน)", 10, 5000, 10],
     ["snipeTarget", "num", 0, "กำไรรวมขั้นต่ำก่อนปิด (จำนวนเงิน · 0 = เกินเท่าทุน)", 0, 1e8, 1],
     ["snipeMaxLot", "num", 0, "lot สูงสุดของไม้ X (0 = ไม่จำกัด จำกัดตาม Margin)", 0, 100, 0.01],
     ["snipeMax", "int", 8, "ยิงได้สูงสุดกี่ครั้งต่อตะกร้า (ครบแล้วส่งต่อให้ระบบเบรค / Hedging / ตัดขาดทุน)", 1, 10, 1]] },
@@ -4094,6 +4096,13 @@ const CFG_GROUPS = [
     ["newsAfter", "int", 5, "หยุดหลังข่าว (นาที)", 0, 240, 1]] },
   { id: "time", title: "เวลาเทรด", toggle: "timeOn", days: true, fields: [
     ["timeOn", "bool", true, "จำกัดเวลาเทรด"]] },
+  { id: "brk", title: "พักช่วงเวลา", info: () => `<p class="pnote">ในช่วงพัก EA <b>หยุดเข้าไม้ใหม่</b> ทุกวัน ไม้ที่เปิดอยู่ยังดูแลต่อจนปิด (แก้ไม้ / ปิดกำไรตามปกติ) · ใช้<b>เวลาไทย</b> · ตั้งข้ามเที่ยงคืนได้ เช่น 23:00 ถึง 01:00 · ต้องใช้ EA เวอร์ชัน 2.39 ขึ้นไป</p>`, fields: [
+    ["brk1On", "bool", false, "พักช่วงที่ 1"],
+    ["brk1Start", "time", "19:00", "ช่วงที่ 1 เริ่มพัก"],
+    ["brk1End", "time", "20:00", "ช่วงที่ 1 กลับมาเทรด"],
+    ["brk2On", "bool", false, "พักช่วงที่ 2"],
+    ["brk2Start", "time", "01:00", "ช่วงที่ 2 เริ่มพัก"],
+    ["brk2End", "time", "02:00", "ช่วงที่ 2 กลับมาเทรด"]] },
   { id: "follow", title: "ไม้ตามทาง / บอลลูน", fields: [
     ["followOn", "bool", false, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
     ["followMax", "int", 3, "ไม้ตามทางสูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 100, 1],
@@ -4158,6 +4167,7 @@ DAYS.forEach(([d, , st, en]) => { CFG_DEF[d + "On"] = true; CFG_DEF[d + "Start"]
 function fieldHTML(f) {
   const [k, t, , label, a, b, c] = f;
   if (t === "bool") return `<label class="sw"><input type="checkbox" data-k="${k}"><span class="track"></span><span>${label}</span></label>`;
+  if (t === "time") return `<label class="fld"><span>${label}</span><input class="field num" type="time" data-k="${k}"></label>`;
   if (t === "sel") return `<label class="fld"><span>${label}</span><select class="field" data-k="${k}">${a.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("")}</select></label>`;
   return `<label class="fld"><span>${label}</span><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}"></label>`;
 }
@@ -4209,6 +4219,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
         sum.textContent = `${draft.maxOrders} ไม้ · ${on.length ? "ตัด " + on.join(" / ") : "ไม่ตัดขาดทุน"}`; sum.classList.toggle("on", on.length > 0);
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
+      if (g.id === "brk") { const on = [1, 2].filter(i => draft["brk" + i + "On"]).map(i => draft["brk" + i + "Start"] + "–" + draft["brk" + i + "End"]); sum.textContent = on.length ? on.join(" · ") : "ปิด"; sum.classList.toggle("on", on.length > 0); }
       if (g.id === "daily" && draft.dailyOn) sum.textContent = `${draft.dailyPct}% / วัน`;
       if (g.id === "cutmoney" && draft.cutLossOn) sum.textContent = `เปิด · -${draft.cutLoss}`;
       if (g.id === "cutpct" && draft.cutPctOn) sum.textContent = `เปิด · -${draft.cutPct}%`;
@@ -4251,7 +4262,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "snipe" || g.id === "hedge" || g.id === "news" || g.id === "time"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "snipe" || g.id === "hedge" || g.id === "news" || g.id === "time" || g.id === "brk"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
