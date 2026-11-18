@@ -6255,5 +6255,36 @@ function renderPerp() {
   setInterval(() => { if (!document.hidden && document.body.dataset.view === "loginView") step(); }, 380);
 })();
 </script>
+<script>
+/* เว็บอัปเดตเวอร์ชันใหม่ → รีเฟรชหน้าให้เอง (เช็กทุก 2 นาที + ตอนกลับมาที่แท็บ) · ไม่รีเฟรชระหว่างกำลังพิมพ์ / มีค่าที่ยังไม่บันทึก / เปิดหน้าต่างย่อยอยู่ */
+(function () {
+  if (location.protocol !== "https:") return;
+  let base = null, pending = false;
+  const tag = async () => {
+    try {
+      const r = await fetch(location.pathname + "?_=" + Date.now(), { method: "HEAD", cache: "no-store" });
+      return r.ok ? (r.headers.get("etag") || r.headers.get("last-modified")) : null;
+    } catch (e) { return null; }
+  };
+  const busy = () => {
+    try { if (userForm.changed().length) return true; } catch (e) {}
+    try { if (admForm.changed().length) return true; } catch (e) {}
+    const a = document.activeElement;
+    if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return true;
+    return !!document.querySelector("dialog[open]");
+  };
+  const check = async () => {
+    if (!pending) {
+      const t = await tag(); if (!t) return;
+      if (base === null) { base = t; return; }
+      if (t !== base) pending = true;
+    }
+    if (pending && !busy()) location.reload();
+  };
+  setInterval(check, 120000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+  check();
+})();
+</script>
 </body>
 </html>
