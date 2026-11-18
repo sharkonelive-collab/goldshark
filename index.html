@@ -1517,6 +1517,7 @@ body[data-view="loginView"] .auth-card{padding:28px 26px;border-radius:28px;back
 .ea-badge{display:inline-flex;align-items:center;gap:6px;max-width:min(420px,60vw);font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ea-badge[hidden]{display:none}
 .ea-badge b{font-weight:600;color:var(--muted)}
+.ea-badge b{white-space:nowrap}.ea-badge b.old{color:#F2B544}
 .ea-badge span{overflow:hidden;text-overflow:ellipsis}
 .ea-badge i{flex:none;width:7px;height:7px;border-radius:50%;background:#3DDC97;box-shadow:0 0 8px #3DDC97}
 .ea-badge.ok{border-color:rgba(61,220,151,.35);color:#BFF2DA}
@@ -6121,7 +6122,10 @@ function renderEaBadge() {
   }
   el.className = "ea-badge " + c;
   $("eaBadgeT").textContent = txt;
-  el.title = "สถานะ EA: " + txt;
+  // เวอร์ชัน EA ที่พอร์ตนี้ใช้อยู่ (เก่ากว่าล่าสุด → สีเหลือง)
+  const ver = String(S.version || "").trim(), vb = el.querySelector("b");
+  if (vb) { vb.textContent = ver ? "EA " + ver : "EA"; vb.classList.toggle("old", eaOld(ver)); }
+  el.title = "สถานะ EA: " + txt + (ver ? " · เวอร์ชัน " + ver + (eaOld(ver) ? " (ล่าสุด " + EA_LATEST + ")" : "") : "");
 }
 
 /* ============ กระดานแบบ Perp: แถบราคา + ตาราง Positions / Open Orders ============ */
