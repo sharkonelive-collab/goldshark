@@ -1302,8 +1302,23 @@ body{top:0!important}
 #dashView[data-pg="port"]:not(.nolive) > #secBasket{margin-top:0;align-self:stretch;height:0;min-height:100%;display:flex;flex-direction:column;overflow:hidden}
 #dashView[data-pg="port"]:not(.nolive) > #secBasket > #bkBody{flex:1;min-height:0;display:flex;flex-direction:column}
 #dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-tbl-wrap{flex:1;min-height:60px;max-height:none;overflow:auto}
-#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-lot{margin-top:auto}
-@media (max-width:1100px){#dashView[data-pg="port"]:not(.nolive) > #secBasket{height:auto;min-height:0;margin-top:14px;overflow:visible}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-lot{margin-top:12px}
+/* กำไรรายชั่วโมง: เฉพาะหน้าจอคอม ใช้ที่ว่างของการ์ดตะกร้า (มือถือไม่แสดง) */
+.bk-hr{display:none}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-hr{display:flex;flex-direction:column;flex:1.2;min-height:120px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(140,170,225,.1)}
+.bk-hr-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--muted)}
+.bk-hr-h b{margin-left:auto;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.bk-hr-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:2px;padding-right:2px}
+.bk-hr-r{display:grid;grid-template-columns:46px minmax(0,1fr) 76px;align-items:center;gap:10px;padding:4px 6px;border-radius:8px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.bk-hr-r .t{color:var(--muted)}
+.bk-hr-r b{text-align:right;font-weight:600}
+.bk-hr-r .hb{height:6px;border-radius:3px;background:rgba(140,170,225,.08);overflow:hidden}
+.bk-hr-r .hb i{display:block;height:100%;border-radius:3px}
+.bk-hr-r .hb i.pos{background:var(--green)} .bk-hr-r .hb i.neg{background:var(--red)}
+.bk-hr-r.z{opacity:.45} .bk-hr-r.z b{color:var(--muted);font-weight:400}
+.bk-hr-r.now{background:rgba(140,170,225,.07)}
+@media (max-width:1100px){#dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-hr{display:none}
+#dashView[data-pg="port"]:not(.nolive) > #secBasket{height:auto;min-height:0;margin-top:14px;overflow:visible}
   #dashView[data-pg="port"]:not(.nolive) > #secBasket .bk-tbl-wrap{max-height:300px}}
 #dashView[data-pg="port"] > #secProfit{grid-column:1;order:20;margin-top:16px}
 #dashView[data-pg="port"] > #secNews{grid-column:2;order:21;margin-top:16px;align-self:start}
@@ -5928,6 +5943,17 @@ $("eaUpd").addEventListener("click", e => {
 });
 
 /* ============ การ์ดตะกร้าที่เปิดอยู่ (หน้าพอร์ต) ============ */
+// กำไรรายชั่วโมงของวันนี้ (ไม้ที่ปิดแล้ว · ชั่วโมงล่าสุดอยู่บน) — แสดงเฉพาะหน้าจอคอม ในที่ว่างของการ์ดตะกร้า
+function bkHourly() {
+  const m = hourlyMap();
+  const mid = new Date(); mid.setHours(0, 0, 0, 0);
+  const midH = Math.floor(mid.getTime() / 3600000), nowH = Math.floor(Date.now() / 3600000);
+  const rows = []; let tot = 0, mx = 0;
+  for (let h = nowH; h >= midH; h--) { const v = m.get(h) || 0; tot += v; mx = Math.max(mx, Math.abs(v)); rows.push([h, v]); }
+  const hh = h => String(new Date(h * 3600000).getHours()).padStart(2, "0") + ":00";
+  return `<div class="bk-hr"><div class="bk-hr-h"><span>กำไรรายชั่วโมง · วันนี้</span><b class="${cls(tot)}">${signed(tot)}</b></div>
+    <div class="bk-hr-list">${rows.map(([h, v]) => `<div class="bk-hr-r${v ? "" : " z"}${h === nowH ? " now" : ""}"><span class="t">${hh(h)}</span><span class="hb"><i class="${cls(v)}" style="width:${mx ? Math.max(v ? 4 : 0, Math.abs(v) / mx * 100).toFixed(1) : 0}%"></i></span><b class="${v ? cls(v) : ""}">${v ? signed(v) : "–"}</b></div>`).join("")}</div></div>`;
+}
 const BK_TAG = { m: ["Buy", "Sell"], b: ["บอลลูน B", "บอลลูน S"], h: ["Hedge B", "Hedge S"], r: ["กู้ B", "กู้ S"] };
 function renderBaskets() {
   const S = dashData && dashData.snapshot, body = $("bkBody"); if (!body) return;
@@ -5977,6 +6003,7 @@ function renderBaskets() {
       return `<tr><td><i class="side-tag ${tc}">${BK_TAG[k] ? BK_TAG[k][o.s > 0 ? 0 : 1] : (o.s > 0 ? "Buy" : "Sell")}</i></td><td>${(+o.v).toFixed(2)}</td><td>${f(o.p)}</td><td class="${cls(o.pl)}">${signed(o.pl)}</td></tr>`;
     }).join("")}</tbody></table></div>`);
   }
+  html.push(bkHourly());
   html.push(`<div class="bk-lot">ล็อตเริ่มต้น <b>${esc(C.startLot)}</b> · ไม้แก้คูณ ${esc(C.lotMult)}<button class="btn small" type="button" data-goto-cfg="1">ปรับในตั้งค่า</button></div>`);
   body.innerHTML = html.join("");
   const nOrd = L ? pos.length : (S.buyCount || 0) + (S.sellCount || 0);
