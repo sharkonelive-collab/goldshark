@@ -4038,9 +4038,7 @@ const CFG_GROUPS = [
     ["basketTP", "num", 100, "TP ตะกร้า (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e7, 0.01],
     ["firstTP", "num", 120, "ไม้เดียวไปถูกทาง: TP (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ใช้ TP ตะกร้า)", 0, 200000, 0.1],
     ["beOffset", "num", 110, "มีไม้แก้แล้ว ปิดที่ทุน + (จุด · 100 จุด = ราคาทองขยับ 1.00, 0=ปิด)", 0, 200000, 0.1],
-    ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50],
-    ["closeGapOn", "bool", true, "รวบไม้เสร็จแล้วพักก่อนเข้าไม้ใหม่ (EA 2.38+)"],
-    ["closeGapSec", "int", 60, "พักกี่วินาทีหลังรวบไม้ (ปิดตะกร้า) ก่อนเปิดไม้ใหม่", 0, 3600, 5]] },
+    ["minMarginLv", "int", 300, "ไม่เปิดไม้แก้ถ้า Margin Level ต่ำกว่า (%, 0=ปิด)", 0, 5000, 50]] },
   { id: "cutmoney", title: "ตัดขาดทุนทั้งตะกร้า (เงิน)", toggle: "cutLossOn", fields: [
     ["cutLossOn", "bool", false, "ตัดขาดทุนทั้งตะกร้า : ติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
     ["cutLoss", "num", 30000, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ตเซ็นต์ = USC)", 0.01, 1e8, 0.01]] },
@@ -5924,20 +5922,22 @@ function verLt(a, b) {
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
   return false;
 }
-const eaOld = v => !!v && verLt(v, EA_LATEST);
+// ไม่ตรงกับเวอร์ชันที่ร้านใช้อยู่ = ต้องเปลี่ยน (เก่ากว่า หรือ ใหม่กว่าเพราะร้านถอนเวอร์ชันนั้นกลับ)
+const eaBack = v => !!v && verLt(EA_LATEST, v);
+const eaOld = v => !!v && (verLt(v, EA_LATEST) || eaBack(v));
 function renderEaUpd() {
   const el = $("eaUpd"); if (!el || !dashData) return;
   const ports = dashData.ports || [], L = dashData.license, S = dashData.snapshot;
   const olds = ports.filter(p => p.equity != null && eaOld(p.version));
   if (curPage === "all") {
     el.hidden = !olds.length;
-    if (olds.length) el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>มี EA เวอร์ชันใหม่ ${EA_LATEST}</b> · ${olds.length === ports.length ? "ทุกพอร์ต" : olds.length + " พอร์ต"}ยังใช้เวอร์ชันเก่า (${olds.map(p => esc(p.label) + " " + esc(p.version)).join(", ")})<small>${EA_NEWS}</small></span>`;
+    if (olds.length) el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>${olds.every(p => eaBack(p.version)) ? "กลับไปใช้ EA เวอร์ชัน " + EA_LATEST : "มี EA เวอร์ชันใหม่ " + EA_LATEST}</b> · ${olds.length === ports.length ? "ทุกพอร์ต" : olds.length + " พอร์ต"}ยังใช้เวอร์ชันอื่น (${olds.map(p => esc(p.label) + " " + esc(p.version)).join(", ")})<small>${EA_NEWS}</small></span>`;
     return;
   }
   const v = S && S.version;
   el.hidden = !(L && eaOld(v));
   if (el.hidden) return;
-  el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>EA ของพอร์ตนี้ยังเป็นเวอร์ชัน ${esc(v)}</b> · เวอร์ชันล่าสุด ${EA_LATEST}<small>${EA_NEWS}</small></span>
+  el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>EA ของพอร์ตนี้ยังเป็นเวอร์ชัน ${esc(v)}</b> · ${eaBack(v) ? "เวอร์ชันนี้ถูกถอนแล้ว ให้กลับไปใช้ " + EA_LATEST : "เวอร์ชันล่าสุด " + EA_LATEST}<small>${eaBack(v) ? "พอร์ตที่รันบน VPS ของร้านจะเปลี่ยนกลับให้เองภายในประมาณ 30 นาที · ถ้ารัน EA บนเครื่องตัวเอง ดาวน์โหลดไปวางทับ" : EA_NEWS}</small></span>
     <a class="btn small primary" href="${esc($("dlEA").getAttribute("href"))}" download>ดาวน์โหลด EA ${EA_LATEST}</a>
     <button class="btn small" type="button" data-updhow="1">วิธีอัปเดต</button>`;
 }
@@ -6125,7 +6125,7 @@ function renderEaBadge() {
   // เวอร์ชัน EA ที่พอร์ตนี้ใช้อยู่ (เก่ากว่าล่าสุด → สีเหลือง)
   const ver = String(S.version || "").trim(), vb = el.querySelector("b");
   if (vb) { vb.textContent = ver ? "EA " + ver : "EA"; vb.classList.toggle("old", eaOld(ver)); }
-  el.title = "สถานะ EA: " + txt + (ver ? " · เวอร์ชัน " + ver + (eaOld(ver) ? " (ล่าสุด " + EA_LATEST + ")" : "") : "");
+  el.title = "สถานะ EA: " + txt + (ver ? " · เวอร์ชัน " + ver + (eaOld(ver) ? " (ที่ใช้งาน " + EA_LATEST + ")" : "") : "");
 }
 
 /* ============ กระดานแบบ Perp: แถบราคา + ตาราง Positions / Open Orders ============ */
