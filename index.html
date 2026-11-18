@@ -4096,13 +4096,7 @@ const CFG_GROUPS = [
     ["newsAfter", "int", 5, "หยุดหลังข่าว (นาที)", 0, 240, 1]] },
   { id: "time", title: "เวลาเทรด", toggle: "timeOn", days: true, fields: [
     ["timeOn", "bool", true, "จำกัดเวลาเทรด"]] },
-  { id: "brk", title: "พักช่วงเวลา", info: () => `<p class="pnote">ในช่วงพัก EA <b>หยุดเข้าไม้ใหม่</b> ทุกวัน ไม้ที่เปิดอยู่ยังดูแลต่อจนปิด (แก้ไม้ / ปิดกำไรตามปกติ) · ใช้<b>เวลาไทย</b> · ตั้งข้ามเที่ยงคืนได้ เช่น 23:00 ถึง 01:00 · ต้องใช้ EA เวอร์ชัน 2.39 ขึ้นไป</p>`, fields: [
-    ["brk1On", "bool", false, "พักช่วงที่ 1"],
-    ["brk1Start", "time", "19:00", "ช่วงที่ 1 เริ่มพัก"],
-    ["brk1End", "time", "20:00", "ช่วงที่ 1 กลับมาเทรด"],
-    ["brk2On", "bool", false, "พักช่วงที่ 2"],
-    ["brk2Start", "time", "01:00", "ช่วงที่ 2 เริ่มพัก"],
-    ["brk2End", "time", "02:00", "ช่วงที่ 2 กลับมาเทรด"]] },
+  { id: "brk", title: "พักช่วงเวลา", brk: true, fields: [] },
   { id: "follow", title: "ไม้ตามทาง / บอลลูน", fields: [
     ["followOn", "bool", false, "ไม้ตามทาง (เฉพาะตะกร้าที่มีไม้แก้แล้ว)"],
     ["followMax", "int", 3, "ไม้ตามทางสูงสุดต่อตะกร้า (0=ไม่จำกัด)", 0, 100, 1],
@@ -4162,6 +4156,9 @@ const CFG_GROUPS = [
 const DAYS = [["mon", "จันทร์", "05:30", "03:00"], ["tue", "อังคาร", "05:30", "03:00"], ["wed", "พุธ", "05:30", "03:00"], ["thu", "พฤหัส", "05:30", "03:00"], ["fri", "ศุกร์", "05:30", "19:59"]];
 const CFG_DEF = { startLot: 0.01 };
 CFG_GROUPS.forEach(g => g.fields.forEach(f => { CFG_DEF[f[0]] = f[2]; }));
+const BRK_MAX = 6, BRK_DEF = [["19:00", "20:00"], ["01:00", "02:00"], ["12:00", "13:00"], ["15:00", "16:00"], ["21:00", "22:00"], ["23:00", "00:00"]];
+const BRK_N = Array.from({ length: BRK_MAX }, (_, i) => i + 1);
+BRK_N.forEach(i => { CFG_DEF["brk" + i + "On"] = false; CFG_DEF["brk" + i + "Start"] = BRK_DEF[i - 1][0]; CFG_DEF["brk" + i + "End"] = BRK_DEF[i - 1][1]; });
 DAYS.forEach(([d, , st, en]) => { CFG_DEF[d + "On"] = true; CFG_DEF[d + "Start"] = st; CFG_DEF[d + "End"] = en; });
 
 function fieldHTML(f) {
@@ -4178,6 +4175,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   groups.forEach(g => {
     g.fields.forEach(f => types[f[0]] = f[1]);
     if (g.days) DAYS.forEach(([d]) => { types[d + "On"] = "bool"; types[d + "Start"] = "time"; types[d + "End"] = "time"; });
+    if (g.brk) BRK_N.forEach(i => { types["brk" + i + "On"] = "bool"; types["brk" + i + "Start"] = "time"; types["brk" + i + "End"] = "time"; });
   });
   let draft = null;
   const saved = () => Object.assign({}, CFG_DEF, getSaved() || {});
@@ -4193,6 +4191,13 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       ${g.toggle ? g.fields.filter(f => f[0] === g.toggle).map(f => `<p class="cfg-tdesc">${f[3]}</p>`).join("") : ""}
       <div class="cfg-grid">${g.fields.filter(f => f[0] !== g.toggle).map(fieldHTML).join("")}</div>
       ${g.info ? `<div class="cfg-info"></div>` : ""}
+      ${g.brk ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days brk-tbl"><tbody>${BRK_N.map(i => `
+        <tr data-brk="${i}"><td class="dname">ช่วงที่ ${i}</td>
+          <td><label class="sw"><input type="checkbox" data-k="brk${i}On" aria-label="พักช่วงที่ ${i}"><span class="track"></span></label></td>
+          <td><input class="field num" type="time" data-k="brk${i}Start" aria-label="ช่วงที่ ${i} เริ่มพัก"></td><td class="muted">ถึง</td>
+          <td><input class="field num" type="time" data-k="brk${i}End" aria-label="ช่วงที่ ${i} กลับมาเทรด"></td></tr>`).join("")}</tbody></table>
+        <button class="btn small" type="button" data-brkadd="1" style="margin-top:8px">+ เพิ่มช่วงเวลา</button>
+        <p class="pnote">ในช่วงพัก EA <b>หยุดเข้าไม้ใหม่</b> ทุกวัน ไม้ที่เปิดอยู่ยังดูแลต่อจนปิด · ใช้<b>เวลาไทย</b> · ตั้งข้ามเที่ยงคืนได้ เช่น 23:00 ถึง 01:00 · ตั้งได้สูงสุด ${BRK_MAX} ช่วง · ต้องใช้ EA เวอร์ชัน 2.39 ขึ้นไป</p></div>` : ""}
       ${g.days ? `<div style="overflow-x:auto;padding:0 2px 18px"><table class="days"><tbody>${DAYS.map(([d, name]) => `
         <tr><td class="dname">${name}</td>
           <td><label class="sw"><input type="checkbox" data-k="${d}On" aria-label="เทรดวัน${name}"><span class="track"></span></label></td>
@@ -4204,7 +4209,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
   function status() {
     const ch = changed();
     groups.forEach(g => {
-      const keys = g.fields.map(f => f[0]).concat(g.days ? DAYS.flatMap(([d]) => [d + "On", d + "Start", d + "End"]) : []);
+      const keys = g.fields.map(f => f[0]).concat(g.days ? DAYS.flatMap(([d]) => [d + "On", d + "Start", d + "End"]) : []).concat(g.brk ? BRK_N.flatMap(i => ["brk" + i + "On", "brk" + i + "Start", "brk" + i + "End"]) : []);
       const box = root.querySelector(`.cfg-group[data-g="${g.id}"]`);
       box.classList.toggle("changed", keys.some(k => ch.includes(k)));
       const sum = box.querySelector(".cfg-sum");
@@ -4219,7 +4224,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
         sum.textContent = `${draft.maxOrders} ไม้ · ${on.length ? "ตัด " + on.join(" / ") : "ไม่ตัดขาดทุน"}`; sum.classList.toggle("on", on.length > 0);
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
-      if (g.id === "brk") { const on = [1, 2].filter(i => draft["brk" + i + "On"]).map(i => draft["brk" + i + "Start"] + "–" + draft["brk" + i + "End"]); sum.textContent = on.length ? on.join(" · ") : "ปิด"; sum.classList.toggle("on", on.length > 0); }
+      if (g.id === "brk") { const on = BRK_N.filter(i => draft["brk" + i + "On"]).map(i => draft["brk" + i + "Start"] + "–" + draft["brk" + i + "End"]); sum.textContent = on.length > 1 ? `พัก ${on.length} ช่วง` : on.length ? on[0] : "ปิด"; sum.classList.toggle("on", on.length > 0); }
       if (g.id === "daily" && draft.dailyOn) sum.textContent = `${draft.dailyPct}% / วัน`;
       if (g.id === "cutmoney" && draft.cutLossOn) sum.textContent = `เปิด · -${draft.cutLoss}`;
       if (g.id === "cutpct" && draft.cutPctOn) sum.textContent = `เปิด · -${draft.cutPct}%`;
@@ -4242,6 +4247,22 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
     e.preventDefault(); e.stopPropagation();
     const i = l.querySelector("input"); i.checked = !i.checked; i.dispatchEvent(new Event("change", { bubbles: true }));
   }));
+  // พักช่วงเวลา: แสดงแถวถึงช่วงสุดท้ายที่เปิดใช้ (อย่างน้อย 1 แถว) · ปุ่ม "+ เพิ่มช่วงเวลา" เปิดแถวถัดไป
+  let brkShow = 1;
+  function brkRows(reset) {
+    if (!draft) return;
+    const last = BRK_N.filter(i => draft["brk" + i + "On"]).pop() || 1;
+    brkShow = reset ? last : Math.max(brkShow, last);
+    root.querySelectorAll("tr[data-brk]").forEach(tr => { tr.hidden = +tr.dataset.brk > brkShow; });
+    const add = root.querySelector("[data-brkadd]"); if (add) add.hidden = brkShow >= BRK_MAX;
+  }
+  root.addEventListener("click", e => {
+    if (!e.target.closest("[data-brkadd]") || !draft || brkShow >= BRK_MAX) return;
+    brkShow++;
+    const cb = root.querySelector(`[data-k="brk${brkShow}On"]`);
+    if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event("change", { bubbles: true })); }
+    brkRows(false);
+  });
   root.addEventListener("input", onInput);
   root.addEventListener("change", onInput);
   function fill(force) {
@@ -4255,6 +4276,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       if (el.type === "checkbox") el.checked = !!v;
       else el.value = (el.step === "0.1" && v !== "" && v != null && isFinite(v)) ? Number(v).toFixed(1) : v;   // ช่อง points แสดงเป็น 270.0
     });
+    brkRows(!keep);
     status();
   }
   return { fill, changed, get draft() { return draft; } };
@@ -5927,7 +5949,7 @@ function demoLive(C) {
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
 const EA_LATEST = "2.39";
-const EA_NEWS = "พักช่วงเวลา: ตั้งช่วงที่ EA หยุดเข้าไม้ใหม่ได้ 2 ช่วงต่อวัน (หน้าตั้งค่า > พักช่วงเวลา) · ระบบ X ปรับค่าเริ่มต้น ระยะเป้า 200 / กันหน้าทุน 100";
+const EA_NEWS = "พักช่วงเวลา: ตั้งช่วงที่ EA หยุดเข้าไม้ใหม่ได้สูงสุด 6 ช่วงต่อวัน (หน้าตั้งค่า > พักช่วงเวลา)";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
