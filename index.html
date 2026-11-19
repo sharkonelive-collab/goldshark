@@ -3999,7 +3999,7 @@ function guardWarn(d, s) {
 /* ============ คำเตือน Hedging ============ */
 function snipeWarn(d, s) {
   const out = [];
-  if (d.snipeOn && !s.snipeOn) out.push(`<b>กำลังเปิดระบบ X</b> เมื่อตะกร้าติดลบถึง ${Number(d.snipeAmt) > 0 ? fmt(d.snipeAmt, 0) : d.snipePct + "% ของ Balance"} EA จะเปิดไม้ฝั่งตรงข้าม<b>ล็อตใหญ่กว่าตะกร้าเดิมหลายเท่า</b> คำนวณให้ราคาวิ่งต่ออีก ${d.snipeDist} points (≈ $${(Number(d.snipeDist) / 100).toFixed(2)}) แล้วรวมทุกไม้ได้กำไร จากนั้นปิดหมด ถ้าราคากลับตัว EA ตัดไม้ X (${Number(d.snipeBack) > 0 ? "ไม่ไปต่อปิดทันที (ระยะ " + d.snipeBack + " points) แล้วกลับไปแก้ไม้ตามระบบเดิม" : Number(d.snipeSL) > 0 ? "ตัดขาดทุนเริ่มที่ " + d.snipeSL + " points" : "<b>ไม่ตั้งตัดขาดทุน</b>"} · กันหน้าทุนเมื่อราคาวิ่งถูกทาง ${d.snipeBE} points) ยิงได้สูงสุด ${d.snipeMax} ครั้งต่อตะกร้า <b>ความเสี่ยง:</b> ล็อตใหญ่ใช้ Margin มาก ถ้าราคากระชากหรือสเปรดกว้างตอนข่าว อาจโดนตัดแย่กว่าที่ตั้งได้ ต้องใช้บัญชีแบบ Hedging · ต้องใช้ EA เวอร์ชัน 2.37 ขึ้นไป`);
+  if (d.snipeOn && !s.snipeOn) out.push(`<b>กำลังเปิดระบบ X</b> เมื่อตะกร้าติดลบถึง ${Number(d.snipeAmt) > 0 ? fmt(d.snipeAmt, 0) : d.snipePct + "% ของ Balance"} EA จะเปิดไม้ฝั่งตรงข้าม<b>ล็อตใหญ่กว่าตะกร้าเดิมหลายเท่า</b> คำนวณให้ราคาวิ่งต่ออีก ${d.snipeDist} points (≈ $${(Number(d.snipeDist) / 100).toFixed(2)}) แล้วรวมทุกไม้ได้กำไร จากนั้นปิดหมด ถ้าราคากลับตัว EA ตัดไม้ X (${Number(d.snipeBack) > 0 ? "ราคาย้อนกลับปิดไม้ X (ระยะ " + d.snipeBack + " points) แล้วยิงใหม่เมื่อติดลบถึงจุดยิงอีกครั้ง" : Number(d.snipeSL) > 0 ? "ตัดขาดทุนเริ่มที่ " + d.snipeSL + " points" : "<b>ไม่ตั้งตัดขาดทุน</b>"} · กันหน้าทุนเมื่อราคาวิ่งถูกทาง ${d.snipeBE} points) ยิงได้สูงสุด ${d.snipeMax} ครั้งต่อตะกร้า <b>ความเสี่ยง:</b> ล็อตใหญ่ใช้ Margin มาก ถ้าราคากระชากหรือสเปรดกว้างตอนข่าว อาจโดนตัดแย่กว่าที่ตั้งได้ ต้องใช้บัญชีแบบ Hedging · ต้องใช้ EA เวอร์ชัน 2.37 ขึ้นไป`);
   if (d.snipeOn && Number(d.snipeSL) <= 0 && Number(d.snipeBack) <= 0) out.push(`<b>ไม้ X ไม่มีตัดขาดทุน</b> ถ้าราคากลับตัวทันทีหลังยิง ไม้ X ที่ lot ใหญ่จะขาดทุนเร็วกว่าตะกร้าเดิมหลายเท่าและไม่มีเพดาน ควรเปิดกันพอร์ตแตกหรือปิดขาดทุน % คู่ไว้`);
   if (d.snipeOn && Number(d.snipeMaxLot) <= 0) out.push(`<b>ยังไม่ได้จำกัด lot สูงสุดของไม้ X</b> EA จะใช้ lot เท่าที่ Margin ไหว แนะนำให้ใส่ lot สูงสุดตามทุน`);
   if (d.snipeOn && (d.brakeOn || d.hedgeOn)) out.push(`<b>เปิดไม้ X คู่กับ${d.brakeOn ? "ระบบเบรค" : "Hedging"}</b> EA จะลองไม้ X ก่อน ยิงครบ ${d.snipeMax} ครั้งแล้วยังไม่สำเร็จ จึงส่งต่อให้${d.brakeOn ? "ระบบเบรค" : "Hedging"}`);
@@ -4075,13 +4075,15 @@ const CFG_GROUPS = [
     ["snipeOn", "bool", false, "เปิดระบบ X : ตะกร้าติดลบถึงจุดที่ตั้ง → เปิดฝั่งตรงข้าม lot ใหญ่ ให้ราคาวิ่งต่ออีกไม่กี่จุดแล้วรวมทุกไม้ได้กำไร → ปิดหมด · ราคากลับตัว → ตัดไม้ X ที่เท่าทุน (EA 2.37+)"],
     ["snipeAmt", "num", 0, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (จำนวนเงิน · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง)", 0, 1e8, 1],
     ["snipePct", "num", 10, "ยิงไม้ X เมื่อตะกร้าติดลบถึง (% ของ Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 1, 90, 1],
-    ["snipeDist", "num", 200, "ระยะเป้าหมาย (points · 500 = ราคาทองขยับ $5) ราคาวิ่งต่อเท่านี้แล้วรวมทุกไม้ได้กำไร · ยิ่งสั้น lot ยิ่งใหญ่", 50, 20000, 50],
+    ["snipeDist", "num", 100, "ระยะเป้าหมาย (points · 500 = ราคาทองขยับ $5) ราคาวิ่งต่อเท่านี้แล้วรวมทุกไม้ได้กำไร · ยิ่งสั้น lot ยิ่งใหญ่", 50, 20000, 50],
     ["snipeSL", "num", 0, "ระยะตัดขาดทุนเริ่มต้นของไม้ X (points · 0 = ไม่ตั้งตัดขาดทุน ใช้กันหน้าทุนอย่างเดียว)", 0, 5000, 10],
     ["snipeBE", "num", 100, "กันหน้าทุน (points · 100 = ราคาทองขยับ $1) ราคาวิ่งถูกทางเท่านี้แล้วขยับ SL ของไม้ X มาที่ราคาเปิด (เท่าทุน)", 10, 5000, 10],
-    ["snipeBack", "num", 30, "ไม้ X ไม่ไปต่อ (points · 0 = ปิด) ราคายังไม่ถึงระยะกันหน้าทุนแล้วย้อนกลับ → ปิดไม้ X ทันทีที่กลับมาเท่าทุน (หรือย้อนผิดทางเกินระยะนี้) แล้วให้ระบบเดิมแก้ไม้ต่อ", 0, 2000, 5],
+    ["snipePend", "num", 10, "ตั้งดักไม้ X (points · 0 = เปิดทันที) ถึงจุดยิงแล้ววางคำสั่งดักห่างไปทางที่ราคากำลังวิ่ง · ราคาไปต่อถึงจะเปิดไม้ X · ราคาย้อนทันที = ไม่เปิด ไม่เสีย", 0, 2000, 5],
+    ["snipeBack", "num", 10, "ราคาย้อนกลับ (points · 0 = ปิด) ไม้ X เคยกำไรแล้วราคาย้อนมาเหลือระยะนี้ก่อนถึงราคาเปิด → ปิดเก็บ · ถ้ากลับตัวทันทีหลังยิง ตัดเมื่อผิดทางเกินระยะนี้ · จากนั้นตะกร้าติดลบถึงจุดยิงอีกครั้งจะยิงไม้ X ใหม่", 0, 2000, 5],
     ["snipeTarget", "num", 0, "กำไรรวมขั้นต่ำก่อนปิด (จำนวนเงิน ไม่ใช่ points · พอร์ต USD = $ · พอร์ต Cent = USC · 0 = เกินเท่าทุน)", 0, 1e8, 1],
-    ["snipeMaxLot", "num", 0, "lot สูงสุดของไม้ X (0 = ไม่จำกัด จำกัดตาม Margin)", 0, 100, 0.01],
-    ["snipeMax", "int", 8, "ยิงได้สูงสุดกี่ครั้งต่อตะกร้า (ครบแล้วส่งต่อให้ระบบเบรค / Hedging / ตัดขาดทุน)", 1, 10, 1]] },
+    ["snipeMaxLot", "num", 1, "lot สูงสุดของไม้ X (0 = ไม่จำกัด จำกัดตาม Margin)", 0, 100, 0.01],
+    ["snipeMax", "int", 8, "ยิงได้สูงสุดกี่ครั้งต่อตะกร้า (ครบแล้วส่งต่อให้ระบบเบรค / Hedging / ตัดขาดทุน)", 1, 50, 1]] },
+    ["snipeHold", "bool", false, "เอาคืนไม้ X ที่โดนตัดไปแล้ว : lot ไม้ X ถัดไปใหญ่ขึ้น และถือตะกร้าจนคืนครบ (เสี่ยงสูงขึ้น · ปิด = ไม้ X คิดจากตะกร้าอย่างเดียว ระบบเดิมปิดกำไรตามจุดเดิม)"],
   { id: "hedge", title: "Hedging", toggle: "hedgeOn", warn: hedgeWarn, fields: [
     ["hedgeOn", "bool", false, "เปิด Hedging : ไม้แก้ครบ หรือติดลบถึง % ที่ตั้ง → เปิดไม้ฝั่งตรงข้าม 70% ล็อกขาดทุนไว้แทนการตัด (ถ้าเปิดระบบเบรคด้วย จะใช้ระบบเบรค)"],
     ["hedgePct", "num", 15, "เริ่ม Hedge เมื่อตะกร้าติดลบถึง (% ของ Balance)", 1, 90, 1],
@@ -4300,7 +4302,7 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap", "snipeOn", "snipeAmt", "snipePct", "snipeDist", "snipeSL", "snipeBE", "snipeBack", "snipeTarget", "snipeMaxLot", "snipeMax"].includes(k))) {
+  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap", "snipeOn", "snipeAmt", "snipePct", "snipeDist", "snipeSL", "snipeBE", "snipePend", "snipeBack", "snipeHold", "snipeTarget", "snipeMaxLot", "snipeMax"].includes(k))) {
     const msg = (targetWarn(userForm.draft, cfgSaved()) + riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
     if (msg && !confirm("ยืนยันการเปลี่ยนค่าเป้ารายวัน / ไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
@@ -5949,8 +5951,8 @@ function demoLive(C) {
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.40";
-const EA_NEWS = "ระบบ X: ราคาย้อนกลับก่อนถึงระยะกันหน้าทุน → ปิดไม้ X ทันทีแล้วกลับไปแก้ไม้ตามระบบเดิม · กันหน้าทุนนับตามราคาบนกราฟ (100 points = $1 พอดี) · หน้าจอ EA บอกสถานะกันหน้าทุน";
+const EA_LATEST = "2.41";
+const EA_NEWS = "ระบบ X: ตั้งดักแทนเปิดทันที (ราคาย้อนทันที = ไม่เปิด ไม่เสีย) · ราคาย้อนกลับปิดเก็บไม้ X แล้วยิงซ้ำได้ · ข้อมูลไม้ X ขึ้นเว็บครบ";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
