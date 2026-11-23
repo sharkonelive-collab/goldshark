@@ -316,6 +316,39 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px 18px;padding:4px 2px 18px}
 .fld span{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
 .fld .field{padding:8px 10px}
+.fld .lb-d,.sw .lb-d,.fld .fu{display:none}
+.fld .fin{display:block;width:100%;margin:0;font-size:inherit;color:inherit}
+.fld .fin .field{width:100%;box-sizing:border-box}
+.sw .sw-t .lb-m{display:inline}
+/* หน้าตั้งค่าสมาชิก: แต่ละช่องเป็นกรอบ หัวข้อสั้น + คำอธิบาย · ช่องกรอก + หน่วย
+   มือถือ: เรียง 1 คอลัมน์ ข้อความอยู่บน ช่องกรอกอยู่ล่าง · จอคอม: 2 คอลัมน์เท่ากัน ข้อความซ้าย ช่องกรอกขวา */
+#cfgForm .cfg-grid{grid-template-columns:minmax(0,1fr);gap:10px;padding:6px 2px 18px;align-items:stretch}
+#cfgForm .cfg-grid .fld,#cfgForm .cfg-grid .sw{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:12px 14px;min-height:0;
+  border:1px solid rgba(140,170,225,.11);border-radius:12px;background:rgba(140,170,225,.035)}
+#cfgForm .cfg-grid .fld:focus-within{border-color:rgba(90,150,255,.4)}
+#cfgForm .cfg-grid .lb-m{display:none}
+#cfgForm .cfg-grid .lb-d{display:block;margin:0}
+#cfgForm .cfg-grid .lb-d b{display:block;font-size:14px;font-weight:600;color:var(--text);line-height:1.35}
+#cfgForm .cfg-grid .lb-d small{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:3px}
+#cfgForm .cfg-grid .fin{display:flex;align-items:center;gap:10px;width:100%;justify-self:stretch}
+#cfgForm .cfg-grid .fin .field{flex:1 1 0;width:auto;min-width:0}
+#cfgForm .cfg-grid .fu{display:block;flex:none;min-width:46px;font-style:normal;font-size:12px;color:var(--muted);text-align:left}
+#cfgForm .cfg-grid .sw{grid-template-columns:minmax(0,1fr) auto;gap:14px}
+#cfgForm .cfg-grid .sw .track{order:2}
+#cfgForm .cfg-grid .sw .sw-t{order:1;margin:0}
+@media (min-width:1000px){
+  #cfgForm .cfg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:6px 2px 20px}
+  #cfgForm .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 190px;gap:6px 18px;min-height:64px}
+  #cfgForm .cfg-grid .sw{min-height:64px}
+  #cfgForm .cfg-grid .sw:hover{border-color:rgba(90,150,255,.4)}
+  #cfgForm .cfg-grid .lb-d small{font-size:12px}
+  #cfgForm .cfg-grid .fin{gap:8px;justify-content:flex-end}
+  #cfgForm .cfg-grid .fin .field{text-align:right}
+  #cfgForm .cfg-grid .fin select.field{text-align:left}
+  #cfgForm .cfg-grid .fu{min-width:44px;font-size:11.5px}
+  #cfgForm .cfg-grid .fld-sel{grid-column:1 / -1;grid-template-columns:minmax(0,1fr) minmax(280px,46%)}
+  #cfgForm .cfg-grid > :only-child{grid-column:1 / -1}
+}
 select.field{appearance:auto}
 .sw{display:flex;align-items:center;gap:10px;cursor:pointer;min-height:40px}
 .sw input{position:absolute;opacity:0;width:1px;height:1px}
@@ -4168,12 +4201,62 @@ const BRK_N = Array.from({ length: BRK_MAX }, (_, i) => i + 1);
 BRK_N.forEach(i => { CFG_DEF["brk" + i + "On"] = false; CFG_DEF["brk" + i + "Start"] = BRK_DEF[i - 1][0]; CFG_DEF["brk" + i + "End"] = BRK_DEF[i - 1][1]; });
 DAYS.forEach(([d, , st, en]) => { CFG_DEF[d + "On"] = true; CFG_DEF[d + "Start"] = st; CFG_DEF[d + "End"] = en; });
 
+// ป้ายช่องตั้งค่า → หัวข้อสั้น + คำอธิบาย (หน้าจอคอมแสดงแยกสองบรรทัด มือถือแสดงข้อความเดิม)
+function splitLabel(label) {
+  const L = String(label), cut = [L.indexOf(" ("), L.indexOf(" : "), L.indexOf(" · ")].filter(i => i > 0);
+  if (!cut.length) return [L, ""];
+  const i = Math.min(...cut), title = L.slice(0, i).trim();
+  let hint = L.slice(i).trim();
+  if (hint.startsWith(":") || hint.startsWith("·")) hint = hint.slice(1).trim();
+  else if (hint.startsWith("(")) {
+    let d = 0, e = -1;
+    for (let k = 0; k < hint.length; k++) { if (hint[k] === "(") d++; else if (hint[k] === ")" && --d === 0) { e = k; break; } }
+    if (e > 0) { const rest = hint.slice(e + 1).trim(); hint = hint.slice(1, e).trim() + (rest ? " · " + rest : ""); }
+  }
+  return [title, hint];
+}
+// หัวข้อ + คำอธิบายแบบสั้นของช่องที่ป้ายเดิมยาว (จอคอม) — ช่องอื่นแยกจากป้ายเดิมอัตโนมัติ
+const FIELD_TXT = {
+  dailyAmt: ["เป้ากำไรต่อวัน (จำนวนเงิน)", "พอร์ต USD = ดอลลาร์ · พอร์ต Cent = USC · ใส่ 0 เพื่อใช้ % แทน"],
+  dailyPct: ["เป้ากำไรต่อวัน (%)", "คิดจาก Balance ต้นวัน · ใช้เมื่อช่องจำนวนเงินเป็น 0"],
+  maxOrders: ["จำนวนไม้แก้สูงสุด", "ต่อ 1 ตะกร้า · ครบแล้วไม่เติมไม้เพิ่ม"],
+  ddStopPct: ["หยุดฉุกเฉินเมื่อ Equity ลดลง", "เทียบกับ Balance เช่น 30 = ทุน 1,000 เหลือ 700 แล้วปิดทุกไม้"],
+  ddPauseMin: ["พักหลังหยุดฉุกเฉิน", "1440 = 1 วัน"],
+  snipeMode: ["วิธีแก้ของไม้ X", "ปลดทีละไม้ = ไม้ X เล็ก แก้ทีละออเดอร์ · รวบทั้งตะกร้า = ไม้ X ใหญ่ ปิดทุกไม้พร้อมกัน"],
+  snipeAmt: ["จุดยิงไม้ X (จำนวนเงิน)", "ตะกร้าติดลบถึงยอดนี้ → วางไม้ X ฝั่งตรงข้าม · ใส่ 0 เพื่อใช้ % แทน"],
+  snipePct: ["จุดยิงไม้ X (%)", "คิดจาก Balance · ใช้เมื่อช่องจำนวนเงินเป็น 0"],
+  snipeDist: ["ระยะเป้าหมาย", "ราคาวิ่งต่อเท่านี้แล้วคู่ที่แก้รวมเป็นบวก · ยิ่งสั้น lot ไม้ X ยิ่งใหญ่ · 100 = ทองขยับ $1"],
+  snipeSL: ["ตัดขาดทุนของไม้ X", "ระยะ SL ที่ตั้งตอนเปิดไม้ · 0 = ไม่ตั้ง SL"],
+  snipeBE: ["กันหน้าทุน", "ราคาวิ่งถูกทางเท่านี้ → ขยับ SL ของไม้ X มาที่ราคาเปิด"],
+  snipePend: ["ระยะตั้งดัก", "ถึงจุดยิงแล้ววางคำสั่งดักห่างเท่านี้ ราคาไปต่อจึงเปิดไม้ X · 0 = เปิดทันที"],
+  snipeBack: ["ราคาย้อนกลับ", "เคยกำไรแล้วย้อนมาเหลือระยะนี้ → ปิดเก็บ · ผิดทางเกินระยะนี้ → ตัด · EA ใช้อย่างน้อย 2 เท่าของสเปรด"],
+  snipeTarget: ["กำไรขั้นต่ำก่อนปิด", "0 = ปิดทันทีที่รวมเกินเท่าทุน"],
+  snipeTol: ["ยอมรวบเกือบเท่าทุน", "เฉพาะโหมดรวบทั้งตะกร้า: รวบเมื่อขาดทุนรวมไม่เกินยอดนี้ · 0 = ต้องเป็นบวก"],
+  snipeMaxLot: ["lot สูงสุดของไม้ X", "0 = ไม่จำกัด (ใช้ได้ถึง 90% ของ Margin ที่เหลือ)"],
+  snipeMax: ["ยิงได้กี่ครั้งต่อตะกร้า", "ครบแล้วระบบ X หยุดสำหรับตะกร้านั้น"],
+  snipeHold: ["เอาคืนไม้ X ที่โดนตัด", "lot ไม้ X ถัดไปใหญ่ขึ้น และถือตะกร้าจนคืนครบ · เสี่ยงสูงขึ้น"]
+};
+// หน่วยของช่อง (แสดงท้ายช่องกรอกบนจอคอม)
+function fieldUnit(label, t) {
+  if (t === "int" && /ครั้ง/.test(label)) return "ครั้ง";
+  if (/\((จำนวนเงิน|เงินในพอร์ต)/.test(label)) return "$ / USC";
+  if (/\(points|\(points|points ·|\(points\)/.test(label)) return "points";
+  if (/\(%|% ของ|\(%\)/.test(label)) return "%";
+  if (/นาที/.test(label)) return "นาที";
+  if (/วินาที/.test(label)) return "วินาที";
+  if (/^lot |ล็อต|lot สูงสุด/.test(label) && !/ทุนต่อ/.test(label)) return "lot";
+  if (/จำนวนเงิน|เงินในพอร์ต/.test(label)) return "$ / USC";
+  if (/ไม้\)/.test(label) || /จำนวนไม้/.test(label)) return "ไม้";
+  return "";
+}
 function fieldHTML(f) {
   const [k, t, , label, a, b, c] = f;
-  if (t === "bool") return `<label class="sw"><input type="checkbox" data-k="${k}"><span class="track"></span><span>${label}</span></label>`;
-  if (t === "time") return `<label class="fld"><span>${label}</span><input class="field num" type="time" data-k="${k}"></label>`;
-  if (t === "sel") return `<label class="fld"><span>${label}</span><select class="field" data-k="${k}">${a.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("")}</select></label>`;
-  return `<label class="fld"><span>${label}</span><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}"></label>`;
+  const u = fieldUnit(label, t); let [ti, hi] = FIELD_TXT[k] || splitLabel(label); if (hi === u || hi === "%") hi = "";
+  const lb = `<span class="lb-m">${label}</span><span class="lb-d"><b>${ti}</b>${hi ? `<small>${hi}</small>` : ""}</span>`;
+  if (t === "bool") return `<label class="sw"><input type="checkbox" data-k="${k}"><span class="track"></span><span class="sw-t">${lb}</span></label>`;
+  if (t === "time") return `<label class="fld">${lb}<span class="fin"><input class="field num" type="time" data-k="${k}"></span></label>`;
+  if (t === "sel") return `<label class="fld fld-sel">${lb}<span class="fin"><select class="field" data-k="${k}">${a.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("")}</select></span></label>`;
+  return `<label class="fld">${lb}<span class="fin"><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}">${u ? `<i class="fu${u === "$ / USC" ? " mon" : ""}">${u}</i>` : ""}</span></label>`;
 }
 
 /* ฟอร์มตั้งค่าที่ใช้ซ้ำได้ ทั้งหน้าสมาชิกและหน้าต่างแอดมิน */
@@ -4284,6 +4367,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       else el.value = (el.step === "0.1" && v !== "" && v != null && isFinite(v)) ? Number(v).toFixed(1) : v;   // ช่อง points แสดงเป็น 270.0
     });
     brkRows(!keep);
+    try { const cu = riskLot(draft).cur; if (cu) root.querySelectorAll(".fu.mon").forEach(e => { e.textContent = cu; }); } catch (e) {}   // หน่วยเงินตามพอร์ตที่เลือก
     status();
   }
   return { fill, changed, get draft() { return draft; } };
