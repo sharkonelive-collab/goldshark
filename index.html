@@ -5557,7 +5557,7 @@ $("shopQrDel").addEventListener("click", async () => {
 });
 async function loadHostAdmin(opt) {
   const r = await api("admin_host", Object.assign({ pass: session.pass }, opt || {}));
-  if (!r.ok) { if (opt && (opt.clearRow || opt.forceStop || opt.moveTo || opt.delAgent)) { toast(r.error); return; } $("hostAgent").textContent = r.error; return; }
+  if (!r.ok) { if (opt && (opt.clearRow || opt.forceStop || opt.killNow || opt.moveTo || opt.delAgent)) { toast(r.error); return; } $("hostAgent").textContent = r.error; return; }
   hostAgents = r.agents || [];
   renderHostRows(r.rows);
   $("agentKey").textContent = r.agentKey || "ยังไม่มี กด สร้างใหม่";
@@ -5580,10 +5580,11 @@ function renderHostRows(rows) {
     return `<div class="hr-row">
       <span class="dot ${h.state === "running" ? "on" : h.state === "error" || h.state === "login_failed" ? "off" : ""}"></span>
       <span class="hr-t"><b>${esc(h.code)}</b>${h.orphan ? ' <span class="host-tag bad">พอร์ตถูกลบแล้ว</span>' : h.label ? ` <span class="muted">${esc(h.label)}</span>` : ""}
-        <small>บัญชี ${esc(h.login)} · ${esc(h.stateText || h.state)}${h.wanted === "stop" && busy ? " (สั่งหยุดแล้ว รอไม้ปิด)" : ""}</small></span>
+        <small>บัญชี ${esc(h.login)} · ${esc(h.stateText || h.state)}${h.wanted !== "run" && busy ? (h.kill ? " (สั่งปิดทันทีแล้ว รอเครื่องรันปิด MT5)" : " (สั่งหยุดแล้ว รอไม้ปิด)") : ""}</small></span>
       ${h.moveTo ? `<span class="ag-tag mv">${esc(h.agent || "–")} → ${esc(h.moveTo)}</span>` : h.agent ? `<span class="ag-tag">${esc(h.agent)}</span>` : h.wanted === "run" ? '<span class="ag-tag mv">รอคิว</span>' : ""}
       ${hostAgents.length > 1 && h.wanted === "run" && !h.moveTo ? `<select class="field ag-sel" data-hmove="${esc(h.code)}"><option value="">ย้าย…</option>${hostAgents.filter(a => a.name !== h.agent).map(a => `<option value="${esc(a.name)}">→ ${esc(a.name)} (${a.count}/${a.max})</option>`).join("")}</select>` : ""}
       ${h.wanted === "run" ? `<button type="button" class="btn small" data-hstop="${esc(h.code)}">สั่งหยุด</button>` : ""}
+      ${busy && h.wanted !== "run" && !h.kill ? `<button type="button" class="btn small del-btn" data-hkill="${esc(h.code)}">ปิดทันที</button>` : ""}
       ${!busy && h.wanted !== "run" ? `<button type="button" class="btn small del-btn" data-hclear="${esc(h.code)}">ล้างทิ้ง</button>` : ""}
     </div>`;
   }).join("");
@@ -5602,6 +5603,11 @@ $("hostRows").addEventListener("click", async e => {
   const st = e.target.closest("[data-hstop]"), cl = e.target.closest("[data-hclear]");
   if (st) { if (!confirm(`สั่งหยุด ${st.dataset.hstop}?\nEA จะหยุดเปิดตะกร้าใหม่ รอไม้ที่เปิดอยู่ปิดหมด แล้วเครื่องรันจะปิด MT5 เอง`)) return; await loadHostAdmin({ code: st.dataset.hstop, forceStop: true }); toast("สั่งหยุดแล้ว"); }
   if (cl) { await loadHostAdmin({ code: cl.dataset.hclear, clearRow: true }); toast("ล้างแล้ว"); }
+  const kl = e.target.closest("[data-hkill]");
+  if (kl) {
+    if (!confirm(`ปิด MT5 ของ ${kl.dataset.hkill} ทันที?\n\nเครื่องรันจะปิด MT5 เลยโดยไม่รอไม้ปิด\nไม้ที่เปิดอยู่จะยังค้างในบัญชี และไม่มี EA ดูแลต่อ ต้องปิดไม้เองในแอป MT5`)) return;
+    await loadHostAdmin({ code: kl.dataset.hkill, killNow: true }); toast("สั่งปิดทันทีแล้ว รอเครื่องรันปิด MT5 ไม่เกิน 1 นาที");
+  }
 });
 /* แท็บ "เครื่องรัน" (แยกจากตั้งค่าร้าน) */
 async function loadHostTab() {
