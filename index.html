@@ -3936,7 +3936,7 @@ function balancedBox(d) {
     return `<div class="balbox ${info.cls} ${on ? "on" : ""}">
       <div class="rk-h"><b>${on ? "✓ ใช้" + info.name + "อยู่" : info.name}</b><span class="rk-tag">${info.tag}</span></div>
       <div class="rk-sub">ล้างพอร์ตเมื่อทองสวน <b>$${sim.d100}</b>${on ? "" : ` (ตอนนี้ $${now.d100})`} · ติดลบ 30% ที่ <b>$${sim.d30}</b><br>
-        กำไรวันปกติประมาณ <b>${est.pct.toFixed(1)}%</b> (≈ ${fmt(est.amt)} ${est.cur}) · ${B.dailyOn ? `ถึงเป้า ${B.dailyPct}% แล้วพักถึงเที่ยงคืน` : "ไม่จำกัดเป้ารายวัน"}
+        กำไรวันปกติประมาณ <b>${est.pct.toFixed(1)}%</b> (≈ ${fmt(est.amt)} ${est.cur}) · ${B.dailyOn ? `ถึงเป้า ${+B.dailyAmt > 0 ? fmt(+B.dailyAmt) + " " + est.cur : B.dailyPct + "%"} แล้วพักถึงเที่ยงคืน` : "ไม่จำกัดเป้ารายวัน"}
         ${low ? `<br>⚠ ทุนต่ำกว่า ${fmt(B.lotPerBal, 0)} ${sim.cur} ต่อ 0.01 lot ความเสี่ยงจริงจะสูงกว่านี้` : ""}</div>
       <button type="button" class="btn small ${on ? "ghost" : "primary"}" data-preset="${id}" data-on="${on ? 0 : 1}">${on ? "กลับไปใช้ค่าเริ่มต้นของร้าน" : "ใช้" + info.name}</button>
     </div>`;
@@ -3945,7 +3945,7 @@ function balancedBox(d) {
 const BAL_LABEL = { gridDist: ["ระยะแก้ไม้", v => "$" + v / 100], lotMult: ["ตัวคูณล็อต", v => "×" + v], maxOrders: ["ไม้แก้สูงสุด", v => v + " ไม้"],
   autoLotOn: ["ล็อตอัตโนมัติ", v => v ? "เปิด" : "ปิด"], lotPerBal: ["ทุนต่อ 0.01 lot", v => fmt(v, 0)], cutPctOn: ["ปิดขาดทุน %", v => v ? "เปิด" : "ปิด"],
   cutPct: ["ปิดขาดทุนที่", v => v + "%"], ddStopOn: ["กันพอร์ตแตก", v => v ? "เปิด" : "ปิด"], ddStopPct: ["หยุดฉุกเฉินที่", v => v + "%"],
-  dailyOn: ["เป้ากำไรรายวัน", v => v ? "เปิด" : "ปิด"], dailyPct: ["เป้าต่อวัน", v => v + "%"] };
+  dailyOn: ["เป้ากำไรรายวัน", v => v ? "เปิด" : "ปิด"], dailyPct: ["เป้าต่อวัน", v => v + "%"], dailyAmt: ["เป้าต่อวัน (จำนวนเงิน)", v => +v > 0 ? fmt(+v) : "ใช้ %"] };
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-preset]"); if (!b) return;
   const id = b.dataset.preset, on = b.dataset.on === "1", B = presets()[id], info = PRESET_INFO[id] || { name: id };
@@ -3966,14 +3966,15 @@ document.addEventListener("click", async e => {
 });
 /* ---- เป้ากำไรรายวัน ---- */
 function targetInfo(d) {
-  const e = dailyEst(d), amt = e.bal * (+d.dailyPct || 0) / 100;
+  const e = dailyEst(d), byAmt = +d.dailyAmt > 0, amt = byAmt ? +d.dailyAmt : e.bal * (+d.dailyPct || 0) / 100;
   if (!d.dailyOn) return `<div class="rk-sub">ปิดอยู่: EA เทรดต่อไปเรื่อย ๆ ไม่มีจุดพักรายวัน</div>`;
-  return `<div class="rk-sub">เป้าวันละ <b>${d.dailyPct}%</b> ≈ <b>${fmt(amt)} ${e.cur}</b> (คิดจากกำไรที่ปิดแล้วตั้งแต่เที่ยงคืนเวลาไทย) · ถึงเป้าแล้ว EA หยุดเปิดตะกร้าใหม่ ตะกร้าที่เปิดอยู่ปิดตามปกติ แล้วเริ่มใหม่หลังเที่ยงคืน
+  return `<div class="rk-sub">เป้าวันละ ${byAmt ? `<b>${fmt(amt)} ${e.cur}</b>${e.bal > 0 ? ` ≈ <b>${(amt / e.bal * 100).toFixed(1)}%</b> ของ Balance` : ""}` : `<b>${d.dailyPct}%</b> ≈ <b>${fmt(amt)} ${e.cur}</b>`} (คิดจากกำไรที่ปิดแล้วตั้งแต่เที่ยงคืนเวลาไทย) · ถึงเป้าแล้ว EA หยุดเปิดตะกร้าใหม่ ตะกร้าที่เปิดอยู่ปิดตามปกติ แล้วเริ่มใหม่หลังเที่ยงคืน
     <br>ค่าที่ตั้งอยู่ทำได้ประมาณ <b>${e.pct.toFixed(1)}%</b> ต่อวันในวันปกติ</div>`;
 }
 function targetWarn(d, s) {
   if (!d.dailyOn) return "";
   const e = dailyEst(d), out = [];
+  if (+d.dailyAmt > 0) d = Object.assign({}, d, { dailyPct: e.bal > 0 ? +(+d.dailyAmt / e.bal * 100).toFixed(1) : 0 });   // ตั้งเป็นจำนวนเงิน → แปลงเป็น % เพื่อเทียบ
   if (+d.dailyPct > e.pct * 1.5) out.push(`<b>เป้า ${d.dailyPct}% ต่อวัน เกินที่ค่าปัจจุบันทำได้จริง (ประมาณ ${e.pct.toFixed(1)}% ต่อวัน)</b> ส่วนใหญ่จะไม่ถึงเป้า EA จะเทรดทั้งวันตามปกติ ถ้าเพิ่มล็อตเพื่อไล่เป้านี้ ระยะที่ทองสวนแล้วล้างพอร์ตจะสั้นลงตามสัดส่วน`);
   if (+d.dailyPct >= 5) out.push(`<b>เป้าตั้งแต่ 5% ต่อวันขึ้นไปไม่ยั่งยืน</b> (${d.dailyPct}% ทบ 22 วัน = ทุนโต ${Math.pow(1 + d.dailyPct / 100, 22).toFixed(1)} เท่าต่อเดือน) ค่าที่ทำได้ระดับนี้มักล้างพอร์ตภายในไม่กี่สัปดาห์`);
   return out.map(t => `<p>⚠️ ${t}</p>`).join("");
@@ -4055,7 +4056,8 @@ const CFG_GROUPS = [
     ["lotPerBal", "num", 3000, "ทุนต่อ 1 ชุดล็อตเริ่ม (เงินในพอร์ต · เช่น ล็อตเริ่ม 0.01 ทุน 3,000 → พอร์ต 9,000 ใช้ 0.03)", 100, 1e8, 100]] },
   { id: "daily", title: "เป้ากำไรรายวัน", toggle: "dailyOn", warn: targetWarn, info: targetInfo, fields: [
     ["dailyOn", "bool", false, "ถึงเป้าแล้วหยุดเปิดตะกร้าใหม่ จนถึงเที่ยงคืนเวลาไทย (EA 2.28+)"],
-    ["dailyPct", "num", 2, "เป้ากำไรต่อวัน (% ของ Balance ต้นวัน)", 0.1, 50, 0.1]] },
+    ["dailyAmt", "num", 0, "เป้ากำไรต่อวันเป็นจำนวนเงิน (พอร์ต USD = $ · พอร์ต Cent = USC · 0 = ใช้ % ด้านล่าง · EA 2.44+)", 0, 10000000, 1],
+    ["dailyPct", "num", 2, "เป้ากำไรต่อวัน (% ของ Balance ต้นวัน · ใช้เมื่อช่องจำนวนเงินเป็น 0)", 0.1, 50, 0.1]] },
   { id: "risk", title: "ไม้แก้ / ตัดขาดทุน", member: true, warn: riskWarn, fields: [
     ["maxOrders", "int", 30, "จำนวนไม้แก้สูงสุดต่อตะกร้า (1–30 ไม้)", 1, 30, 1],
     ["cutPctOn", "bool", false, "ปิดขาดทุนเป็น % : ตะกร้าติดลบเกิน % ของ Balance → ปิดทั้งตะกร้า"],
@@ -4230,7 +4232,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
       }
       else if (g.id === "lot") sum.textContent = `${draft.startLot} lot`;
       if (g.id === "brk") { const on = BRK_N.filter(i => draft["brk" + i + "On"]).map(i => draft["brk" + i + "Start"] + "–" + draft["brk" + i + "End"]); sum.textContent = on.length > 1 ? `พัก ${on.length} ช่วง` : on.length ? on[0] : "ปิด"; sum.classList.toggle("on", on.length > 0); }
-      if (g.id === "daily" && draft.dailyOn) sum.textContent = `${draft.dailyPct}% / วัน`;
+      if (g.id === "daily" && draft.dailyOn) sum.textContent = +draft.dailyAmt > 0 ? `${fmt(+draft.dailyAmt)} / วัน` : `${draft.dailyPct}% / วัน`;
       if (g.id === "cutmoney" && draft.cutLossOn) sum.textContent = `เปิด · -${draft.cutLoss}`;
       if (g.id === "cutpct" && draft.cutPctOn) sum.textContent = `เปิด · -${draft.cutPct}%`;
       if (g.id === "sl" && draft.slOn) sum.textContent = `เปิด · ${draft.slPoints} จุด`;
@@ -4304,7 +4306,7 @@ $("cfgUndo").addEventListener("click", () => fillCfg(true));
 $("cfgSave").addEventListener("click", async () => {
   const ch = userForm.changed(); if (!ch.length) return;
   const settings = {}; ch.forEach(k => settings[k] = userForm.draft[k]);
-  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap", "snipeOn", "snipeAmt", "snipePct", "snipeDist", "snipeMode", "snipeSL", "snipeBE", "snipePend", "snipeBack", "snipeHold", "snipeTol", "snipeTarget", "snipeMaxLot", "snipeMax"].includes(k))) {
+  if (ch.some(k => ["autoLotOn", "lotPerBal", "dailyOn", "dailyPct", "dailyAmt", "maxOrders", "cutPctOn", "cutPct", "cutLossOn", "cutLoss", "ddStopOn", "ddStopPct", "ddPauseMin", "hedgeOn", "hedgePct", "hedgeExitPct", "recOn", "brakeOn", "brakeAmt", "brakePct", "brakeGap", "snipeOn", "snipeAmt", "snipePct", "snipeDist", "snipeMode", "snipeSL", "snipeBE", "snipePend", "snipeBack", "snipeHold", "snipeTol", "snipeTarget", "snipeMaxLot", "snipeMax"].includes(k))) {
     const msg = (targetWarn(userForm.draft, cfgSaved()) + riskWarn(userForm.draft, cfgSaved()) + guardWarn(userForm.draft, cfgSaved()) + hedgeWarn(userForm.draft, cfgSaved())).replace(/<\/p>/g, "\n\n").replace(/<[^>]+>/g, "").trim().replace(/⚠️ /g, "• ");
     if (msg && !confirm("ยืนยันการเปลี่ยนค่าเป้ารายวัน / ไม้แก้ / ตัดขาดทุน / กันพอร์ตแตก / Hedging?\n\n" + msg)) return;
   }
