@@ -333,24 +333,26 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 :is(#cfgForm,#admCfg) .cfg-grid .fin{display:flex;align-items:center;gap:10px;width:100%;justify-self:stretch}
 :is(#cfgForm,#admCfg) .cfg-grid .fin .field{flex:1 1 0;width:auto;min-width:0}
 :is(#cfgForm,#admCfg) .cfg-grid .fu{display:block;flex:none;min-width:46px;font-style:normal;font-size:12px;color:var(--muted);text-align:left}
+:is(#cfgForm,#admCfg) .cfg-grid .fu:empty{display:none}
 :is(#cfgForm,#admCfg) .cfg-grid .sw{grid-template-columns:minmax(0,1fr) auto;gap:14px}
 :is(#cfgForm,#admCfg) .cfg-grid .sw .track{order:2}
 :is(#cfgForm,#admCfg) .cfg-grid .sw .sw-t{order:1;margin:0}
 @media (min-width:1000px){
   :is(#cfgForm,#admCfg) .cfg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:6px 2px 20px}
-  :is(#cfgForm,#admCfg) .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 190px;gap:6px 18px;min-height:64px}
+  :is(#cfgForm,#admCfg) .cfg-grid .fld{grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;min-height:64px}
   :is(#cfgForm,#admCfg) .cfg-grid .sw{min-height:64px}
   :is(#cfgForm,#admCfg) .cfg-grid .sw:hover{border-color:rgba(90,150,255,.4)}
   :is(#cfgForm,#admCfg) .cfg-grid .lb-d small{font-size:12px}
-  :is(#cfgForm,#admCfg) .cfg-grid .fin{gap:8px;justify-content:flex-end}
-  :is(#cfgForm,#admCfg) .cfg-grid .fin .field{text-align:right}
+  :is(#cfgForm,#admCfg) .cfg-grid .fin{gap:8px;justify-content:flex-end;width:auto}
+  :is(#cfgForm,#admCfg) .cfg-grid .fin .field{text-align:right;flex:none;width:104px}   /* ช่องกว้างพอดีกับตัวเลข + หน่วยต่อท้ายทุกช่อง */
+  :is(#cfgForm,#admCfg) .cfg-grid .fld-sel .fin{width:100%}
+  :is(#cfgForm,#admCfg) .cfg-grid .fld-sel .fin .field{flex:1 1 0;width:auto}
   :is(#cfgForm,#admCfg) .cfg-grid .fin select.field{text-align:left}
-  :is(#cfgForm,#admCfg) .cfg-grid .fu{min-width:44px;font-size:11.5px}
+  :is(#cfgForm,#admCfg) .cfg-grid .fu,:is(#cfgForm,#admCfg) .cfg-grid .fu:empty{display:block;width:46px;min-width:46px;font-size:11.5px;white-space:nowrap}   /* จองที่หน่วยไว้เสมอ ช่องกรอกจึงกว้างเท่ากันทุกแถว */
   :is(#cfgForm,#admCfg) .cfg-grid .fld-sel{grid-column:1 / -1;grid-template-columns:minmax(0,1fr) minmax(280px,46%)}
   :is(#cfgForm,#admCfg) .cfg-grid > :only-child{grid-column:1 / -1}
   /* หน้าต่างแอดมินแคบกว่า → คอลัมน์เดียว ข้อความซ้าย ช่องกรอกขวา */
   #admCfg .cfg-grid{grid-template-columns:minmax(0,1fr)}
-  #admCfg .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 210px}
   #admCfg .cfg-grid .fld-sel{grid-template-columns:minmax(0,1fr) minmax(260px,48%)}
 }
 select.field{appearance:auto}
@@ -4244,7 +4246,7 @@ const FIELD_TXT = {
 function fieldUnit(label, t) {
   if (t === "int" && /ครั้ง/.test(label)) return "ครั้ง";
   if (/\((จำนวนเงิน|เงินในพอร์ต)/.test(label)) return "$ / USC";
-  if (/\(points|\(points|points ·|\(points\)/.test(label)) return "points";
+  if (/\(points|points ·|\(จุด/.test(label)) return "จุด";
   if (/\(%|% ของ|\(%\)/.test(label)) return "%";
   if (/วินาที/.test(label)) return "วินาที";
   if (/นาที/.test(label)) return "นาที";
@@ -4252,17 +4254,22 @@ function fieldUnit(label, t) {
   if (/^(lot |ล็อตเริ่มต้น)|lot สูงสุด/.test(label)) return "lot";
   if (/กี่ไม้|\(ไม้/.test(label)) return "ไม้";
   if (/จำนวนเงิน|เงินในพอร์ต/.test(label)) return "$ / USC";
-  if (/ไม้\)/.test(label) || /จำนวนไม้/.test(label)) return "ไม้";
+  if (/ไม้\)/.test(label) || /จำนวนไม้|ไม้.*สูงสุด/.test(label)) return "ไม้";
+  if (/^ล็อต/.test(label)) return "lot";
+  if (/x ATR|เทียบ ATR/.test(label)) return "ATR";
+  if (/\(x\)/.test(label)) return "เท่า";
+  if (/^Over(bought|sold)/.test(label)) return "RSI";
+  if (/แท่ง|period|^EMA/.test(label)) return "แท่ง";
   return "";
 }
 function fieldHTML(f) {
   const [k, t, , label, a, b, c] = f;
-  const u = fieldUnit(label, t); let [ti, hi] = FIELD_TXT[k] || splitLabel(label); if (hi === u || hi === "%") hi = "";
+  const u = fieldUnit(label, t); let [ti, hi] = FIELD_TXT[k] || splitLabel(label); if (hi === u || hi === "%") hi = ""; hi = hi.replace(/^points · /, "");
   const lb = `<span class="lb-m">${label}</span><span class="lb-d"><b>${ti}</b>${hi ? `<small>${hi}</small>` : ""}</span>`;
   if (t === "bool") return `<label class="sw"><input type="checkbox" data-k="${k}"><span class="track"></span><span class="sw-t">${lb}</span></label>`;
-  if (t === "time") return `<label class="fld">${lb}<span class="fin"><input class="field num" type="time" data-k="${k}"></span></label>`;
+  if (t === "time") return `<label class="fld">${lb}<span class="fin"><input class="field num" type="time" data-k="${k}"><i class="fu">น.</i></span></label>`;
   if (t === "sel") return `<label class="fld fld-sel">${lb}<span class="fin"><select class="field" data-k="${k}">${a.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("")}</select></span></label>`;
-  return `<label class="fld">${lb}<span class="fin"><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}">${u ? `<i class="fu${u === "$ / USC" ? " mon" : ""}">${u}</i>` : ""}</span></label>`;
+  return `<label class="fld">${lb}<span class="fin"><input class="field num" type="number" inputmode="decimal" data-k="${k}" min="${a}" max="${b}" step="${c}"><i class="fu${u === "$ / USC" ? " mon" : ""}">${u}</i></span></label>`;
 }
 
 /* ฟอร์มตั้งค่าที่ใช้ซ้ำได้ ทั้งหน้าสมาชิกและหน้าต่างแอดมิน */
