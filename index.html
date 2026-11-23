@@ -322,32 +322,36 @@ dialog h3{margin:0 0 4px;font-family:var(--display)}
 .sw .sw-t .lb-m{display:inline}
 /* หน้าตั้งค่าสมาชิก: แต่ละช่องเป็นกรอบ หัวข้อสั้น + คำอธิบาย · ช่องกรอก + หน่วย
    มือถือ: เรียง 1 คอลัมน์ ข้อความอยู่บน ช่องกรอกอยู่ล่าง · จอคอม: 2 คอลัมน์เท่ากัน ข้อความซ้าย ช่องกรอกขวา */
-#cfgForm .cfg-grid{grid-template-columns:minmax(0,1fr);gap:10px;padding:6px 2px 18px;align-items:stretch}
-#cfgForm .cfg-grid .fld,#cfgForm .cfg-grid .sw{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:12px 14px;min-height:0;
+:is(#cfgForm,#admCfg) .cfg-grid{grid-template-columns:minmax(0,1fr);gap:10px;padding:6px 2px 18px;align-items:stretch}
+:is(#cfgForm,#admCfg) .cfg-grid .fld,:is(#cfgForm,#admCfg) .cfg-grid .sw{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:12px 14px;min-height:0;
   border:1px solid rgba(140,170,225,.11);border-radius:12px;background:rgba(140,170,225,.035)}
-#cfgForm .cfg-grid .fld:focus-within{border-color:rgba(90,150,255,.4)}
-#cfgForm .cfg-grid .lb-m{display:none}
-#cfgForm .cfg-grid .lb-d{display:block;margin:0}
-#cfgForm .cfg-grid .lb-d b{display:block;font-size:14px;font-weight:600;color:var(--text);line-height:1.35}
-#cfgForm .cfg-grid .lb-d small{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:3px}
-#cfgForm .cfg-grid .fin{display:flex;align-items:center;gap:10px;width:100%;justify-self:stretch}
-#cfgForm .cfg-grid .fin .field{flex:1 1 0;width:auto;min-width:0}
-#cfgForm .cfg-grid .fu{display:block;flex:none;min-width:46px;font-style:normal;font-size:12px;color:var(--muted);text-align:left}
-#cfgForm .cfg-grid .sw{grid-template-columns:minmax(0,1fr) auto;gap:14px}
-#cfgForm .cfg-grid .sw .track{order:2}
-#cfgForm .cfg-grid .sw .sw-t{order:1;margin:0}
+:is(#cfgForm,#admCfg) .cfg-grid .fld:focus-within{border-color:rgba(90,150,255,.4)}
+:is(#cfgForm,#admCfg) .cfg-grid .lb-m{display:none}
+:is(#cfgForm,#admCfg) .cfg-grid .lb-d{display:block;margin:0}
+:is(#cfgForm,#admCfg) .cfg-grid .lb-d b{display:block;font-size:14px;font-weight:600;color:var(--text);line-height:1.35}
+:is(#cfgForm,#admCfg) .cfg-grid .lb-d small{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:3px}
+:is(#cfgForm,#admCfg) .cfg-grid .fin{display:flex;align-items:center;gap:10px;width:100%;justify-self:stretch}
+:is(#cfgForm,#admCfg) .cfg-grid .fin .field{flex:1 1 0;width:auto;min-width:0}
+:is(#cfgForm,#admCfg) .cfg-grid .fu{display:block;flex:none;min-width:46px;font-style:normal;font-size:12px;color:var(--muted);text-align:left}
+:is(#cfgForm,#admCfg) .cfg-grid .sw{grid-template-columns:minmax(0,1fr) auto;gap:14px}
+:is(#cfgForm,#admCfg) .cfg-grid .sw .track{order:2}
+:is(#cfgForm,#admCfg) .cfg-grid .sw .sw-t{order:1;margin:0}
 @media (min-width:1000px){
-  #cfgForm .cfg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:6px 2px 20px}
-  #cfgForm .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 190px;gap:6px 18px;min-height:64px}
-  #cfgForm .cfg-grid .sw{min-height:64px}
-  #cfgForm .cfg-grid .sw:hover{border-color:rgba(90,150,255,.4)}
-  #cfgForm .cfg-grid .lb-d small{font-size:12px}
-  #cfgForm .cfg-grid .fin{gap:8px;justify-content:flex-end}
-  #cfgForm .cfg-grid .fin .field{text-align:right}
-  #cfgForm .cfg-grid .fin select.field{text-align:left}
-  #cfgForm .cfg-grid .fu{min-width:44px;font-size:11.5px}
-  #cfgForm .cfg-grid .fld-sel{grid-column:1 / -1;grid-template-columns:minmax(0,1fr) minmax(280px,46%)}
-  #cfgForm .cfg-grid > :only-child{grid-column:1 / -1}
+  :is(#cfgForm,#admCfg) .cfg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:6px 2px 20px}
+  :is(#cfgForm,#admCfg) .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 190px;gap:6px 18px;min-height:64px}
+  :is(#cfgForm,#admCfg) .cfg-grid .sw{min-height:64px}
+  :is(#cfgForm,#admCfg) .cfg-grid .sw:hover{border-color:rgba(90,150,255,.4)}
+  :is(#cfgForm,#admCfg) .cfg-grid .lb-d small{font-size:12px}
+  :is(#cfgForm,#admCfg) .cfg-grid .fin{gap:8px;justify-content:flex-end}
+  :is(#cfgForm,#admCfg) .cfg-grid .fin .field{text-align:right}
+  :is(#cfgForm,#admCfg) .cfg-grid .fin select.field{text-align:left}
+  :is(#cfgForm,#admCfg) .cfg-grid .fu{min-width:44px;font-size:11.5px}
+  :is(#cfgForm,#admCfg) .cfg-grid .fld-sel{grid-column:1 / -1;grid-template-columns:minmax(0,1fr) minmax(280px,46%)}
+  :is(#cfgForm,#admCfg) .cfg-grid > :only-child{grid-column:1 / -1}
+  /* หน้าต่างแอดมินแคบกว่า → คอลัมน์เดียว ข้อความซ้าย ช่องกรอกขวา */
+  #admCfg .cfg-grid{grid-template-columns:minmax(0,1fr)}
+  #admCfg .cfg-grid .fld{grid-template-columns:minmax(0,1fr) 210px}
+  #admCfg .cfg-grid .fld-sel{grid-template-columns:minmax(0,1fr) minmax(260px,48%)}
 }
 select.field{appearance:auto}
 .sw{display:flex;align-items:center;gap:10px;cursor:pointer;min-height:40px}
@@ -4242,9 +4246,11 @@ function fieldUnit(label, t) {
   if (/\((จำนวนเงิน|เงินในพอร์ต)/.test(label)) return "$ / USC";
   if (/\(points|\(points|points ·|\(points\)/.test(label)) return "points";
   if (/\(%|% ของ|\(%\)/.test(label)) return "%";
-  if (/นาที/.test(label)) return "นาที";
   if (/วินาที/.test(label)) return "วินาที";
-  if (/^lot |ล็อต|lot สูงสุด/.test(label) && !/ทุนต่อ/.test(label)) return "lot";
+  if (/นาที/.test(label)) return "นาที";
+  if (/ตัวคูณ/.test(label)) return "เท่า";
+  if (/^(lot |ล็อตเริ่มต้น)|lot สูงสุด/.test(label)) return "lot";
+  if (/กี่ไม้|\(ไม้/.test(label)) return "ไม้";
   if (/จำนวนเงิน|เงินในพอร์ต/.test(label)) return "$ / USC";
   if (/ไม้\)/.test(label) || /จำนวนไม้/.test(label)) return "ไม้";
   return "";
