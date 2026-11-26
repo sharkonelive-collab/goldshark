@@ -4657,7 +4657,7 @@ function renderDigitNotice() {
   const S = dashData.snapshot, L = dashData.license || {}, el = $("digitNotice"), t = $("digitText");
   const dg = S ? +S.digits : 0;
   const d3 = dg === 3 || dg === 5;
-  if ((d3 && L.digitsOk) || (dg && !d3)) { el.hidden = true; return; }   // ตั้งค่าแล้ว หรือโบรก 2 ทศนิยม → ไม่ต้องแจ้ง
+  if (dg) { el.hidden = true; return; }   // เชื่อม EA แล้ว → EA ปรับหน่วยให้เองทั้งโบรก 2 และ 3 ทศนิยม ยืนยันอัตโนมัติ ไม่ต้องแจ้งแอดมิน
   el.hidden = false;
   el.className = "digit-notice" + (d3 ? " alert" : "");
   t.innerHTML = d3
@@ -5152,7 +5152,7 @@ function renderLics() {
     return `<tr>
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
       <td class="cu-cell"><div class="cu-n">${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}</div>${l.login ? `<div class="cu-e muted" title="${esc(l.login)}">${esc(l.login)}</div>` : l.note ? `<div class="cu-e muted" title="${esc(l.note)}">${esc(l.note)}</div>` : ""}</td>
-      <td class="acc-cell"><div class="acc-n">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</div><div class="acc-tags">${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? (l.digitsOk ? '<span class="dig3 ok" title="ตั้งค่าโบรก 3 ทศนิยมแล้ว">3 ทศนิยม ✓</span>' : '<span class="dig3" title="โบรกใช้ราคาทองทศนิยม 3 ตำแหน่ง ยังไม่ได้ยืนยันการตั้งค่า">3 ทศนิยม</span>') : ""}</div></td>
+      <td class="acc-cell"><div class="acc-n">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</div><div class="acc-tags">${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? '<span class="dig3 ok" title="โบรกราคาทองทศนิยม 3 ตำแหน่ง · EA ปรับหน่วยให้อัตโนมัติ ยืนยันแล้ว">3 ทศนิยม ✓</span>' : ""}</div></td>
       <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">ร่วม</span>` : ""}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td style="white-space:nowrap"><span class="pill ${st}">${stTxt}</span> <span class="dot ${l.online ? "on" : ""}" style="display:inline-block;vertical-align:middle;margin-left:6px" title="EA ${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
@@ -5336,7 +5336,8 @@ function renderDigBox() {
   const d3 = admLic && (+admLic.digits === 3 || +admLic.digits === 5);
   $("digBox").hidden = !d3;
   if (!d3) return;
-  $("digBox").classList.toggle("done", !!admLic.digitsOk);
+  $("digBox").classList.add("done"); $("dlgDigits").hidden = true;
+  $("digBoxText").textContent = "ยืนยันอัตโนมัติแล้ว · EA ปรับหน่วยให้เอง (100 จุด = ราคาทองขยับ 1.00) ลูกค้าไม่เห็นการแจ้งเตือน"; return;
   $("digBoxText").textContent = admLic.digitsOk ? "ยืนยันแล้ว ลูกค้าไม่เห็นการแจ้งเตือน" : "ลูกค้าเห็นแถบแดงในหน้าสมาชิก ตั้งค่าให้เหมาะกับโบรกแล้วกดยืนยัน";
   $("dlgDigits").textContent = admLic.digitsOk ? "ยกเลิกการยืนยัน (แสดงแจ้งเตือนอีกครั้ง)" : "ตั้งค่าเสร็จแล้ว · ซ่อนการแจ้งเตือนลูกค้า";
 }
@@ -6058,8 +6059,8 @@ function demoLive(C) {
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
-const EA_LATEST = "2.44";
-const EA_NEWS = "เป้ากำไรรายวันตั้งเป็นจำนวนเงินได้ (USD หรือ USC ตามพอร์ต) นอกจากแบบ %";
+const EA_LATEST = "2.45";
+const EA_NEWS = "ยอดกำไรและไม้บนเว็บตรงกับ MT5 นับรวมไม้ที่กดมือเอง";
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
@@ -6298,7 +6299,7 @@ function renderPerp() {
   $("ppNPos").textContent = pos.length; $("ppNOrd").textContent = pend.length;
   const tot = pos.reduce((a, o) => a + +o.pl, 0), lots = pos.reduce((a, o) => a + +o.v, 0);
   $("ppTot").innerHTML = pos.length ? `uPnL <b class="${cls(tot)}">${signed(tot)}</b> · ${fmt(lots)} lot` : "";
-  const KN = { m: "", b: "Balloon", h: "Hedge", r: "Recovery", x: "X" };
+  const KN = { m: "", b: "Balloon", h: "Hedge", r: "Recovery", x: "X", u: "กดมือ" };
   if (ppTab === "pos") {
     $("ppTable").innerHTML = !pos.length ? `<div class="pp-empty">ไม่มีตำแหน่งที่เปิดอยู่</div>` : `<table><thead><tr><th>Symbol</th><th>Size</th><th>Entry</th><th class="hide-m">Mark</th><th>PnL</th><th class="hide-m">Move</th></tr></thead><tbody>${pos.map(o => {
       const mark = o.s > 0 ? bid : +L.ask, mv = (mark - o.p) * o.s, k = o.k || "m";
