@@ -675,6 +675,24 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 .ov-status::before{content:"";width:6px;height:6px;border-radius:50%;background:#8EC1FF}
 .ov-status b{color:#CFE3FF;font-weight:500}
 .ea-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+/* เลือก EA ของพอร์ต: SG GM / SG KM */
+.ea-choose{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
+.ea-choose-h{font-weight:600;font-size:15px}
+.ea-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ea-pick button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:0;cursor:pointer;padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);color:var(--text);font:inherit}
+.ea-pick button b{font-family:var(--display,inherit);letter-spacing:.08em;font-size:15px}
+.ea-pick button small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.ea-pick button.on{background:rgba(233,196,106,.12);box-shadow:inset 0 0 0 2px #E9C46A}
+.ea-pick button.on b{color:#E9C46A}
+.ea-pick button:disabled{opacity:.6;cursor:wait}
+@media (max-width:560px){.ea-pick{grid-template-columns:1fr}}
+.mpill.ea-kind{color:#E9C46A;box-shadow:inset 0 0 0 1px rgba(233,196,106,.45)}
+.km-cfg-note{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:12px;margin-bottom:12px;background:rgba(233,196,106,.08);box-shadow:inset 0 0 0 1px rgba(233,196,106,.35);font-size:14px;line-height:1.55}
+.km-cfg-note b{color:#E9C46A;font-size:15px}
+#cfgCard.km #cfgAdvice,#cfgCard.km #lotBox > div + div,
+#cfgCard.km #cfgForm .cfg-group:not([data-g^="km"]):not([data-g="guard"]):not([data-g="news"]):not([data-g="time"]):not([data-g="brk"]){display:none}
+#cfgCard:not(.km) #cfgForm .cfg-group[data-g^="km"]{display:none}
 .ea-right .pill.ptype{font-size:13px;padding:6px 12px;border-radius:999px}
 #portWarn{margin:-6px 0 14px}
 #portWarn .btn{margin-left:8px}
@@ -2325,6 +2343,14 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
       <div class="purge-note" id="purgeNote" hidden></div>
+      <div class="ea-choose">
+        <div class="ea-choose-h">เลือก EA ของพอร์ตนี้</div>
+        <div class="ea-pick" id="eaPick" role="radiogroup" aria-label="เลือก EA ของพอร์ตนี้">
+          <button type="button" data-ea="gm" role="radio"><b>SG GM</b><small>แก้ไม้ตามระยะ · ตั้งค่าได้ครบ</small></button>
+          <button type="button" data-ea="km" role="radio"><b>SG KM</b><small>เข้าไม้ที่โซน Key Level · แก้ไม้ที่โซนถัดไป</small></button>
+        </div>
+        <small class="muted">เปลี่ยนได้เมื่อไม่มีไม้เปิดค้าง · ปุ่มดาวน์โหลดด้านล่างเปลี่ยนตาม EA ที่เลือก</small>
+      </div>
       <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
       <ol class="steps">
         <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
@@ -2463,6 +2489,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
   </section>
 
   <section class="card cfg" id="cfgCard" data-pages="cfg">
+    <div class="km-cfg-note" id="kmCfgNote" hidden><b>พอร์ตนี้ใช้ SG KM</b><span>ตั้งค่าเฉพาะของ SG KM (โซน Key Level · ไม้แรก · Trailing · แก้ไม้ / รวบปิด) รวมกับกันพอร์ตแตก กรองข่าว เวลาเทรด และพักช่วงเวลา · หน่วยจุดของ SG KM: 1 จุด = ราคาทอง 0.10 (50 จุด = $5) · เปลี่ยน EA ได้ที่หน้าติดตั้ง EA</span></div>
     <div class="cfg-head">
       <div class="card-label" style="flex:1">ตั้งค่าแก้ไม้ ปิดขาดทุน ข่าว และเวลาเทรด</div>
       <button class="btn small ghost" id="cfgUndo" hidden>ยกเลิกที่แก้</button>
@@ -2728,6 +2755,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
         <label class="fld"><span>แพ็กเกจ</span><select class="field" id="mPlan"></select></label>
         <label class="fld" id="mExpWrap"><span>วันหมดอายุ</span><input class="field" type="date" id="mExp"></label>
         <label class="fld"><span>หมายเหตุ</span><input class="field" id="mNote" maxlength="200"></label>
+        <label class="fld"><span>EA ที่ใช้</span><select class="field" id="mEa"><option value="gm">SG GM</option><option value="km">SG KM</option></select></label>
       </div>
       <label class="mem-ext" id="mExtWrap" hidden><input type="checkbox" id="mExt" checked> <span id="mExtText"></span></label>
       <div class="mem-left muted" id="mLeft"></div>
@@ -2932,7 +2960,7 @@ function demoApi(action, d) {
       demo.users.push({ id, login: d.login, password: d.password, name: d.name, code });
       return res({ ok: true, token: "demo-" + id });
     }
-    if (["me", "user_port", "user_lot", "user_settings", "user_balanced", "user_preset", "claim_code", "pay_submit", "port_add", "port_rename", "port_close", "host_set", "host_stop", "ea_toggle", "port_order", "google_link"].includes(action)) {
+    if (["me", "user_port", "user_ea", "user_lot", "user_settings", "user_balanced", "user_preset", "claim_code", "pay_submit", "port_add", "port_rename", "port_close", "host_set", "host_stop", "ea_toggle", "port_order", "google_link"].includes(action)) {
       const u = uOf(); if (!u) return res({ ok: false, error: "กรุณาเข้าสู่ระบบใหม่" });
       u.codes = u.codes || [u.code];
       if (action === "port_add") {
@@ -2949,6 +2977,7 @@ function demoApi(action, d) {
       if (action === "user_settings") demoAct(u, lic.code, "user_settings", "บันทึกการตั้งค่า EA " + Object.keys(d.settings || {}).length + " รายการ");
       if (action === "user_preset" || action === "user_balanced") demoAct(u, lic.code, "user_preset", d.on === false ? "กลับไปใช้ค่าเริ่มต้นของร้าน" : "ใช้ชุดค่า " + (d.preset === "fast" ? "ทำกำไรไว" : "ค่าสมดุล"));
       if (action === "ea_toggle") { lic.eaOff = !d.on; return res({ ok: true, eaOff: lic.eaOff }); }
+      if (action === "user_ea") { lic.ea = d.ea === "km" ? "km" : "gm"; return res({ ok: true, ea: lic.ea }); }
       if (action === "host_set") {
         if (!lic.hosting && !d.encPass) return res({ ok: false, error: "ใส่รหัสผ่าน MT5" });
         lic.hosting = Object.assign(lic.hosting || {}, { broker: d.broker, login: d.login, server: d.server, symbol: d.symbol, wanted: "run", state: "pending", stateText: "รอเครื่องรันติดตั้ง", stateTime: Date.now() });
@@ -2966,7 +2995,7 @@ function demoApi(action, d) {
         const nb = Date.now();
         const settings = Object.assign({}, demo.config.port[lic.port === "usd" ? "usd" : "cent"], lic.settings);
         const cov = demoCover(u.codes.map(c => L.find(x => x.code === c)).filter(Boolean));
-        const ports = u.codes.map((c, i) => { const l0 = L.find(x => x.code === c), l = cov[c] ? Object.assign({}, l0, { plan: cov[c].plan, expires: cov[c].expires }) : l0; return { coveredBy: cov[c] ? cov[c].by : "", code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance != null ? l.balance : (l.equity != null ? l.equity + 21.5 : null), eaOff: !!l.eaOff,
+        const ports = u.codes.map((c, i) => { const l0 = L.find(x => x.code === c), l = cov[c] ? Object.assign({}, l0, { plan: cov[c].plan, expires: cov[c].expires }) : l0; return { ea: l.ea || "gm", coveredBy: cov[c] ? cov[c].by : "", code: c, label: l.label || ("พอร์ต " + (i + 1)), account: l.account, plan: l.plan, expires: l.expires, status: l.status, port: l.port, currency: l.currency, online: !!l.equity && l.status === "active", equity: l.equity, balance: l.balance != null ? l.balance : (l.equity != null ? l.equity + 21.5 : null), eaOff: !!l.eaOff,
           profit: l.equity != null ? { today: i === 0 ? 62.56 : 18.4, week: i === 0 ? 412.9 : 96.35 } : null, version: i === 0 ? "2.28" : "2.30" }; });
         return res({ ok: true, host: { on: demo.config.hostOn, pubKey: DEMO_PUB, brokers: demo.config.hostBrokers, agentOnline: true }, hosting: lic.hosting || null, user: { name: u.name, login: u.login }, ports, maxPorts: 10, trialRealOnly: demo.config.trialRealOnly,
           balanced: DEMO_BAL, presets: { balanced: DEMO_BAL, fast: DEMO_FAST }, plans: demoPlans(), planLabels: demoLabels(),
@@ -2974,7 +3003,7 @@ function demoApi(action, d) {
           payments: demo.pays.filter(x => x.userId === u.id),
           activity: (u.acts = u.acts || demoActsSeed(u)).map(a => { const l = L.find(x => x.code === a.c); return { t: a.t, code: a.c, port: a.c ? ((l && l.label) || a.c) : "", text: a.m, kind: a.k }; }),
           google: u.google || { linked: false, email: "", clientId: "" },
-          coverPorts: 5, license: { coveredBy: cov[lic.code] ? cov[lic.code].by : "", coveredByLabel: cov[lic.code] ? cov[lic.code].byLabel : "", code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: cov[lic.code] ? cov[lic.code].expires : lic.expires, status: lic.status, plan: cov[lic.code] ? cov[lic.code].plan : lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk, eaOff: !!lic.eaOff },
+          coverPorts: 5, license: { ea: lic.ea || "gm", coveredBy: cov[lic.code] ? cov[lic.code].by : "", coveredByLabel: cov[lic.code] ? cov[lic.code].byLabel : "", code: lic.code, name: lic.name, label: lic.label || "พอร์ต", account: lic.account, expires: cov[lic.code] ? cov[lic.code].expires : lic.expires, status: lic.status, plan: cov[lic.code] ? cov[lic.code].plan : lic.plan, port: lic.port, currency: lic.currency, digitsOk: !!lic.digitsOk, eaOff: !!lic.eaOff },
           settings, limits: { maxLot: lic.plan === "trial" ? 0.01 : 1 },
           news: [{ t: nb + 2.5 * 3600000, title: "Unemployment Claims", impact: "Medium" }, { t: nb + 26 * 3600000, title: "Core PCE Price Index m/m", impact: "High" }, { t: nb + 50 * 3600000, title: "ISM Manufacturing PMI", impact: "High" }, { t: nb + 74 * 3600000, title: "Non-Farm Employment Change", impact: "High" }],
           newsStatus: { ok: true, time: Date.now() - 600000, info: "HTTP 200", count: 34 },
@@ -3098,6 +3127,7 @@ function demoApi(action, d) {
         if (d.settings) Object.assign(lic.settings, d.settings);
         if (d.name !== undefined) lic.name = d.name;
         if (d.note !== undefined) lic.note = d.note;
+        if (d.ea) lic.ea = d.ea;
         if (d.plan) lic.plan = d.plan;
         if (d.expires) lic.expires = d.expires;
         if (lic.plan === "life") lic.expires = Date.UTC(2099, 11, 31);
@@ -4110,6 +4140,38 @@ const CFG_GROUPS = [
     ["cutPct", "num", 20, "ปิดขาดทุนที่ (% ของ Balance · เช่น 20 = พอร์ต $1,000 ติดลบ $200)", 1, 95, 1],
     ["cutLossOn", "bool", false, "ตัดขาดทุนเป็นจำนวนเงิน : ตะกร้าติดลบถึงยอดที่ตั้ง → ปิดทั้งตะกร้า"],
     ["cutLoss", "num", 300, "ตัดขาดทุนเมื่อติดลบถึง (เงินในพอร์ต · พอร์ต USD = $ · พอร์ต Cent = USC)", 1, 1e8, 1]] },
+  // ---- SG KM (KLZone Recovery) · หน่วยจุดของ SG KM: 1 จุด = ราคาทอง 0.10 (50 จุด = $5)
+  { id: "kmzone", title: "SG KM · โซน Key Level", km: true, fields: [
+    ["kmZoneTF", "sel", 5, "TF ที่ใช้หาโซน Key Level", TFO],
+    ["kmLookback", "int", 300, "จำนวนแท่งย้อนหลังที่ใช้หาโซน (แท่ง)", 20, 5000, 10],
+    ["kmPivotLen", "int", 2, "จุดกลับตัว: จำนวนแท่งซ้าย-ขวา (แท่ง)", 1, 20, 1],
+    ["kmClusterPts", "num", 30, "ระยะรวมเส้นเป็นโซนเดียวกัน (จุด · 1 จุด = ราคาทอง 0.10)", 1, 5000, 1],
+    ["kmMinZonePts", "num", 10, "ความกว้างโซนขั้นต่ำ (จุด · 1 จุด = ราคาทอง 0.10)", 0, 5000, 1],
+    ["kmMaxZonePts", "num", 80, "ความกว้างโซนสูงสุด (จุด · 1 จุด = ราคาทอง 0.10)", 1, 5000, 1],
+    ["kmMinTouches", "int", 2, "โซนต้องมีจุดกลับตัวอย่างน้อย (ครั้ง)", 1, 20, 1]] },
+  { id: "kmentry", title: "SG KM · ไม้แรก", km: true, fields: [
+    ["kmAllowBuy", "bool", true, "เปิด Buy : ราคาลงมาแตะโซนเขียว"],
+    ["kmAllowSell", "bool", true, "เปิด Sell : ราคาขึ้นไปแตะโซนแดง"],
+    ["kmEntryTF", "sel", 5, "TF ที่ใช้เช็กว่าราคาวิ่งเข้าหาโซน", TFO],
+    ["kmUseTrend", "bool", false, "กรองเทรนด์ HH/HL - LH/LL : ขาขึ้นเปิดแค่ Buy · ขาลงเปิดแค่ Sell"],
+    ["kmMaxSpread", "num", 5, "Spread สูงสุดที่ยอมเข้า (จุด · 1 จุด = ราคาทอง 0.10)", 0.5, 1000, 0.5]] },
+  { id: "kmtrail", title: "SG KM · Trailing กันหน้าทุน (ตอนมีไม้เดียว)", km: true, toggle: "kmTrailOn", fields: [
+    ["kmTrailOn", "bool", true, "เปิด Trailing : กำไรถึงระยะที่ตั้ง → เลื่อน SL มากันหน้าทุนแล้วตามราคา"],
+    ["kmTrailStart", "num", 50, "เริ่มกันหน้าทุนเมื่อกำไรถึง (จุด · 1 จุด = ราคาทอง 0.10)", 1, 10000, 1],
+    ["kmBELock", "num", 5, "ล็อกกำไรขั้นต่ำเหนือทุน (จุด · 1 จุด = ราคาทอง 0.10)", 0, 10000, 1],
+    ["kmTrailDist", "num", 30, "ระยะ Trailing ตามหลังราคา (จุด · 1 จุด = ราคาทอง 0.10)", 1, 10000, 1],
+    ["kmTrailStep", "num", 5, "ขยับ SL ทีละอย่างน้อย (จุด · 1 จุด = ราคาทอง 0.10)", 0.1, 10000, 1]] },
+  { id: "kmrec", title: "SG KM · แก้ไม้ / รวบปิด", km: true, fields: [
+    ["kmBasketTP", "num", 10, "รวบปิดทั้งชุดเมื่อกำไรรวมถึง (เงินในพอร์ต)", 0.1, 10000000, 1],
+    ["kmRecOn", "bool", true, "เปิดแก้ไม้ : ราคาผิดทาง → เปิดไม้แก้ที่โซนถัดไป (ไม่มี SL)"],
+    ["kmMaxLevels", "int", 6, "จำนวนไม้สูงสุดต่อฝั่ง รวมไม้แรก (ไม้)", 1, 50, 1],
+    ["kmRecGap", "num", 50, "ไม้แก้ต้องห่างไม้ก่อนหน้าอย่างน้อย (จุด · 1 จุด = ราคาทอง 0.10)", 1, 100000, 10],
+    ["kmGridFallback", "bool", true, "ไม่มีโซนถัดไป : แก้ไม้ตามระยะคงที่แทน"],
+    ["kmGridStep", "num", 350, "ระยะแก้ไม้เมื่อไม่มีโซน (จุด · 1 จุด = ราคาทอง 0.10)", 1, 100000, 10],
+    ["kmRecLotMode", "sel", 0, "วิธีคิด lot ไม้แก้", [[0, "คำนวณ lot ให้รวบได้เมื่อราคากลับมาตามระยะ"], [1, "คูณ lot จากไม้ก่อนหน้า"]]],
+    ["kmRecoverPts", "num", 100, "โหมดคำนวณ: รวบได้เมื่อราคากลับมา (จุด · 1 จุด = ราคาทอง 0.10)", 1, 100000, 10],
+    ["kmMartMult", "num", 1.5, "โหมดคูณ: ตัวคูณ lot", 1, 5, 0.1],
+    ["kmMaxLot", "num", 1, "lot สูงสุดต่อไม้", 0.01, 100, 0.01]] },
   { id: "guard", title: "กันพอร์ตแตก", toggle: "ddStopOn", warn: guardWarn, fields: [
     ["ddStopOn", "bool", false, "หยุดฉุกเฉิน : Equity ลดลงเกิน % ที่ตั้ง → ปิดทุกออเดอร์ (รวมไม้ Hedge) แล้วพัก EA"],
     ["ddStopPct", "num", 30, "หยุดฉุกเฉินเมื่อ Equity ต่ำกว่า Balance (%)", 5, 95, 1],
@@ -4395,7 +4457,7 @@ function makeCfgForm(root, groups, getSaved, onChange, open) {
 
 /* หน้าสมาชิก: แค่กรองข่าวกับเวลาเทรด */
 const cfgSaved = () => Object.assign({}, CFG_DEF, (dashData && dashData.settings) || {});
-const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "snipe" || g.id === "hedge" || g.id === "news" || g.id === "time" || g.id === "brk"),
+const userForm = makeCfgForm($("cfgForm"), CFG_GROUPS.filter(g => g.km || g.id === "autolot" || g.id === "daily" || g.id === "risk" || g.id === "guard" || g.id === "brake" || g.id === "snipe" || g.id === "hedge" || g.id === "news" || g.id === "time" || g.id === "brk"),
   () => dashData && dashData.settings,
   ch => {
     $("cfgSave").disabled = !ch.length;
@@ -4782,7 +4844,7 @@ function renderPorts() {
     const nodata = p.equity == null;
     return `<div class="prow ${p.code === cur ? "cur" : ""} ${portArr ? "arr" : ""}" ${portArr ? "" : `data-pcode="${esc(p.code)}" role="button" tabindex="0"`}>
       <span class="pr-name">${mv}<span class="dot ${p.online ? "on" : ""}" title="${p.online ? "EA ออนไลน์" : "EA ออฟไลน์"}"></span>
-        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${eaOld(p.version) ? `<span class="pill upd" title="EA เวอร์ชัน ${esc(p.version)} · ล่าสุด ${EA_LATEST}">อัปเดต EA</span>` : ""}
+        <span class="pr-t"><b>${esc(p.label)}</b>${ptype ? `<span class="pill ptype ${ptype}">${ptype === "cent" ? "CENT" : "USD"}</span>` : ""}${eaOld(p.version, eaKindOf(p)) ? `<span class="pill upd" title="${EA_KIND[eaKindOf(p)].name} เวอร์ชัน ${esc(p.version)} · ล่าสุด ${eaLatest(eaKindOf(p))}">อัปเดต EA</span>` : ""}
           <small class="pr-meta">${(() => { const pl = PLAN_LABEL[p.plan] || p.plan, lc = p.status !== "active" || left === "หมดอายุ" ? "bad" : none ? "warn" : (dl > 0 && dl <= 7) ? "warn" : "ok";
             return (pl && pl !== left ? `<span class="pm-plan">${esc(pl)}</span>` : "") + `<span class="mpill ${lc}">${esc(left)}</span>`
               + (p.coveredBy ? '<span class="mpill">แพ็กเกจร่วม</span>' : "") + (none && ci.paid ? '<span class="mpill bad">ต้องชำระเพิ่ม</span>' : "")
@@ -4800,7 +4862,7 @@ function renderPorts() {
   const add = ports.length < (dashData.maxPorts || 10) && !portArr ? `<button class="prow add ${ci.paid && !ci.free ? "over" : ""}" id="addPortBtn"><b>+ เปิดพอร์ตใหม่</b><small>${ci.paid ? (ci.free ? `ใช้แพ็กเกจเดิมได้อีก ${ci.free} พอร์ต (สูงสุด ${ci.max})` : `ครบ ${ci.max} พอร์ตแล้ว พอร์ตต่อไปต้องชำระเพิ่ม`) : `1 แพ็กเกจ ใช้ได้ ${ci.max} พอร์ต`}</small></button>` : "";
   $("portList").innerHTML = head + ports.map(row).join("") + total + add;
   // แถบสลับพอร์ต (หน้าพอร์ต / กำไร / ตั้งค่า / แพ็กเกจ)
-  $("portTabs").innerHTML = ports.map(p => `<button class="ptab ${p.code === cur ? "on" : ""}" data-pcode="${esc(p.code)}"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><small>${p.account ? esc(p.account) : (p.port === "usd" ? "USD" : p.port === "cent" ? "Cent" : "")}</small>${eaOld(p.version) ? '<i class="upd-dot" title="ต้องอัปเดต EA"></i>' : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</button>`).join("")
+  $("portTabs").innerHTML = ports.map(p => `<button class="ptab ${p.code === cur ? "on" : ""}" data-pcode="${esc(p.code)}"><span class="dot ${p.online ? "on" : ""}"></span><b>${esc(p.label)}</b><small>${p.account ? esc(p.account) : (p.port === "usd" ? "USD" : p.port === "cent" ? "Cent" : "")}</small>${eaOld(p.version, eaKindOf(p)) ? '<i class="upd-dot" title="ต้องอัปเดต EA"></i>' : ""}${p.eaOff ? '<span class="ea-x">EA ปิด</span>' : ""}</button>`).join("")
     + (ports.length < (dashData.maxPorts || 10) ? `<button class="ptab add" data-addport="1">+ เพิ่มพอร์ต</button>` : "");
   initPage(); pageTitle();
 }
@@ -4815,7 +4877,29 @@ $("portTabs").addEventListener("pointerenter", e => {
   const c = meCacheGet(b.dataset.pcode);
   if (!c || Date.now() - (c._t || 0) > PREFETCH_FRESH) prefetchPort(b.dataset.pcode);
 }, true);
+function renderEaPick() {
+  const L = dashData && dashData.license, k = eaKindOf(L);
+  document.querySelectorAll("#eaPick button").forEach(b => { b.classList.toggle("on", b.dataset.ea === k); b.setAttribute("aria-pressed", b.dataset.ea === k); });
+  $("cfgCard").classList.toggle("km", k === "km");
+  $("kmCfgNote").hidden = k !== "km";
+}
+$("eaPick").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-ea]"), L = dashData && dashData.license;
+  if (!b || !L || b.dataset.ea === eaKindOf(L)) return;
+  const to = b.dataset.ea, nm = EA_KIND[to].name, file = eaFile(to, (L.port || "") === "usd");
+  if (!confirm(`เปลี่ยน EA ของพอร์ตนี้เป็น ${nm}?\n\n• เปลี่ยนได้เมื่อไม่มีไม้เปิดค้าง (EA ตัวใหม่ไม่ดูแลไม้ของตัวเดิม)\n• รันบนเซิร์ฟเวอร์ของร้าน: เปลี่ยนให้เองภายในไม่กี่นาที\n• รัน EA เอง: ดาวน์โหลด ${file} แล้วลากลงกราฟแทนตัวเดิม (ใช้โค้ดเดิม)`)) return;
+  document.querySelectorAll("#eaPick button").forEach(x => x.disabled = true);
+  const r = await api("user_ea", { token: session.token, code: L.code, ea: to });
+  document.querySelectorAll("#eaPick button").forEach(x => x.disabled = false);
+  if (!r.ok) { toast(r.error || "เปลี่ยน EA ไม่ได้"); return; }
+  L.ea = r.ea;
+  const p = (dashData.ports || []).find(x => x.code === L.code); if (p) p.ea = r.ea;
+  meCachePut(dashData);
+  renderPort(); renderEaPick(); renderPorts(); renderEaUpd(); try { renderEaBadge(); } catch (x) {}
+  toast("เปลี่ยนเป็น " + nm + " แล้ว");
+});
 function renderEaSwitch() {
+  renderEaPick();
   const L = dashData.license, off = !!(L && L.eaOff);
   $("eaOn").checked = !off; $("eaOn").disabled = false;
   $("eaOnText").textContent = off ? "EA ปิดอยู่" : "EA เปิดทำงาน";
@@ -4891,9 +4975,9 @@ function renderPort() {
   pb.className = "pill ptype " + port;
   pb.textContent = port === "usd" ? "USD" : "CENT";
   // ปุ่มดาวน์โหลด EA ตามพอร์ต
-  const eaUsd = port === "usd", eaName = eaUsd ? "GoldShark_USD" : "GoldShark_Cent";
+  const eaUsd = port === "usd", ek = eaKindOf(L), eaName = eaFile(ek, eaUsd);
   $("dlEA").href = eaName + ".ex5";
-  $("dlEALabel").textContent = "ดาวน์โหลด EA พอร์ต" + (eaUsd ? " USD" : "เซ็นต์") + " (" + eaName + ")";
+  $("dlEALabel").textContent = "ดาวน์โหลด " + EA_KIND[ek].name + " พอร์ต" + (eaUsd ? " USD" : "เซ็นต์") + " (" + eaName + ")";
   $("dlEAName").textContent = eaName;
   // แจ้งเฉพาะตอนพอร์ตไม่ตรงกับบัญชี MT5 พร้อมปุ่มแก้
   const w = $("portWarn");
@@ -5160,7 +5244,7 @@ function renderLics() {
       <td class="code-cell"><button class="btn small ghost code-copy" data-act="copy" data-code="${esc(l.code)}" title="คลิกเพื่อคัดลอก">${esc(l.code)}</button></td>
       <td class="cu-cell"><div class="cu-n">${esc(l.name)}${l.label ? ` <span class="port-tag">${esc(l.label)}</span>` : ""}</div>${l.login ? `<div class="cu-e muted" title="${esc(l.login)}">${esc(l.login)}</div>` : l.note ? `<div class="cu-e muted" title="${esc(l.note)}">${esc(l.note)}</div>` : ""}</td>
       <td class="acc-cell"><div class="acc-n">${l.account ? esc(l.account) : '<span class="muted">ยังไม่ผูก</span>'}</div><div class="acc-tags">${!l.account && l.purgeAt ? `<span class="purge-tag" title="ยังไม่เชื่อม EA — ระบบจะลบโค้ดนี้อัตโนมัติ">ลบใน ${purgeLeftText(Math.max(0, l.purgeAt - Date.now()))}</span>` : ""}${l.host ? `<span class="host-tag ${l.host.state === "login_failed" || l.host.state === "error" ? "bad" : ""}" title="รันบนเซิร์ฟเวอร์ ${esc(l.host.login)} @ ${esc(l.host.server)}">☁ ${esc(l.host.stateText)}${l.host.wanted === "stop" ? " · สั่งหยุด" : ""}</span>` : ""}${+l.digits === 3 || +l.digits === 5 ? '<span class="dig3 ok" title="โบรกราคาทองทศนิยม 3 ตำแหน่ง · EA ปรับหน่วยให้อัตโนมัติ ยืนยันแล้ว">3 ทศนิยม ✓</span>' : ""}</div></td>
-      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">ร่วม</span>` : ""}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
+      <td>${esc(PLAN_LABEL[l.plan] || "–")}${l.coveredBy ? `<span class="host-tag" title="ใช้แพ็กเกจร่วมกับ ${esc(l.coveredBy)}">ร่วม</span>` : ""}${l.port ? `<span class="port-tag">${l.port === "usd" ? "USD" : "Cent"}</span>` : ""}<span class="port-tag" title="EA ที่พอร์ตนี้ใช้">${EA_KIND[eaKindOf(l)].name}</span>${l.eaOff ? `<span class="host-tag bad">EA ปิด</span>` : ""}</td>
       <td class="num" style="${dl <= 5 && dl > 0 && l.plan !== "life" ? "color:var(--gold)" : ""}">${l.plan === "life" ? "ถาวร" : dl > 0 ? dl + " วัน" : "–"}</td>
       <td style="white-space:nowrap"><span class="pill ${st}">${stTxt}</span> <span class="dot ${l.online ? "on" : ""}" style="display:inline-block;vertical-align:middle;margin-left:6px" title="EA ${l.online ? "ออนไลน์" : "ออฟไลน์"}"></span></td>
       <td class="num">${l.equity != null ? fmt(l.equity) : '<span class="muted">–</span>'}</td>
@@ -5285,7 +5369,7 @@ const dayStr = t => { const d = new Date(t); return d.getFullYear() + "-" + Stri
 const dayEnd = v => { const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d, 23, 59, 0).getTime(); };
 function memFill() {
   const l = admLic;
-  $("mName").value = l.name || ""; $("mNote").value = l.note || "";
+  $("mName").value = l.name || ""; $("mNote").value = l.note || ""; $("mEa").value = eaKindOf(l);
   const pk = admPackages.length ? admPackages : Object.keys(PLAN_LABEL).filter(k => k !== "none" && k !== "trial").map(k => ({ id: k, label: PLAN_LABEL[k], days: 0 }));
   const ids = pk.map(k => k.id);
   $("mPlan").innerHTML = (l.plan === "none" ? `<option value="none">ยังไม่มีแพ็กเกจ</option>` : "") + `<option value="trial">ทดลองฟรี</option>` +
@@ -5300,6 +5384,7 @@ function memDraft() {
   const l = admLic, plan = $("mPlan").value, out = {};
   if ($("mName").value.trim() !== (l.name || "")) out.name = $("mName").value.trim();
   if ($("mNote").value.trim() !== (l.note || "")) out.note = $("mNote").value.trim();
+  if ($("mEa").value !== eaKindOf(l)) out.ea = $("mEa").value;
   if (plan !== (l.plan || "none")) out.plan = plan;
   if (plan !== "life" && $("mExp").value && $("mExp").value !== (l.expires ? dayStr(l.expires) : "")) out.expires = dayEnd($("mExp").value);
   return out;
@@ -5325,6 +5410,7 @@ function updSaveLabel() {
   $("setSave").textContent = n ? `บันทึก (${n})` : "บันทึก";
 }
 ["mName", "mNote"].forEach(id => $(id).addEventListener("input", updSaveLabel));
+$("mEa").addEventListener("change", updSaveLabel);
 $("mPlan").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
 $("mExt").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
 $("mExp").addEventListener("input", () => { $("mExp").dataset.manual = "1"; memSync(); });
@@ -5371,6 +5457,7 @@ $("setDlg").addEventListener("close", async () => {
       if (body.settings) l.own = Object.assign({}, l.own || {}, body.settings), l.settings = Object.assign({}, l.settings || {}, body.settings);
       if (mem.name !== undefined) l.name = mem.name;
       if (mem.note !== undefined) l.note = mem.note;
+      if (mem.ea) l.ea = mem.ea;
       if (mem.plan) { l.plan = mem.plan; if (mem.plan !== "trial" && mem.plan !== "none") l.purgeAt = 0; }
       if (mem.expires) l.expires = mem.expires;
       if (l.plan === "life") l.expires = Date.UTC(2099, 11, 31);
@@ -6119,28 +6206,39 @@ function demoLive(C) {
 // เปลี่ยนเลขนี้ทุกครั้งที่อัป EA ตัวใหม่ขึ้นเว็บ · EA_NEWS = สิ่งที่ได้เมื่ออัปเดต (บอกสมาชิกสั้นๆ)
 const EA_LATEST = "2.45";
 const EA_NEWS = "ยอดกำไรและไม้บนเว็บตรงกับ MT5 นับรวมไม้ที่กดมือเอง";
+// SG KM (GoldShark_KM_USD / GoldShark_KM_Cent): เปลี่ยนเลขนี้ทุกครั้งที่อัป SG KM ตัวใหม่
+const EA_LATEST_KM = "2.02";
+const EA_NEWS_KM = "SG KM เชื่อมเว็บ: ยอด กำไร ไม้ และกราฟสดขึ้นหน้าสมาชิก";
+const EA_KIND = { gm: { name: "SG GM", file: "GoldShark_" }, km: { name: "SG KM", file: "GoldShark_KM_" } };
+const eaKindOf = x => (x && (x.ea === "km" || x === "km")) ? "km" : "gm";
+const eaLatest = k => k === "km" ? EA_LATEST_KM : EA_LATEST;
+const eaNews = k => k === "km" ? EA_NEWS_KM : EA_NEWS;
+const eaFile = (k, usd) => EA_KIND[k].file + (usd ? "USD" : "Cent");
 function verLt(a, b) {
   const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
   return false;
 }
 // ไม่ตรงกับเวอร์ชันที่ร้านใช้อยู่ = ต้องเปลี่ยน (เก่ากว่า หรือ ใหม่กว่าเพราะร้านถอนเวอร์ชันนั้นกลับ)
-const eaBack = v => !!v && verLt(EA_LATEST, v);
-const eaOld = v => !!v && (verLt(v, EA_LATEST) || eaBack(v));
+const eaBack = (v, k) => !!v && verLt(eaLatest(k), v);
+const eaOld = (v, k) => !!v && (verLt(v, eaLatest(k)) || eaBack(v, k));
 function renderEaUpd() {
   const el = $("eaUpd"); if (!el || !dashData) return;
   const ports = dashData.ports || [], L = dashData.license, S = dashData.snapshot;
-  const olds = ports.filter(p => p.equity != null && eaOld(p.version));
+  const olds = ports.filter(p => p.equity != null && eaOld(p.version, eaKindOf(p)));
   if (curPage === "all") {
     el.hidden = !olds.length;
-    if (olds.length) el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>${olds.every(p => eaBack(p.version)) ? "กลับไปใช้ EA เวอร์ชัน " + EA_LATEST : "มี EA เวอร์ชันใหม่ " + EA_LATEST}</b> · ${olds.length === ports.length ? "ทุกพอร์ต" : olds.length + " พอร์ต"}ยังใช้เวอร์ชันอื่น (${olds.map(p => esc(p.label) + " " + esc(p.version)).join(", ")})<small>${EA_NEWS}</small></span>`;
+    if (olds.length) {
+      const ks = [...new Set(olds.map(eaKindOf))], one = ks.length === 1 ? ks[0] : "";
+      el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>${one ? (olds.every(p => eaBack(p.version, one)) ? "กลับไปใช้ " + EA_KIND[one].name + " เวอร์ชัน " + eaLatest(one) : "มี " + EA_KIND[one].name + " เวอร์ชันใหม่ " + eaLatest(one)) : "มี EA เวอร์ชันใหม่"}</b> · ${olds.length === ports.length ? "ทุกพอร์ต" : olds.length + " พอร์ต"}ยังใช้เวอร์ชันอื่น (${olds.map(p => esc(p.label) + " " + EA_KIND[eaKindOf(p)].name + " " + esc(p.version)).join(", ")})<small>${one ? eaNews(one) : ""}</small></span>`;
+    }
     return;
   }
-  const v = S && S.version;
-  el.hidden = !(L && eaOld(v));
+  const v = S && S.version, k = eaKindOf(L), lt = eaLatest(k);
+  el.hidden = !(L && eaOld(v, k));
   if (el.hidden) return;
-  el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>EA ของพอร์ตนี้ยังเป็นเวอร์ชัน ${esc(v)}</b> · ${eaBack(v) ? "เวอร์ชันนี้ถูกถอนแล้ว ให้กลับไปใช้ " + EA_LATEST : "เวอร์ชันล่าสุด " + EA_LATEST}<small>${eaBack(v) ? "พอร์ตที่รันบน VPS ของร้านจะเปลี่ยนกลับให้เองภายในประมาณ 30 นาที · ถ้ารัน EA บนเครื่องตัวเอง ดาวน์โหลดไปวางทับ" : EA_NEWS}</small></span>
-    <a class="btn small primary" href="${esc($("dlEA").getAttribute("href"))}" download>ดาวน์โหลด EA ${EA_LATEST}</a>
+  el.innerHTML = `<span class="un-ico">↑</span><span class="un-t"><b>${EA_KIND[k].name} ของพอร์ตนี้ยังเป็นเวอร์ชัน ${esc(v)}</b> · ${eaBack(v, k) ? "เวอร์ชันนี้ถูกถอนแล้ว ให้กลับไปใช้ " + lt : "เวอร์ชันล่าสุด " + lt}<small>${eaBack(v, k) ? "พอร์ตที่รันบน VPS ของร้านจะเปลี่ยนกลับให้เองภายในประมาณ 5 นาที · ถ้ารัน EA บนเครื่องตัวเอง ดาวน์โหลดไปวางทับ" : eaNews(k)}</small></span>
+    <a class="btn small primary" href="${esc($("dlEA").getAttribute("href"))}" download>ดาวน์โหลด ${EA_KIND[k].name} ${lt}</a>
     <button class="btn small" type="button" data-updhow="1">วิธีอัปเดต</button>`;
 }
 $("eaUpd").addEventListener("click", e => {
@@ -6326,8 +6424,9 @@ function renderEaBadge() {
   $("eaBadgeT").textContent = txt;
   // เวอร์ชัน EA ที่พอร์ตนี้ใช้อยู่ (เก่ากว่าล่าสุด → สีเหลือง)
   const ver = String(S.version || "").trim(), vb = el.querySelector("b");
-  if (vb) { vb.textContent = ver ? "EA " + ver : "EA"; vb.classList.toggle("old", eaOld(ver)); }
-  el.title = "สถานะ EA: " + txt + (ver ? " · เวอร์ชัน " + ver + (eaOld(ver) ? " (ที่ใช้งาน " + EA_LATEST + ")" : "") : "");
+  const ek = eaKindOf(L), en = EA_KIND[ek].name;
+  if (vb) { vb.textContent = ver ? en + " " + ver : en; vb.classList.toggle("old", eaOld(ver, ek)); }
+  el.title = "สถานะ " + en + ": " + txt + (ver ? " · เวอร์ชัน " + ver + (eaOld(ver, ek) ? " (ที่ใช้งาน " + eaLatest(ek) + ")" : "") : "");
 }
 
 /* ============ กระดานแบบ Perp: แถบราคา + ตาราง Positions / Open Orders ============ */
