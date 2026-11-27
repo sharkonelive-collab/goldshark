@@ -696,6 +696,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 #cfgCard.km #cfgAdvice,#cfgCard.km #lotBox > div + div,
 #cfgCard.km #cfgForm .cfg-group:not([data-g^="km"]):not([data-g="guard"]):not([data-g="news"]):not([data-g="time"]):not([data-g="brk"]){display:none}
 #cfgCard:not(.km) #cfgForm .cfg-group[data-g^="km"]{display:none}
+/* หน้าต่างแอดมิน: โชว์เฉพาะค่าของ EA ที่เลือกในช่อง "EA ที่ใช้" */
+#admCfg.km .cfg-group:not([data-g^="km"]):not([data-g="lot"]):not([data-g="guard"]):not([data-g="news"]):not([data-g="time"]):not([data-g="brk"]){display:none}
+#admCfg:not(.km) .cfg-group[data-g^="km"]{display:none}
 .ea-right .pill.ptype{font-size:13px;padding:6px 12px;border-radius:999px}
 #portWarn{margin:-6px 0 14px}
 #portWarn .btn{margin-left:8px}
@@ -5374,7 +5377,7 @@ const dayStr = t => { const d = new Date(t); return d.getFullYear() + "-" + Stri
 const dayEnd = v => { const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d, 23, 59, 0).getTime(); };
 function memFill() {
   const l = admLic;
-  $("mName").value = l.name || ""; $("mNote").value = l.note || ""; $("mEa").value = eaKindOf(l);
+  $("mName").value = l.name || ""; $("mNote").value = l.note || ""; $("mEa").value = eaKindOf(l); $("admCfg").classList.toggle("km", $("mEa").value === "km");
   const pk = admPackages.length ? admPackages : Object.keys(PLAN_LABEL).filter(k => k !== "none" && k !== "trial").map(k => ({ id: k, label: PLAN_LABEL[k], days: 0 }));
   const ids = pk.map(k => k.id);
   $("mPlan").innerHTML = (l.plan === "none" ? `<option value="none">ยังไม่มีแพ็กเกจ</option>` : "") + `<option value="trial">ทดลองฟรี</option>` +
@@ -5415,7 +5418,7 @@ function updSaveLabel() {
   $("setSave").textContent = n ? `บันทึก (${n})` : "บันทึก";
 }
 ["mName", "mNote"].forEach(id => $(id).addEventListener("input", updSaveLabel));
-$("mEa").addEventListener("change", updSaveLabel);
+$("mEa").addEventListener("change", () => { $("admCfg").classList.toggle("km", $("mEa").value === "km"); updSaveLabel(); });
 $("mPlan").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
 $("mExt").addEventListener("change", () => { delete $("mExp").dataset.manual; memSync(); });
 $("mExp").addEventListener("input", () => { $("mExp").dataset.manual = "1"; memSync(); });
