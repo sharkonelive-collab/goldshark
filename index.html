@@ -1156,6 +1156,13 @@ dialog{background:linear-gradient(180deg,#121C31,#0A111F);border:1px solid rgba(
 .side-tag{display:inline-block;font-style:normal;font-weight:600;font-size:13px;color:#fff;padding:1px 10px;border-radius:6px;margin-right:4px}
 .side-tag.b{background:#2FBF8A} .side-tag.s{background:#E5283D}
 @media (max-width:560px){#liveChart{height:320px}}
+/* เส้น EMA ของโหมดกรองเทรนด์ (ป้ายมุมซ้ายบนของกราฟ) */
+.live-ema{position:absolute;left:10px;top:8px;z-index:3;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:calc(100% - 90px);pointer-events:none;
+  font-size:12px;font-weight:600;padding:4px 9px;border-radius:8px;background:rgba(5,9,18,.72);border:1px solid rgba(255,255,255,.08)}
+.live-ema[hidden]{display:none}
+.live-ema span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.live-ema i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.live-ema small{color:var(--muted);font-weight:400}
 .upd-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:14px;font-size:14px;
   background:linear-gradient(90deg,rgba(242,184,75,.12),rgba(242,184,75,.04));border:1px solid rgba(242,184,75,.45);color:#FFE3A6}
 .upd-notice[hidden]{display:none!important}
@@ -2404,7 +2411,7 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
         <button data-ltf="60" aria-pressed="false">H1</button>
       </div>
     </div>
-    <div class="live-wrap"><span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b id="hdrSym">XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span><span class="acct" id="hdrAcct"></span></span><div id="liveChart"></div><div class="live-empty" id="liveEmpty" hidden></div></div>
+    <div class="live-wrap"><span class="hdr-px notranslate" id="hdrPx" translate="no" hidden title="ราคาทองจากโบรกของพอร์ตนี้"><b id="hdrSym">XAUUSD</b><span class="v" id="hdrPxV">–</span><span class="d" id="hdrPxD"></span><span class="sp" id="hdrPxS"></span><span class="acct" id="hdrAcct"></span></span><div id="liveChart"></div><div class="live-ema" id="liveEma" hidden></div><div class="live-empty" id="liveEmpty" hidden></div></div>
     <div class="live-legend">
       <span><i style="background:#2FBF8A"></i>Buy</span><span><i style="background:#E5283D"></i>Sell</span>
       <span><i style="background:#B07CFF"></i>Hedge</span><span><i style="background:#F2B84B"></i>ตะกร้ากู้</span>
@@ -5944,6 +5951,56 @@ function liveBars(raw, tf, h1) {
   });
   return out;
 }
+/* ---- เส้น EMA200 (กรอง Buy เหนือ / Sell ใต้): คำนวณจากแท่งของ TF ที่ EA ใช้จริง แล้ววาดทับกราฟ ---- */
+const EMA_COL = ["#FFD60A"];                          // EMA200 = เหลืองสด (ไม่ซ้ำสีแท่งและเส้นไม้)
+const TF_MIN = { 1: 1, 5: 5, 15: 15, 30: 30, 16385: 60, 16388: 240 };
+const TF_NAME = { 1: "M1", 5: "M5", 15: "M15", 30: "M30", 60: "H1", 240: "H4" };
+let liveEmaS = [];
+function emaCalc(bars, n) {
+  if (!n || bars.length < n) return null;
+  const k = 2 / (n + 1); let e = 0;
+  for (let i = 0; i < n; i++) e += bars[i].close;
+  e /= n;
+  const out = [{ time: bars[n - 1].time, value: e }];
+  for (let i = n; i < bars.length; i++) { e = bars[i].close * k + e * (1 - k); out.push({ time: bars[i].time, value: e }); }
+  return out;
+}
+function tfBarsFor(L, m) {                           // แท่งของ TF ที่ต้องการ จากข้อมูลที่ EA ส่งมา (M5 300 แท่ง · H1 120 แท่ง)
+  if (m === 60) return liveBars(L.h1 && L.h1.length ? L.h1 : L.bars, 60);
+  if (m === 240) return liveBars(L.h1 || [], 240);
+  if (m >= 5) return liveBars(L.bars, m);
+  return null;                                       // M1: EA ไม่ได้ส่งแท่ง M1 มา
+}
+function emaSpecs(C) {                               // เส้นที่ต้องวาด: เฉพาะตอนเปิด "Buy เหนือ EMA200 / Sell ใต้ EMA200" (และเปิดกรองชุดนี้)
+  const on = v => v === true || v === "true" || v === 1 || v === "1";
+  if (!on(C.pfOn) || !on(C.ema200On)) return [];
+  return [{ tf: TF_MIN[+C.ema200TF] || 5, n: +C.ema200Period || 200 }];
+}
+function renderLiveEma(L, C, disp) {
+  const specs = emaSpecs(C), leg = $("liveEma"), lines = [], notes = [];
+  specs.forEach(sp => {
+    const src = tfBarsFor(L, sp.tf);
+    [[sp.n, 0]].forEach(([n, ci]) => {
+      const nm = `EMA ${n} ${TF_NAME[sp.tf] || ""}`;
+      const e = src && emaCalc(src, n);
+      if (!e) { notes.push(`${nm} (ข้อมูลไม่พอ)`); return; }
+      // วางค่า EMA ของแท่ง TF นั้นลงบนแท่งที่กำลังดู (แบบขั้นบันไดเมื่อ TF ใหญ่กว่ากราฟ)
+      const data = []; let j = 0;
+      disp.forEach(b => { while (j + 1 < e.length && e[j + 1].time <= b.time) j++; if (e[j].time <= b.time) data.push({ time: b.time, value: e[j].value }); });
+      lines.push({ nm, col: EMA_COL[ci], data, w: 3 });
+    });
+  });
+  while (liveEmaS.length > lines.length) liveC.removeSeries(liveEmaS.pop());
+  lines.forEach((ln, i) => {
+    const opt = { color: ln.col, lineWidth: ln.w, priceLineVisible: false, lastValueVisible: true, title: ln.nm, crosshairMarkerVisible: false,
+      autoscaleInfoProvider: () => null };          // ไม่ให้เส้น EMA ที่อยู่ไกลบีบแท่งเทียนจนเล็ก
+    if (!liveEmaS[i]) liveEmaS[i] = liveC.addLineSeries(opt); else liveEmaS[i].applyOptions(opt);
+    liveEmaS[i].setData(ln.data);
+  });
+  leg.hidden = !lines.length && !notes.length;
+  leg.innerHTML = lines.map(l => `<span style="color:${l.col}"><i style="background:${l.col}"></i>${esc(l.nm)}</span>`).join("")
+    + notes.map(t => `<span><small>${esc(t)}</small></span>`).join("");
+}
 const LIVE_COL = { m: ["#2FBF8A", "#E5283D"], b: ["#2FBF8A", "#E5283D"], h: ["#B07CFF", "#B07CFF"], r: ["#F2B84B", "#F2B84B"] };
 const LIVE_NAME = { m: "", b: "บอลลูน ", h: "Hedge ", r: "กู้ " };
 async function renderLive() {
@@ -5978,10 +6035,11 @@ async function renderLive() {
   const smooth = sig === liveSig && liveShown && tb && bars.length >= liveLen && bars.length <= liveLen + 1 && tb.time >= liveShown.time;
   if (smooth) liveTween(bars[bars.length - 2], tb, dg);
   else {
-    cancelAnimationFrame(liveTw); liveS.setData(bars); liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;
+    cancelAnimationFrame(liveTw); liveEmaS.forEach(x => x.setData([])); liveS.setData(bars);   // ล้างเส้น EMA ก่อน (เวลาแท่งของ TF เก่าค้างแล้วกราฟพัง) liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;
     if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
   }
   liveLen = bars.length;
+  try { renderLiveEma(L, Object.assign({}, CFG_DEF, dashData.settings || {}), bars); } catch (e) {}
   // เส้นไม้/ออเดอร์: สร้างใหม่เฉพาะตอนชุดเส้นเปลี่ยน · ระหว่างนั้นแก้แค่ป้าย (กำไร/ขาดทุน) → ไม่กระพริบ
   const specs = [];
   const line = (price, color, title, style = 0, width = 1) => specs.push({ price: +price, color, lineWidth: width, lineStyle: style, axisLabelVisible: true, title });
