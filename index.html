@@ -6185,7 +6185,7 @@ async function renderLive() {
   const smooth = sig === liveSig && liveShown && tb && bars.length >= liveLen && bars.length <= liveLen + 1 && tb.time >= liveShown.time;
   if (smooth) liveTween(bars[bars.length - 2], tb, dg);
   else {
-    cancelAnimationFrame(liveTw); liveEmaS.forEach(x => x.setData([])); liveS.setData(bars);   // ล้างเส้น EMA ก่อน (เวลาแท่งของ TF เก่าค้างแล้วกราฟพัง) liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;
+    cancelAnimationFrame(liveTw); liveEmaS.forEach(x => x.setData([])); liveS.setData(bars); liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;   // ล้างเส้น EMA ก่อน (เวลาแท่งของ TF เก่าค้างแล้วกราฟพัง) liveShown = tb ? Object.assign({}, tb) : null; liveTickAt = 0;
     if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
   }
   liveLen = bars.length;
