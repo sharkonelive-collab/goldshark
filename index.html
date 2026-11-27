@@ -701,7 +701,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 #liveZones .lz{position:absolute;left:0;right:0;border-top:1px dashed;border-bottom:1px dashed}
 #liveZones .lz.b{background:rgba(47,191,138,.13);border-color:rgba(47,191,138,.75)}
 #liveZones .lz.s{background:rgba(229,40,61,.13);border-color:rgba(255,107,124,.75)}
-#liveZones .lz span{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:10.5px;line-height:1;font-weight:500;white-space:nowrap;padding:2px 6px;border-radius:6px;background:rgba(5,9,18,.72)}
+#liveZones .lz span{position:absolute;left:46px;top:50%;transform:translateY(-50%);font-size:10.5px;line-height:1;font-weight:500;white-space:nowrap;padding:2px 6px;border-radius:6px;background:rgba(5,9,18,.72)}
 #liveZones .lz.b span{color:#7FE8B8}
 #liveZones .lz.s span{color:#FF9AA6}
 /* หน้าต่างแอดมิน: โชว์เฉพาะค่าของ EA ที่เลือกในช่อง "EA ที่ใช้" */
@@ -6012,6 +6012,14 @@ function renderLiveZones(L, box) {
   if (!el) { el = document.createElement("div"); el.id = "liveZones"; box.appendChild(el); }
   liveZ = eaKindOf(dashData && dashData.license) === "km" && Array.isArray(L.zones) ? L.zones.filter(z => Array.isArray(z) && z[1] > z[0]) : [];
   liveZBid = +L.bid || 0;
+  // โชว์แค่โซนสำคัญ: โซนที่ราคาเด้งตั้งแต่ 3 ครั้ง (ฝั่งละไม่เกิน 2) · ถ้าฝั่งนั้นไม่มี ใช้โซนที่เด้งบ่อยที่สุด 1 โซน
+  const strong = arr => {
+    const s = arr.slice().sort((a, b) => (b[2] || 0) - (a[2] || 0) || a.d - b.d);
+    const k = s.filter(z => (z[2] || 0) >= 3);
+    return (k.length ? k.slice(0, 2) : s.slice(0, 1));
+  };
+  const dist = z => Object.assign(z.slice(), { d: Math.abs((z[0] + z[1]) / 2 - liveZBid) });
+  liveZ = strong(liveZ.filter(z => (z[0] + z[1]) / 2 < liveZBid).map(dist)).concat(strong(liveZ.filter(z => (z[0] + z[1]) / 2 >= liveZBid).map(dist)));
   if (!liveZ.length) { el.innerHTML = ""; liveZKey = ""; cancelAnimationFrame(liveZRaf); liveZRaf = 0; return; }
   if (!liveZRaf) liveZRaf = requestAnimationFrame(placeLiveZones);
 }
@@ -6032,7 +6040,7 @@ function placeLiveZones() {
   if (key !== liveZKey) {
     liveZKey = key;
     el.style.width = Math.max(0, w) + "px";
-    el.innerHTML = items.map(([t, h, buy, z]) => `<div class="lz ${buy ? "b" : "s"}" style="top:${t}px;height:${h}px" title="โซน ${buy ? "Buy" : "Sell"} ${(+z[0]).toFixed(dg)} – ${(+z[1]).toFixed(dg)}"><span>${buy ? "โซน Buy" : "โซน Sell"}${z[2] ? " · " + z[2] + " ครั้ง" : ""}</span></div>`).join("");
+    el.innerHTML = items.map(([t, h, buy, z]) => `<div class="lz ${buy ? "b" : "s"}" style="top:${t}px;height:${h}px" title="โซน ${buy ? "Buy" : "Sell"} ${(+z[0]).toFixed(dg)} – ${(+z[1]).toFixed(dg)}"><span>${buy ? "โซน Buy" : "โซน Sell"}${z[2] ? " · เด้ง " + z[2] + " ครั้ง" : ""}</span></div>`).join("");
   }
   if (box.isConnected && box.clientWidth > 0) liveZRaf = requestAnimationFrame(placeLiveZones);
 }
