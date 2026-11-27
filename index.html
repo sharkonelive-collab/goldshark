@@ -676,8 +676,11 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 .ov-status b{color:#CFE3FF;font-weight:500}
 .ea-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 /* เลือก EA ของพอร์ต: SG GM / SG KM */
-.ea-choose{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
-.ea-choose-h{font-weight:600;font-size:15px}
+.ea-card{display:flex;flex-direction:column;gap:14px}
+.ea-card-h{display:flex;align-items:center;gap:14px}
+.ea-card-n{font-size:12.5px}
+#secEa:not([data-on]){display:none!important}
+#dashView[data-pg="setup"] > #secEa{margin-bottom:16px}
 .ea-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ea-pick button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:0;cursor:pointer;padding:12px 14px;border-radius:12px;
   background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);color:var(--text);font:inherit}
@@ -2339,18 +2342,19 @@ body:not([data-adm-role="owner"]) #dlgDelete{display:none!important}
       <p class="pnote" style="margin:10px 0 0">อย่าเปิด EA ตัวนี้บนคอมหรือ VPS ของคุณเองพร้อมกัน เพราะจะเปิดไม้ซ้ำในบัญชีเดียวกัน</p>
     </form>
   </section>
+  <section class="card ea-card" id="secEa" data-pages="setup">
+    <div class="ea-card-h"><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg></span>
+      <span class="hl-t"><b>เลือก EA</b><small>เลือกระบบเทรดของพอร์ตนี้ · เปลี่ยนได้เมื่อไม่มีไม้เปิดค้าง</small></span></div>
+    <div class="ea-pick" id="eaPick" role="radiogroup" aria-label="เลือก EA ของพอร์ตนี้">
+      <button type="button" data-ea="gm" role="radio"><b>SG GM</b><small>แก้ไม้ตามระยะ · ตั้งค่าได้ครบ</small></button>
+      <button type="button" data-ea="km" role="radio"><b>SG KM</b><small>เข้าไม้ที่โซน Key Level · แก้ไม้ที่โซนถัดไป</small></button>
+    </div>
+    <small class="muted ea-card-n">ปุ่มดาวน์โหลดในกล่องติดตั้ง EA ด้านล่างจะเปลี่ยนตาม EA ที่เลือก</small>
+  </section>
   <details class="setup hl" id="setupBox" data-pages="setup">
     <summary><span class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><span class="hl-t"><b>ติดตั้ง EA และเชื่อมต่อ MT5</b><small>ดาวน์โหลด EA แล้วใส่โค้ดของคุณ ใช้เวลาไม่ถึง 5 นาที</small></span><span class="spacer"></span><span class="hint">ดูวิธีติดตั้ง</span></summary>
     <div class="setup-body">
       <div class="purge-note" id="purgeNote" hidden></div>
-      <div class="ea-choose">
-        <div class="ea-choose-h">เลือก EA ของพอร์ตนี้</div>
-        <div class="ea-pick" id="eaPick" role="radiogroup" aria-label="เลือก EA ของพอร์ตนี้">
-          <button type="button" data-ea="gm" role="radio"><b>SG GM</b><small>แก้ไม้ตามระยะ · ตั้งค่าได้ครบ</small></button>
-          <button type="button" data-ea="km" role="radio"><b>SG KM</b><small>เข้าไม้ที่โซน Key Level · แก้ไม้ที่โซนถัดไป</small></button>
-        </div>
-        <small class="muted">เปลี่ยนได้เมื่อไม่มีไม้เปิดค้าง · ปุ่มดาวน์โหลดด้านล่างเปลี่ยนตาม EA ที่เลือก</small>
-      </div>
       <a class="btn primary dl-btn" id="dlEA" href="GoldShark_Cent.ex5" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> <span id="dlEALabel">ดาวน์โหลด EA พอร์ตเซ็นต์ (GoldShark_Cent)</span></a>
       <ol class="steps">
         <li>ใน MT5 ไปที่เมนู <b>ไฟล์ → เปิดโฟลเดอร์ข้อมูล</b> → <b>MQL5 → Experts</b> วางไฟล์ที่ดาวน์โหลดไว้ แล้วปิดและเปิด MT5 ใหม่</li>
@@ -4879,6 +4883,7 @@ $("portTabs").addEventListener("pointerenter", e => {
 }, true);
 function renderEaPick() {
   const L = dashData && dashData.license, k = eaKindOf(L);
+  if (L) $("secEa").setAttribute("data-on", ""); else $("secEa").removeAttribute("data-on");
   document.querySelectorAll("#eaPick button").forEach(b => { b.classList.toggle("on", b.dataset.ea === k); b.setAttribute("aria-pressed", b.dataset.ea === k); });
   $("cfgCard").classList.toggle("km", k === "km");
   $("kmCfgNote").hidden = k !== "km";
