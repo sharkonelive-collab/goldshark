@@ -6006,12 +6006,20 @@ function langSet(code) {
 // ข้อมูลจาก EA 2.30+ (snapshot.live): { bid, ask, digits, bars:[[t,o,h,l,c],...M5], pos:[{s:1|-1, k:"m"|"b"|"h"|"r", p, v, pl}], next:{buy:{p,v},sell:{p,v}}, beOff, every }
 let lwcP = null, liveC = null, liveS = null, liveLines = [], liveTF = 5, liveSig = "";
 /* โซน Key Level ของ SG KM: แถบสีบนกราฟ (เขียว = โซนรอ Buy ใต้ราคา · แดง = โซนรอ Sell เหนือราคา) */
-let liveZ = [], liveZBid = 0, liveZRaf = 0, liveZKey = "";
+let liveZ = [], liveZBid = 0, liveZRaf = 0, liveZKey = "", liveZDg = 2, liveZHooked = false, liveZT = 0;
+// วางแถบโซนใหม่เฉพาะตอนที่ต้องเปลี่ยน (ราคาใหม่ · เลื่อน/ซูมกราฟ · เปลี่ยนขนาด) ไม่วนทุกเฟรม กราฟจะได้ลื่นเหมือนเดิม
+function schedZones() { if (!liveZRaf && liveZ.length) liveZRaf = requestAnimationFrame(placeLiveZones); }
 function renderLiveZones(L, box) {
   let el = $("liveZones");
   if (!el) { el = document.createElement("div"); el.id = "liveZones"; box.appendChild(el); }
   liveZ = eaKindOf(dashData && dashData.license) === "km" && Array.isArray(L.zones) ? L.zones.filter(z => Array.isArray(z) && z[1] > z[0]) : [];
-  liveZBid = +L.bid || 0;
+  liveZBid = +L.bid || 0; liveZDg = L.digits || 2;
+  if (!liveZHooked && liveC) {
+    liveZHooked = true;
+    liveC.timeScale().subscribeVisibleLogicalRangeChange(schedZones);
+    ["wheel", "pointermove", "pointerup", "touchmove"].forEach(ev => box.addEventListener(ev, schedZones, { passive: true }));
+    if (window.ResizeObserver) new ResizeObserver(schedZones).observe(box);
+  }
   // โชว์แค่โซนสำคัญ: โซนที่ราคาเด้งตั้งแต่ 3 ครั้ง (ฝั่งละไม่เกิน 2) · ถ้าฝั่งนั้นไม่มี ใช้โซนที่เด้งบ่อยที่สุด 1 โซน
   const strong = arr => {
     const s = arr.slice().sort((a, b) => (b[2] || 0) - (a[2] || 0) || a.d - b.d);
@@ -6021,13 +6029,14 @@ function renderLiveZones(L, box) {
   const dist = z => Object.assign(z.slice(), { d: Math.abs((z[0] + z[1]) / 2 - liveZBid) });
   liveZ = strong(liveZ.filter(z => (z[0] + z[1]) / 2 < liveZBid).map(dist)).concat(strong(liveZ.filter(z => (z[0] + z[1]) / 2 >= liveZBid).map(dist)));
   if (!liveZ.length) { el.innerHTML = ""; liveZKey = ""; cancelAnimationFrame(liveZRaf); liveZRaf = 0; return; }
-  if (!liveZRaf) liveZRaf = requestAnimationFrame(placeLiveZones);
+  schedZones();
+  clearTimeout(liveZT); liveZT = setTimeout(schedZones, 450);   // หลังแท่งเทียนขยับเสร็จ วางซ้ำอีกครั้งให้ตรงสเกลใหม่
 }
 function placeLiveZones() {
   liveZRaf = 0;
   const el = $("liveZones"); if (!el || !liveS || !liveZ.length) return;
   const box = el.parentElement, w = box.clientWidth - (liveC.priceScale("right").width() || 0), H = box.clientHeight - (liveC.timeScale().height() || 0);
-  const dg = (liveS.options().priceFormat || {}).precision || 2;
+  const dg = liveZDg;
   const items = liveZ.map(z => {
     let a = liveS.priceToCoordinate(z[1]), b = liveS.priceToCoordinate(z[0]);
     if (a == null || b == null) return null;
@@ -6042,7 +6051,6 @@ function placeLiveZones() {
     el.style.width = Math.max(0, w) + "px";
     el.innerHTML = items.map(([t, h, buy, z]) => `<div class="lz ${buy ? "b" : "s"}" style="top:${t}px;height:${h}px" title="โซน ${buy ? "Buy" : "Sell"} ${(+z[0]).toFixed(dg)} – ${(+z[1]).toFixed(dg)}"><span>${buy ? "โซน Buy" : "โซน Sell"}${z[2] ? " · เด้ง " + z[2] + " ครั้ง" : ""}</span></div>`).join("");
   }
-  if (box.isConnected && box.clientWidth > 0) liveZRaf = requestAnimationFrame(placeLiveZones);
 }
 // เรียลไทม์แบบ TradingView: แท่งล่าสุดค่อยๆ ไหลไปหาราคาใหม่ (ไม่กระโดด) + เส้นราคาไม่กระพริบ
 let liveShown = null, liveLen = 0, liveTw = 0, liveTickAt = 0, liveLinesKey = "";
