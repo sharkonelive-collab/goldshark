@@ -696,6 +696,14 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;op
 #cfgCard.km #cfgAdvice,#cfgCard.km #lotBox > div + div,
 #cfgCard.km #cfgForm .cfg-group:not([data-g^="km"]):not([data-g="guard"]):not([data-g="news"]):not([data-g="time"]):not([data-g="brk"]){display:none}
 #cfgCard:not(.km) #cfgForm .cfg-group[data-g^="km"]{display:none}
+#liveChart{position:relative}
+#liveZones{position:absolute;left:0;top:0;bottom:0;pointer-events:none;z-index:2;overflow:hidden}
+#liveZones .lz{position:absolute;left:0;right:0;border-top:1px dashed;border-bottom:1px dashed}
+#liveZones .lz.b{background:rgba(47,191,138,.13);border-color:rgba(47,191,138,.75)}
+#liveZones .lz.s{background:rgba(229,40,61,.13);border-color:rgba(255,107,124,.75)}
+#liveZones .lz span{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:10.5px;line-height:1;font-weight:500;white-space:nowrap;padding:2px 6px;border-radius:6px;background:rgba(5,9,18,.72)}
+#liveZones .lz.b span{color:#7FE8B8}
+#liveZones .lz.s span{color:#FF9AA6}
 /* หน้าต่างแอดมิน: โชว์เฉพาะค่าของ EA ที่เลือกในช่อง "EA ที่ใช้" */
 #admCfg.km .cfg-group:not([data-g^="km"]):not([data-g="lot"]):not([data-g="guard"]):not([data-g="news"]):not([data-g="time"]):not([data-g="brk"]){display:none}
 #admCfg:not(.km) .cfg-group[data-g^="km"]{display:none}
@@ -5997,6 +6005,37 @@ function langSet(code) {
 /* ============ กราฟไม้ที่เปิดอยู่ (Lightweight Charts by TradingView) ============ */
 // ข้อมูลจาก EA 2.30+ (snapshot.live): { bid, ask, digits, bars:[[t,o,h,l,c],...M5], pos:[{s:1|-1, k:"m"|"b"|"h"|"r", p, v, pl}], next:{buy:{p,v},sell:{p,v}}, beOff, every }
 let lwcP = null, liveC = null, liveS = null, liveLines = [], liveTF = 5, liveSig = "";
+/* โซน Key Level ของ SG KM: แถบสีบนกราฟ (เขียว = โซนรอ Buy ใต้ราคา · แดง = โซนรอ Sell เหนือราคา) */
+let liveZ = [], liveZBid = 0, liveZRaf = 0, liveZKey = "";
+function renderLiveZones(L, box) {
+  let el = $("liveZones");
+  if (!el) { el = document.createElement("div"); el.id = "liveZones"; box.appendChild(el); }
+  liveZ = eaKindOf(dashData && dashData.license) === "km" && Array.isArray(L.zones) ? L.zones.filter(z => Array.isArray(z) && z[1] > z[0]) : [];
+  liveZBid = +L.bid || 0;
+  if (!liveZ.length) { el.innerHTML = ""; liveZKey = ""; cancelAnimationFrame(liveZRaf); liveZRaf = 0; return; }
+  if (!liveZRaf) liveZRaf = requestAnimationFrame(placeLiveZones);
+}
+function placeLiveZones() {
+  liveZRaf = 0;
+  const el = $("liveZones"); if (!el || !liveS || !liveZ.length) return;
+  const box = el.parentElement, w = box.clientWidth - (liveC.priceScale("right").width() || 0), H = box.clientHeight - (liveC.timeScale().height() || 0);
+  const dg = (liveS.options().priceFormat || {}).precision || 2;
+  const items = liveZ.map(z => {
+    let a = liveS.priceToCoordinate(z[1]), b = liveS.priceToCoordinate(z[0]);
+    if (a == null || b == null) return null;
+    const top = Math.max(0, Math.min(a, b)), bot = Math.min(H, Math.max(a, b));
+    if (bot <= 0 || top >= H || bot - top < 1) return null;
+    const buy = (z[0] + z[1]) / 2 < liveZBid;
+    return [Math.round(top), Math.max(2, Math.round(bot - top)), buy, z];
+  }).filter(Boolean);
+  const key = w + "|" + items.map(i => i.slice(0, 3).join(",")).join(";");
+  if (key !== liveZKey) {
+    liveZKey = key;
+    el.style.width = Math.max(0, w) + "px";
+    el.innerHTML = items.map(([t, h, buy, z]) => `<div class="lz ${buy ? "b" : "s"}" style="top:${t}px;height:${h}px" title="โซน ${buy ? "Buy" : "Sell"} ${(+z[0]).toFixed(dg)} – ${(+z[1]).toFixed(dg)}"><span>${buy ? "โซน Buy" : "โซน Sell"}${z[2] ? " · " + z[2] + " ครั้ง" : ""}</span></div>`).join("");
+  }
+  if (box.isConnected && box.clientWidth > 0) liveZRaf = requestAnimationFrame(placeLiveZones);
+}
 // เรียลไทม์แบบ TradingView: แท่งล่าสุดค่อยๆ ไหลไปหาราคาใหม่ (ไม่กระโดด) + เส้นราคาไม่กระพริบ
 let liveShown = null, liveLen = 0, liveTw = 0, liveTickAt = 0, liveLinesKey = "";
 function liveFmtPx(v, dg) { return (+v).toLocaleString("en-US", { minimumFractionDigits: dg, maximumFractionDigits: dg }); }
@@ -6134,6 +6173,7 @@ async function renderLive() {
     if (sig !== liveSig && box.clientWidth > 0) { liveC.timeScale().setVisibleLogicalRange({ from: Math.max(0, bars.length - 90), to: bars.length + 5 }); liveSig = sig; }
   }
   liveLen = bars.length;
+  try { renderLiveZones(L, box); } catch (e) {}
   try { renderLiveEma(L, Object.assign({}, CFG_DEF, dashData.settings || {}), bars); } catch (e) {}
   // เส้นไม้/ออเดอร์: สร้างใหม่เฉพาะตอนชุดเส้นเปลี่ยน · ระหว่างนั้นแก้แค่ป้าย (กำไร/ขาดทุน) → ไม่กระพริบ
   const specs = [];
@@ -6207,7 +6247,8 @@ function demoLive(C) {
   pos.push({ s: -1, k: "m", p: +(bid + 3.6).toFixed(2), v: 0.01, pl: +((bid + 3.6 - ask) * 0.01 * 100).toFixed(2) });
   const worst = Math.min(...pos.filter(o => o.s > 0).map(o => o.p));
   const pend = [{ s: 1, t: "stop", p: +(bid + 4.3).toFixed(2), v: 0.01 }, { s: -1, t: "stop", p: +(bid - 3.8).toFixed(2), v: 0.01 }];
-  return { bid, ask, digits: 2, bars, pos, pend, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
+  const zones = [[-9.6, -7.9, 3], [-4.2, -3.1, 2], [2.4, 3.5, 2], [6.8, 8.6, 4]].map(([a, b, n]) => [+(bid + a).toFixed(2), +(bid + b).toFixed(2), n]);
+  return { bid, ask, digits: 2, bars, pos, pend, zones, next: { buy: { p: +(worst - g).toFixed(2), v: +(0.05 * (Number(C.lotMult) || 1.5)).toFixed(2) }, sell: { p: +(bid + 3.6 + g).toFixed(2), v: 0.01 } }, every: 10 };
 }
 
 /* ============ แจ้งเตือน EA เวอร์ชันเก่า ============ */
@@ -6215,8 +6256,8 @@ function demoLive(C) {
 const EA_LATEST = "2.45";
 const EA_NEWS = "ยอดกำไรและไม้บนเว็บตรงกับ MT5 นับรวมไม้ที่กดมือเอง";
 // SG KM (GoldShark_KM_USD / GoldShark_KM_Cent): เปลี่ยนเลขนี้ทุกครั้งที่อัป SG KM ตัวใหม่
-const EA_LATEST_KM = "2.02";
-const EA_NEWS_KM = "SG KM เชื่อมเว็บ: ยอด กำไร ไม้ และกราฟสดขึ้นหน้าสมาชิก";
+const EA_LATEST_KM = "2.03";
+const EA_NEWS_KM = "โชว์โซน Key Level ของ SG KM บนกราฟหน้าเว็บ";
 const EA_KIND = { gm: { name: "SG GM", file: "GoldShark_" }, km: { name: "SG KM", file: "GoldShark_KM_" } };
 const eaKindOf = x => (x && (x.ea === "km" || x === "km")) ? "km" : "gm";
 const eaLatest = k => k === "km" ? EA_LATEST_KM : EA_LATEST;
